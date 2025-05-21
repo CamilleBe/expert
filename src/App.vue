@@ -1,12 +1,33 @@
 <script setup>
 import ArtisanSearch from './components/ArtisanSearch.vue'
 import MainNav from './components/MainNav.vue'
+import ArtisanProfile from './components/ArtisanProfile.vue'
+import { ref } from 'vue'
+
+// État pour contrôler quelle page est affichée
+const currentPage = ref('search')
+const selectedArtisanId = ref(null)
+
+// Fonctions pour la navigation
+function showProfile(artisanId) {
+  selectedArtisanId.value = artisanId
+  currentPage.value = 'profile'
+}
+
+function showSearch() {
+  currentPage.value = 'search'
+}
 </script>
 
 <template>
   <div class="min-h-screen bg-gray-50">
     <MainNav />
-    <ArtisanSearch />
+    
+    <!-- Page de recherche -->
+    <ArtisanSearch v-if="currentPage === 'search'" @view-profile="showProfile" />
+    
+    <!-- Page de profil -->
+    <ArtisanProfile v-else-if="currentPage === 'profile'" :artisan-id="selectedArtisanId" @back-to-search="showSearch" />
   </div>
 </template>
 

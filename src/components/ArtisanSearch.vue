@@ -73,7 +73,7 @@
           >
             <div class="relative">
               <div class="h-48 bg-blue-50 flex items-center justify-center overflow-hidden">
-                <img :src="artisan.coverImage || 'https://images.unsplash.com/photo-1598449426314-8b02525e8733?w=800'" alt="Couverture" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <img :src="artisan.coverImage || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800'" alt="Couverture" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
               </div>
               <div class="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
                 <img :src="artisan.avatar" alt="avatar" class="w-24 h-24 rounded-full border-4 border-blue-400 object-cover shadow-xl bg-white" />
@@ -107,7 +107,9 @@
               <p class="text-gray-600 text-sm mb-6 line-clamp-3">{{ artisan.description || "Artisan qualifié avec plusieurs années d'expérience, proposant des services de qualité et professionnels pour tous vos projets." }}</p>
               
               <div class="mt-auto">
-                <button class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg">
+                <button 
+                  @click="viewArtisanProfile(artisan.id)" 
+                  class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg">
                   Voir le profil
                 </button>
               </div>
@@ -131,7 +133,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, defineEmits } from 'vue'
+
+const emit = defineEmits(['viewProfile'])
 
 const search = ref({
   profession: '',
@@ -146,6 +150,11 @@ function clearFilters() {
   search.value.location = ''
 }
 
+// Fonction pour voir le profil d'un artisan
+function viewArtisanProfile(artisanId) {
+  emit('viewProfile', artisanId)
+}
+
 // Simule une recherche (remplace par un appel API réel)
 function searchArtisans() {
   // Ici tu peux faire un fetch/axios vers ton backend
@@ -157,6 +166,7 @@ function searchArtisans() {
       city: 'Lyon',
       rating: 4.8,
       avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+      coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
       description: 'Maçon expérimenté avec plus de 15 ans de métier, spécialisé dans la construction et rénovation de maisons individuelles.'
     },
     {
@@ -166,6 +176,7 @@ function searchArtisans() {
       city: 'Villeurbanne',
       rating: 4.6,
       avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+      coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
       description: 'Électricienne qualifiée, certifiée pour tous types d\'installations. Interventions rapides et soignées.'
     },
     {
@@ -175,6 +186,7 @@ function searchArtisans() {
       city: 'Lyon',
       rating: 4.9,
       avatar: 'https://randomuser.me/api/portraits/men/45.jpg',
+      coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
       description: 'Plombier sanitaire et chauffagiste, spécialiste des installations écologiques et économes en énergie.'
     },
     {
@@ -184,6 +196,7 @@ function searchArtisans() {
       city: 'Villeurbanne',
       rating: 4.7,
       avatar: 'https://randomuser.me/api/portraits/women/28.jpg',
+      coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
       description: 'Artisan peintre décoratrice, passionnée par les finitions soignées et les designs contemporains.'
     },
     {
@@ -193,6 +206,7 @@ function searchArtisans() {
       city: 'Lyon',
       rating: 4.5,
       avatar: 'https://randomuser.me/api/portraits/men/22.jpg',
+      coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
       description: 'Charpentier traditionnel formé aux techniques ancestrales et modernes. Travail du bois de qualité.'
     },
     {
@@ -202,6 +216,7 @@ function searchArtisans() {
       city: 'Lyon',
       rating: 4.9,
       avatar: 'https://randomuser.me/api/portraits/women/56.jpg',
+      coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
       description: 'Architecte d\'intérieur avec un œil pour le détail et les tendances actuelles. Transformation d\'espaces pour plus de fonctionnalité.'
     }
   ]
