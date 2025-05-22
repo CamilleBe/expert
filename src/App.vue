@@ -1,43 +1,86 @@
-<script setup>
+<script>
+import HomePage from './components/HomePage.vue'
 import ArtisanSearch from './components/ArtisanSearch.vue'
-import MainNav from './components/MainNav.vue'
 import ArtisanProfile from './components/ArtisanProfile.vue'
-import { ref } from 'vue'
 
-// État pour contrôler quelle page est affichée
-const currentPage = ref('search')
-const selectedArtisanId = ref(null)
-
-// Fonctions pour la navigation
-function showProfile(artisanId) {
-  selectedArtisanId.value = artisanId
-  currentPage.value = 'profile'
-}
-
-function showSearch() {
-  currentPage.value = 'search'
+export default {
+  name: 'App',
+  components: {
+    HomePage,
+    ArtisanSearch,
+    ArtisanProfile
+  },
+  data() {
+    return {
+      currentPage: 'home',
+      selectedArtisanId: null
+    }
+  },
+  methods: {
+    showHome() {
+      this.currentPage = 'home'
+    },
+    showSearch() {
+      this.currentPage = 'search'
+    },
+    showProfile(artisanId) {
+      this.selectedArtisanId = artisanId
+      this.currentPage = 'profile'
+    }
+  }
 }
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <MainNav />
+  <div id="app">
+    <header class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+          <div class="flex items-center">
+            <a href="/" class="text-blue-600 font-bold text-2xl">Experta</a>
+          </div>
+          
+          <nav class="hidden md:flex space-x-8">
+            <a href="/" class="text-gray-700 hover:text-blue-600 font-medium">Accueil</a>
+            <a href="#" @click.prevent="showSearch" class="text-gray-700 hover:text-blue-600 font-medium">Trouver un artisan</a>
+            <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Services</a>
+            <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Comment ça marche</a>
+            <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Contact</a>
+          </nav>
+          
+          <div class="flex items-center space-x-4">
+            <a href="#" class="text-gray-700 hover:text-blue-600 font-medium hidden md:block">Connexion</a>
+            <a href="#" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2 rounded-lg transition-colors">Inscription</a>
+            <button class="text-gray-500 md:hidden">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
     
-    <!-- Page de recherche -->
-    <ArtisanSearch v-if="currentPage === 'search'" @view-profile="showProfile" />
-    
-    <!-- Page de profil -->
-    <ArtisanProfile v-else-if="currentPage === 'profile'" :artisan-id="selectedArtisanId" @back-to-search="showSearch" />
+    <main>
+      <!-- Page d'accueil -->
+      <HomePage v-if="currentPage === 'home'" />
+      
+      <!-- Page de recherche -->
+      <ArtisanSearch v-else-if="currentPage === 'search'" @view-profile="showProfile" />
+      
+      <!-- Page de profil -->
+      <ArtisanProfile v-else-if="currentPage === 'profile'" :artisan-id="selectedArtisanId" @back-to-search="showSearch" />
+    </main>
   </div>
 </template>
 
 <style>
+@import './style.css';
+
 body {
+  font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
-  font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 #app {
