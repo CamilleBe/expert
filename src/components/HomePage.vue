@@ -161,6 +161,108 @@
       </div>
     </div>
     
+    <!-- Section Fonctionnalités principales -->
+    <div class="w-screen px-4 sm:px-6 lg:px-8 py-16 md:py-24 bg-white">
+      <div class="w-full mx-auto">
+        <div class="text-center mb-16 animate-fade-in">
+          <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Fonctionnalités principales</h2>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Des outils innovants pour simplifier la gestion de vos projets de rénovation et construction
+          </p>
+        </div>
+        
+        <div class="max-w-7xl mx-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-16 animate-fade-in-delay relative">
+            <!-- Fonctionnalité 1 - Suivi de projet -->
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <div class="flex items-center justify-center h-16 w-16 rounded-md bg-blue-600 text-white">
+                  <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Suivi de projet en temps réel</h3>
+                <p class="text-gray-600 leading-relaxed">
+                  Suivez l'avancement de vos travaux à chaque étape. Recevez des notifications importantes, consultez les photos d'avancement et gardez un œil sur le calendrier des interventions directement depuis votre espace client.
+                </p>
+                <div class="mt-4 flex items-center">
+                  <a href="#" class="text-blue-600 font-medium hover:text-blue-500 inline-flex items-center">
+                    En savoir plus
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            
+            <!-- Fonctionnalité 3 - Gestion documentaire -->
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <div class="flex items-center justify-center h-16 w-16 rounded-md bg-blue-600 text-white">
+                  <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Gestion documentaire centralisée</h3>
+                <p class="text-gray-600 leading-relaxed">
+                  Stockez tous vos documents importants au même endroit : devis, factures, contrats, plans, garanties et assurances. Fini les papiers perdus ou les recherches fastidieuses dans vos emails.
+                </p>
+                <div class="mt-4 flex items-center">
+                  <a href="#" class="text-blue-600 font-medium hover:text-blue-500 inline-flex items-center">
+                    En savoir plus
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Fonctionnalité 4 - Paiement en ligne -->
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <div class="flex items-center justify-center h-16 w-16 rounded-md bg-blue-600 text-white">
+                  <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="ml-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Paiement sécurisé en ligne</h3>
+                <p class="text-gray-600 leading-relaxed">
+                  Réglez vos acomptes et factures directement via notre plateforme sécurisée. Suivez l'historique de vos paiements et bénéficiez de notre système de paiement par étapes qui libère les fonds uniquement lorsque le travail est validé.
+                </p>
+                <div class="mt-4 flex items-center">
+                  <a href="#" class="text-blue-600 font-medium hover:text-blue-500 inline-flex items-center">
+                    En savoir plus
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Image interface -->
+            <div class="relative rounded-2xl overflow-hidden shadow-xl max-h-[180px] animate-fade-in-delay-2">
+              <img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=1200" alt="Interface Experta" class="w-full h-[180px] object-cover" />
+              <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-30"></div>
+              <div class="absolute bottom-0 left-0 right-0 p-3 text-white">
+                <p class="text-lg font-semibold mb-0">Interface intuitive</p>
+                <p class="text-sm">Accessible sur tous vos appareils, gardez le contrôle sur vos projets</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <!-- Section À propos d'Experta -->
     <div class="w-screen px-4 sm:px-6 lg:px-8 py-16 md:py-24 bg-white">
       <div class="w-full mx-auto">
@@ -265,6 +367,89 @@
       </div>
     </div>
     
+    <!-- Section Blog -->
+    <div class="w-screen px-4 sm:px-6 lg:px-8 py-16 md:py-24 bg-white">
+      <div class="w-full mx-auto">
+        <div class="text-center mb-16 animate-fade-in">
+          <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Notre Blog</h2>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Découvrez nos conseils, astuces et actualités pour réussir vos projets de rénovation et construction
+          </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto animate-fade-in-delay">
+          <!-- Article 1 -->
+          <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-transform hover:transform hover:scale-105 duration-300">
+            <div class="h-48 bg-blue-50 overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800" alt="Comment choisir son artisan" class="w-full h-full object-cover" />
+            </div>
+            <div class="p-6">
+              <div class="flex items-center mb-4">
+                <span class="text-sm text-blue-600 font-medium bg-blue-50 px-3 py-1 rounded-full">Conseils</span>
+                <span class="text-sm text-gray-500 ml-3">12 juin 2023</span>
+              </div>
+              <h3 class="font-bold text-xl mb-2 text-gray-900">Comment choisir le bon artisan pour votre projet</h3>
+              <p class="text-gray-600 mb-4">Les critères essentiels à prendre en compte pour sélectionner un professionnel qualifié et éviter les mauvaises surprises.</p>
+              <a href="#" class="text-blue-600 font-medium hover:text-blue-500 inline-flex items-center">
+                Lire l'article
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+          
+          <!-- Article 2 -->
+          <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-transform hover:transform hover:scale-105 duration-300">
+            <div class="h-48 bg-blue-50 overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1556156653-e5a7676c4f34?w=800" alt="Budget rénovation" class="w-full h-full object-cover" />
+            </div>
+            <div class="p-6">
+              <div class="flex items-center mb-4">
+                <span class="text-sm text-blue-600 font-medium bg-blue-50 px-3 py-1 rounded-full">Finance</span>
+                <span class="text-sm text-gray-500 ml-3">28 mai 2023</span>
+              </div>
+              <h3 class="font-bold text-xl mb-2 text-gray-900">Établir un budget réaliste pour votre rénovation</h3>
+              <p class="text-gray-600 mb-4">Nos experts vous guident pour calculer précisément le coût de vos travaux et éviter les dépassements de budget imprévus.</p>
+              <a href="#" class="text-blue-600 font-medium hover:text-blue-500 inline-flex items-center">
+                Lire l'article
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+          
+          <!-- Article 3 -->
+          <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-transform hover:transform hover:scale-105 duration-300">
+            <div class="h-48 bg-blue-50 overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800" alt="Tendances déco" class="w-full h-full object-cover" />
+            </div>
+            <div class="p-6">
+              <div class="flex items-center mb-4">
+                <span class="text-sm text-blue-600 font-medium bg-blue-50 px-3 py-1 rounded-full">Tendances</span>
+                <span class="text-sm text-gray-500 ml-3">5 mai 2023</span>
+              </div>
+              <h3 class="font-bold text-xl mb-2 text-gray-900">Les tendances déco et matériaux pour 2023</h3>
+              <p class="text-gray-600 mb-4">Découvrez les dernières innovations et tendances en matière de décoration et matériaux pour moderniser votre intérieur.</p>
+              <a href="#" class="text-blue-600 font-medium hover:text-blue-500 inline-flex items-center">
+                Lire l'article
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="text-center mt-12">
+          <a href="#" class="inline-block py-3 px-8 bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold rounded-lg transition-all duration-300 ease-in-out">
+            Voir tous les articles
+          </a>
+        </div>
+      </div>
+    </div>
+    
     <!-- Section CTA -->
     <div class="bg-blue-600 py-16 md:py-20 w-screen">
       <div class="w-full px-4 sm:px-6 lg:px-8 mx-auto flex flex-col lg:flex-row items-center justify-between">
@@ -351,7 +536,7 @@
               </li>
               <li class="flex items-start">
                 <svg class="w-5 h-5 mr-2 mt-0.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.414 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                 </svg>
                 <span>01 23 45 67 89</span>
               </li>
