@@ -450,6 +450,182 @@
       </div>
     </div>
     
+    <!-- Section FAQ -->
+    <div class="w-screen px-4 sm:px-6 lg:px-8 py-16 md:py-24 bg-gray-50">
+      <div class="w-full mx-auto">
+        <div class="text-center mb-16 animate-fade-in">
+          <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Foire aux questions</h2>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Réponses aux questions fréquentes avant de vous inscrire ou d'utiliser nos services
+          </p>
+        </div>
+        
+        <div class="max-w-3xl mx-auto space-y-4 animate-fade-in-delay">
+          <!-- Question 1 -->
+          <div class="border border-gray-200 rounded-xl overflow-hidden">
+            <button 
+              class="flex justify-between items-center w-full px-6 py-5 text-left bg-white hover:bg-gray-50 transition-colors"
+              @click="toggleFaq(1)"
+            >
+              <span class="font-semibold text-lg text-gray-900">Comment fonctionne la mise en relation avec les artisans ?</span>
+              <svg 
+                class="w-6 h-6 text-blue-600 transform transition-transform duration-300"
+                :class="{ 'rotate-180': openFaq === 1 }"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div 
+              class="px-6 py-5 bg-white border-t border-gray-100"
+              v-show="openFaq === 1"
+            >
+              <p class="text-gray-700">
+                Après avoir décrit votre projet et précisé vos besoins, notre système identifie les artisans les plus qualifiés dans votre région. Vous recevez plusieurs propositions et pouvez consulter les profils, réalisations et avis des artisans avant de faire votre choix. Une fois votre sélection effectuée, vous êtes mis en relation directe avec l'artisan pour finaliser les détails de votre projet.
+              </p>
+            </div>
+          </div>
+          
+          <!-- Question 2 -->
+          <div class="border border-gray-200 rounded-xl overflow-hidden">
+            <button 
+              class="flex justify-between items-center w-full px-6 py-5 text-left bg-white hover:bg-gray-50 transition-colors"
+              @click="toggleFaq(2)"
+            >
+              <span class="font-semibold text-lg text-gray-900">Comment sont sélectionnés les artisans sur Experta ?</span>
+              <svg 
+                class="w-6 h-6 text-blue-600 transform transition-transform duration-300"
+                :class="{ 'rotate-180': openFaq === 2 }"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div 
+              class="px-6 py-5 bg-white border-t border-gray-100"
+              v-show="openFaq === 2"
+            >
+              <p class="text-gray-700">
+                Tous les artisans référencés sur Experta font l'objet d'une vérification rigoureuse. Nous contrôlons leurs qualifications professionnelles, assurances, certifications et statut juridique. Nous examinons également leurs réalisations antérieures et maintenons un système d'évaluation transparent basé sur les retours des clients. Seuls les artisans répondant à nos critères de qualité sont acceptés sur la plateforme.
+              </p>
+            </div>
+          </div>
+          
+          <!-- Question 3 -->
+          <div class="border border-gray-200 rounded-xl overflow-hidden">
+            <button 
+              class="flex justify-between items-center w-full px-6 py-5 text-left bg-white hover:bg-gray-50 transition-colors"
+              @click="toggleFaq(3)"
+            >
+              <span class="font-semibold text-lg text-gray-900">Quels types de travaux puis-je faire réaliser via Experta ?</span>
+              <svg 
+                class="w-6 h-6 text-blue-600 transform transition-transform duration-300"
+                :class="{ 'rotate-180': openFaq === 3 }"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div 
+              class="px-6 py-5 bg-white border-t border-gray-100"
+              v-show="openFaq === 3"
+            >
+              <p class="text-gray-700">
+                Experta couvre une large gamme de services dans le domaine de la construction et rénovation : maçonnerie, plomberie, électricité, peinture, menuiserie, carrelage, isolation, couverture, chauffage, climatisation et bien d'autres. Que vous souhaitiez rénover une pièce, construire une extension ou simplement effectuer de petites réparations, vous trouverez des artisans qualifiés pour tous types de projets, petits ou grands.
+              </p>
+            </div>
+          </div>
+          
+          <!-- Question 4 -->
+          <div class="border border-gray-200 rounded-xl overflow-hidden">
+            <button 
+              class="flex justify-between items-center w-full px-6 py-5 text-left bg-white hover:bg-gray-50 transition-colors"
+              @click="toggleFaq(4)"
+            >
+              <span class="font-semibold text-lg text-gray-900">La plateforme est-elle gratuite pour les particuliers ?</span>
+              <svg 
+                class="w-6 h-6 text-blue-600 transform transition-transform duration-300"
+                :class="{ 'rotate-180': openFaq === 4 }"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div 
+              class="px-6 py-5 bg-white border-t border-gray-100"
+              v-show="openFaq === 4"
+            >
+              <p class="text-gray-700">
+                Oui, l'inscription et l'utilisation de la plateforme sont totalement gratuites pour les particuliers. Vous pouvez publier vos projets, recevoir des devis et consulter les profils des artisans sans aucun frais. Nous ne prenons aucune commission sur les projets réalisés. Notre modèle économique est basé sur les abonnements des artisans professionnels qui souhaitent accéder aux demandes de projets.
+              </p>
+            </div>
+          </div>
+          
+          <!-- Question 5 -->
+          <div class="border border-gray-200 rounded-xl overflow-hidden">
+            <button 
+              class="flex justify-between items-center w-full px-6 py-5 text-left bg-white hover:bg-gray-50 transition-colors"
+              @click="toggleFaq(5)"
+            >
+              <span class="font-semibold text-lg text-gray-900">Comment sont garantis les travaux réalisés ?</span>
+              <svg 
+                class="w-6 h-6 text-blue-600 transform transition-transform duration-300"
+                :class="{ 'rotate-180': openFaq === 5 }"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div 
+              class="px-6 py-5 bg-white border-t border-gray-100"
+              v-show="openFaq === 5"
+            >
+              <p class="text-gray-700">
+                Tous les travaux réalisés via notre plateforme bénéficient des garanties légales applicables au secteur du bâtiment (garantie décennale, garantie biennale, garantie de parfait achèvement). De plus, notre service de paiement sécurisé par étapes vous permet de ne libérer les fonds qu'après validation des travaux. En cas de problème, notre service client intervient comme médiateur pour trouver une solution satisfaisante.
+              </p>
+            </div>
+          </div>
+          
+          <!-- Question 6 -->
+          <div class="border border-gray-200 rounded-xl overflow-hidden">
+            <button 
+              class="flex justify-between items-center w-full px-6 py-5 text-left bg-white hover:bg-gray-50 transition-colors"
+              @click="toggleFaq(6)"
+            >
+              <span class="font-semibold text-lg text-gray-900">Que faire en cas de litige avec un artisan ?</span>
+              <svg 
+                class="w-6 h-6 text-blue-600 transform transition-transform duration-300"
+                :class="{ 'rotate-180': openFaq === 6 }"
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div 
+              class="px-6 py-5 bg-white border-t border-gray-100"
+              v-show="openFaq === 6"
+            >
+              <p class="text-gray-700">
+                En cas de désaccord ou de litige, contactez immédiatement notre service de médiation via votre espace client. Nos experts interviendront pour faciliter le dialogue et trouver une solution équitable. Si nécessaire, nous pouvons suspendre les paiements en attente de résolution du conflit. Nous disposons également d'un réseau d'experts indépendants qui peuvent intervenir pour évaluer la qualité des travaux en cas de contestation technique.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <!-- Section CTA -->
     <div class="bg-blue-600 py-16 md:py-20 w-screen">
       <div class="w-full px-4 sm:px-6 lg:px-8 mx-auto flex flex-col lg:flex-row items-center justify-between">
@@ -487,7 +663,7 @@
               </a>
               <a href="#" class="text-gray-400 hover:text-white">
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0 1 22 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
                 </svg>
               </a>
               <a href="#" class="text-gray-400 hover:text-white">
@@ -566,6 +742,14 @@
 
 <script setup>
 import { ref } from 'vue'
+
+// Variable pour gérer l'accordéon de la FAQ
+const openFaq = ref(null)
+
+// Fonction pour ouvrir/fermer les questions de la FAQ
+function toggleFaq(id) {
+  openFaq.value = openFaq.value === id ? null : id
+}
 
 // Logique supplémentaire ici si nécessaire
 
