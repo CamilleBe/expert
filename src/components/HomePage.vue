@@ -161,8 +161,44 @@
       </div>
     </div>
     
-    <!-- Section Témoignages -->
+    <!-- Section À propos d'Experta -->
     <div class="w-screen px-4 sm:px-6 lg:px-8 py-16 md:py-24 bg-white">
+      <div class="w-full mx-auto">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center lg:items-start gap-12">
+          <div class="w-full lg:w-1/2 animate-fade-in">
+            <div class="rounded-2xl overflow-hidden shadow-xl">
+              <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1200" alt="L'équipe Experta" class="w-full h-auto object-cover" />
+            </div>
+          </div>
+          
+          <div class="w-full lg:w-1/2 animate-fade-in-delay">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6 text-gray-900">À propos d'Experta</h2>
+            
+            <div class="space-y-6 text-gray-600">
+              <p class="text-lg">
+                Fondée en 2020, Experta est née d'un constat simple : trouver le bon artisan pour son projet de rénovation ou de construction reste un parcours semé d'embûches pour de nombreux particuliers.
+              </p>
+              
+              <p class="text-lg">
+                <span class="font-semibold text-blue-600">Notre mission :</span> Simplifier la mise en relation entre particuliers et artisans qualifiés, tout en garantissant qualité, transparence et sérénité à chaque étape de vos projets immobiliers.
+              </p>
+              
+              <p class="text-lg">
+                <span class="font-semibold text-blue-600">Notre innovation :</span> Experta se distingue par une approche centrée sur la vérification rigoureuse des artisans, un système d'évaluation transparent et un accompagnement personnalisé tout au long de votre projet.
+              </p>
+              
+              <p class="text-lg">
+                Grâce à notre plateforme, fini les mauvaises surprises ! Nous vous aidons à concrétiser vos projets immobiliers en toute confiance, en vous connectant avec des professionnels dont les compétences et le sérieux sont reconnus.
+              </p>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Section Témoignages -->
+    <div class="w-screen px-4 sm:px-6 lg:px-8 py-16 md:py-24 bg-gray-50">
       <div class="w-full mx-auto">
         <div class="text-center mb-16 animate-fade-in">
           <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Ce que disent nos clients</h2>
