@@ -2,13 +2,15 @@
 import HomePage from './components/HomePage.vue'
 import ArtisanSearch from './components/ArtisanSearch.vue'
 import ArtisanProfile from './components/ArtisanProfile.vue'
+import Footer from './components/Footer.vue'
 
 export default {
   name: 'App',
   components: {
     HomePage,
     ArtisanSearch,
-    ArtisanProfile
+    ArtisanProfile,
+    Footer
   },
   data() {
     return {
@@ -71,6 +73,9 @@ export default {
       <!-- Page de profil -->
       <ArtisanProfile v-else-if="currentPage === 'profile'" :artisan-id="selectedArtisanId" @back-to-search="showSearch" />
     </main>
+
+    <!-- Footer commun à toutes les pages -->
+    <Footer />
   </div>
 </template>
 
