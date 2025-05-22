@@ -32,16 +32,16 @@ export default {
 </script>
 
 <template>
-  <div id="app">
-    <header class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+  <div id="app" class="w-screen overflow-x-hidden">
+    <header class="bg-white shadow-md fixed top-0 left-0 right-0 z-50 w-screen">
+      <div class="w-full px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-20">
           <div class="flex items-center">
-            <a href="/" class="text-blue-600 font-bold text-2xl">Experta</a>
+            <a href="#" @click.prevent="showHome" class="text-blue-600 font-bold text-2xl">Experta</a>
           </div>
           
           <nav class="hidden md:flex space-x-8">
-            <a href="/" class="text-gray-700 hover:text-blue-600 font-medium">Accueil</a>
+            <a href="#" @click.prevent="showHome" class="text-gray-700 hover:text-blue-600 font-medium">Accueil</a>
             <a href="#" @click.prevent="showSearch" class="text-gray-700 hover:text-blue-600 font-medium">Trouver un artisan</a>
             <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Services</a>
             <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Comment ça marche</a>
@@ -61,7 +61,7 @@ export default {
       </div>
     </header>
     
-    <main>
+    <main class="pt-20 w-screen overflow-x-hidden">
       <!-- Page d'accueil -->
       <HomePage v-if="currentPage === 'home'" />
       
@@ -81,12 +81,18 @@ body {
   font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
+  width: 100vw;
+  overflow-x: hidden;
 }
 
 #app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 /* Nous pouvons garder les effets de hover pour les logos */
