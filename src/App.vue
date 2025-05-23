@@ -1,36 +1,5 @@
-<script>
-import HomePage from './components/HomePage.vue'
-import ArtisanSearch from './components/ArtisanSearch.vue'
-import ArtisanProfile from './components/ArtisanProfile.vue'
+<script setup>
 import Footer from './components/Footer.vue'
-
-export default {
-  name: 'App',
-  components: {
-    HomePage,
-    ArtisanSearch,
-    ArtisanProfile,
-    Footer
-  },
-  data() {
-    return {
-      currentPage: 'home',
-      selectedArtisanId: null
-    }
-  },
-  methods: {
-    showHome() {
-      this.currentPage = 'home'
-    },
-    showSearch() {
-      this.currentPage = 'search'
-    },
-    showProfile(artisanId) {
-      this.selectedArtisanId = artisanId
-      this.currentPage = 'profile'
-    }
-  }
-}
 </script>
 
 <template>
@@ -39,20 +8,20 @@ export default {
       <div class="w-full px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-20">
           <div class="flex items-center">
-            <a href="#" @click.prevent="showHome" class="text-blue-600 font-bold text-2xl">Experta</a>
+            <router-link to="/" class="text-blue-600 font-bold text-2xl">Experta</router-link>
           </div>
           
           <nav class="hidden md:flex space-x-8">
-            <a href="#" @click.prevent="showHome" class="text-gray-700 hover:text-blue-600 font-medium">Accueil</a>
-            <a href="#" @click.prevent="showSearch" class="text-gray-700 hover:text-blue-600 font-medium">Trouver un artisan</a>
+            <router-link to="/" class="text-gray-700 hover:text-blue-600 font-medium">Accueil</router-link>
+            <router-link to="/search" class="text-gray-700 hover:text-blue-600 font-medium">Trouver un artisan</router-link>
             <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Services</a>
             <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Comment ça marche</a>
             <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Contact</a>
           </nav>
           
           <div class="flex items-center space-x-4">
-            <a href="#" class="text-gray-700 hover:text-blue-600 font-medium hidden md:block">Connexion</a>
-            <a href="#" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2 rounded-lg transition-colors">Inscription</a>
+            <router-link to="/auth" class="text-gray-700 hover:text-blue-600 font-medium hidden md:block">Connexion</router-link>
+            <router-link to="/auth?tab=register" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2 rounded-lg transition-colors">Inscription</router-link>
             <button class="text-gray-500 md:hidden">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -64,14 +33,7 @@ export default {
     </header>
     
     <main class="pt-20 w-screen overflow-x-hidden">
-      <!-- Page d'accueil -->
-      <HomePage v-if="currentPage === 'home'" />
-      
-      <!-- Page de recherche -->
-      <ArtisanSearch v-else-if="currentPage === 'search'" @view-profile="showProfile" />
-      
-      <!-- Page de profil -->
-      <ArtisanProfile v-else-if="currentPage === 'profile'" :artisan-id="selectedArtisanId" @back-to-search="showSearch" />
+      <router-view />
     </main>
 
     <!-- Footer commun à toutes les pages -->
