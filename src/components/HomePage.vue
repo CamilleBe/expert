@@ -3,7 +3,7 @@
     <!-- Section Héro -->
     <div class="relative bg-blue-600 text-white overflow-hidden w-screen">
       <div class="absolute inset-0 opacity-20">
-        <img src="https://images.unsplash.com/photo-1613743983303-b3e89f8a2b80?w=1600" alt="" class="w-full h-full object-cover" />
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600" alt="" class="w-full h-full object-cover" />
       </div>
       <div class="w-full px-4 sm:px-6 lg:px-8 py-24 md:py-32 relative z-10">
         <div class="w-full max-w-5xl mx-auto">
@@ -58,7 +58,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 animate-fade-in-delay max-w-7xl mx-auto">
           <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-transform hover:transform hover:scale-105 duration-300">
             <div class="h-48 bg-blue-50 flex items-center justify-center">
-              <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800" alt="Construction" class="w-full h-full object-cover" />
+              <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800" alt="Construction" class="w-full h-full object-cover" />
             </div>
             <div class="p-6">
               <h3 class="font-bold text-xl mb-2 text-gray-900">Maçonnerie</h3>
@@ -74,7 +74,7 @@
           
           <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-transform hover:transform hover:scale-105 duration-300">
             <div class="h-48 bg-blue-50 flex items-center justify-center">
-              <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800" alt="Plomberie" class="w-full h-full object-cover" />
+              <img src="https://images.unsplash.com/photo-1558618666-c291f71742a0?w=800" alt="Plomberie" class="w-full h-full object-cover" />
             </div>
             <div class="p-6">
               <h3 class="font-bold text-xl mb-2 text-gray-900">Plomberie</h3>
@@ -90,7 +90,7 @@
           
           <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-transform hover:transform hover:scale-105 duration-300">
             <div class="h-48 bg-blue-50 flex items-center justify-center">
-              <img src="https://images.unsplash.com/photo-1558618666-c291f71742a0?w=800" alt="Électricité" class="w-full h-full object-cover" />
+              <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800" alt="Électricité" class="w-full h-full object-cover" />
             </div>
             <div class="p-6">
               <h3 class="font-bold text-xl mb-2 text-gray-900">Électricité</h3>

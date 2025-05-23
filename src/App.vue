@@ -21,7 +21,7 @@ import Footer from './components/Footer.vue'
           
           <div class="flex items-center space-x-4">
             <router-link to="/auth" class="text-gray-700 hover:text-blue-600 font-medium hidden md:block">Connexion</router-link>
-            <router-link to="/auth?tab=register" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2 rounded-lg transition-colors">Inscription</router-link>
+            <router-link to="/register" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2 rounded-lg transition-colors">Inscription</router-link>
             <button class="text-gray-500 md:hidden">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>

@@ -14,7 +14,7 @@
         <!-- Bannière et photo de profil -->
         <div class="relative">
           <div class="h-64 bg-blue-50 flex items-center justify-center overflow-hidden">
-            <img :src="artisan.coverImage || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800'" alt="Couverture" class="w-full h-full object-cover" />
+            <img :src="artisan.coverImage || 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800'" alt="Couverture" class="w-full h-full object-cover" />
           </div>
           <div class="absolute -bottom-16 left-8">
             <img :src="artisan.avatar" alt="avatar" class="w-32 h-32 rounded-full border-4 border-white object-cover shadow-xl bg-white" />
@@ -241,18 +241,18 @@ const artisan = ref({
   experience: 15,
   radius: 50,
   avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-  coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
+  coverImage: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800',
   description: 'Maçon expérimenté avec plus de 15 ans de métier, spécialisé dans la construction et rénovation de maisons individuelles. Je travaille avec des matériaux de qualité et respecte les délais convenus. Mon expertise comprend la construction de murs porteurs, la pose de briques et parpaings, ainsi que la réalisation de fondations solides pour tous types de projets résidentiels et commerciaux.',
   skills: ['Construction murs', 'Rénovation', 'Fondations', 'Pierre naturelle', 'Isolation', 'Maçonnerie traditionnelle'],
   gallery: [
-    'https://images.unsplash.com/photo-1508450859948-4e04fabaa4ea?w=800',
-    'https://images.unsplash.com/photo-1621149650090-2c9d5abc35c0?w=800',
-    'https://images.unsplash.com/photo-1607472586893-edb57bdc0545?w=800',
-    'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800',
-    'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800',
-    'https://images.unsplash.com/photo-1604339454100-c1e268afba76?w=800',
-    'https://images.unsplash.com/photo-1560748952-1d2d768c2337?w=800',
-    'https://images.unsplash.com/photo-1590579491624-f98f36d4c595?w=800',
+    'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800',
+    'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800',
+    'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800',
+    'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800',
+    'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800',
+    'https://images.unsplash.com/photo-1558618666-c291f71742a0?w=800',
+    'https://images.unsplash.com/photo-1562259929-b4e1fd3aef09?w=800',
+    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
   ],
   reviews: [
     {

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '../components/HomePage.vue'
 import AuthPage from '../components/AuthPage.vue'
+import RegisterPage from '../components/RegisterPage.vue'
 import ArtisanSearch from '../components/ArtisanSearch.vue'
 import ArtisanProfile from '../components/ArtisanProfile.vue'
 
@@ -14,6 +15,11 @@ const routes = [
     path: '/auth',
     name: 'Auth',
     component: AuthPage
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: RegisterPage
   },
   {
     path: '/search',

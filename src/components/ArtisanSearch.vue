@@ -73,7 +73,7 @@
           >
             <div class="relative">
               <div class="h-48 bg-blue-50 flex items-center justify-center overflow-hidden">
-                <img :src="artisan.coverImage || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800'" alt="Couverture" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <img :src="artisan.coverImage || 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800'" alt="Couverture" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
               </div>
               <div class="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
                 <img :src="artisan.avatar" alt="avatar" class="w-24 h-24 rounded-full border-4 border-blue-400 object-cover shadow-xl bg-white" />
@@ -167,7 +167,7 @@ function searchArtisans() {
       city: 'Lyon',
       rating: 4.8,
       avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-      coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
+      coverImage: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800',
       description: 'Maçon expérimenté avec plus de 15 ans de métier, spécialisé dans la construction et rénovation de maisons individuelles.'
     },
     {
@@ -177,7 +177,7 @@ function searchArtisans() {
       city: 'Villeurbanne',
       rating: 4.6,
       avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-      coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
+      coverImage: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800',
       description: 'Électricienne qualifiée, certifiée pour tous types d\'installations. Interventions rapides et soignées.'
     },
     {
@@ -187,7 +187,7 @@ function searchArtisans() {
       city: 'Lyon',
       rating: 4.9,
       avatar: 'https://randomuser.me/api/portraits/men/45.jpg',
-      coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
+      coverImage: 'https://images.unsplash.com/photo-1558618666-c291f71742a0?w=800',
       description: 'Plombier sanitaire et chauffagiste, spécialiste des installations écologiques et économes en énergie.'
     },
     {
@@ -197,7 +197,7 @@ function searchArtisans() {
       city: 'Villeurbanne',
       rating: 4.7,
       avatar: 'https://randomuser.me/api/portraits/women/28.jpg',
-      coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
+      coverImage: 'https://images.unsplash.com/photo-1562259929-b4e1fd3aef09?w=800',
       description: 'Artisan peintre décoratrice, passionnée par les finitions soignées et les designs contemporains.'
     },
     {
@@ -207,7 +207,7 @@ function searchArtisans() {
       city: 'Lyon',
       rating: 4.5,
       avatar: 'https://randomuser.me/api/portraits/men/22.jpg',
-      coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
+      coverImage: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800',
       description: 'Charpentier traditionnel formé aux techniques ancestrales et modernes. Travail du bois de qualité.'
     },
     {
@@ -217,7 +217,7 @@ function searchArtisans() {
       city: 'Lyon',
       rating: 4.9,
       avatar: 'https://randomuser.me/api/portraits/women/56.jpg',
-      coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
+      coverImage: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800',
       description: 'Architecte d\'intérieur avec un œil pour le détail et les tendances actuelles. Transformation d\'espaces pour plus de fonctionnalité.'
     }
   ]
