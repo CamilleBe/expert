@@ -220,16 +220,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, defineProps, defineEmits } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-const props = defineProps({
-  artisanId: {
-    type: Number,
-    required: true
-  }
-})
+const route = useRoute()
+const router = useRouter()
 
-const emit = defineEmits(['backToSearch'])
+// Récupération de l'ID depuis les paramètres de route
+const artisanId = route.params.id
 
 // Données de l'artisan (à remplacer par un appel API réel)
 const artisan = ref({
@@ -313,16 +311,16 @@ function submitReview() {
 
 // Fonction pour retourner à la recherche
 function goBackToSearch() {
-  emit('backToSearch')
+  router.push('/search')
 }
 
 // Charger les données de l'artisan au chargement de la page
 onMounted(() => {
   // Simuler un chargement depuis une API en utilisant l'ID
-  console.log('Chargement des données pour l\'artisan ID:', props.artisanId)
+  console.log('Chargement des données pour l\'artisan ID:', artisanId)
   
   // Dans une application réelle, vous feriez un appel API ici
-  // fetchArtisanData(props.artisanId).then(data => artisan.value = data)
+  // fetchArtisanData(artisanId).then(data => artisan.value = data)
 })
 </script>
 

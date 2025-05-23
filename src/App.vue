@@ -14,9 +14,9 @@ import Footer from './components/Footer.vue'
           <nav class="hidden md:flex space-x-8">
             <router-link to="/" class="text-gray-700 hover:text-blue-600 font-medium">Accueil</router-link>
             <router-link to="/search" class="text-gray-700 hover:text-blue-600 font-medium">Trouver un artisan</router-link>
-            <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Services</a>
-            <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Comment ça marche</a>
-            <a href="#" class="text-gray-700 hover:text-blue-600 font-medium">Contact</a>
+            <router-link to="/services" class="text-gray-700 hover:text-blue-600 font-medium">Services</router-link>
+            <router-link to="/how-it-works" class="text-gray-700 hover:text-blue-600 font-medium">Comment ça marche</router-link>
+            <router-link to="/contact" class="text-gray-700 hover:text-blue-600 font-medium">Contact</router-link>
           </nav>
           
           <div class="flex items-center space-x-4">

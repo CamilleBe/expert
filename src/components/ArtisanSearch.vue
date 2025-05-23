@@ -133,9 +133,10 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-const emit = defineEmits(['viewProfile'])
+const router = useRouter()
 
 const search = ref({
   profession: '',
@@ -152,7 +153,7 @@ function clearFilters() {
 
 // Fonction pour voir le profil d'un artisan
 function viewArtisanProfile(artisanId) {
-  emit('viewProfile', artisanId)
+  router.push(`/artisan/${artisanId}`)
 }
 
 // Simule une recherche (remplace par un appel API réel)
