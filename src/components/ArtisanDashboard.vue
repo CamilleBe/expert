@@ -33,6 +33,11 @@
               </button>
             </li>
             <li>
+              <button @click="activeTab = 'meetings'" :class="activeTab === 'meetings' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
+                Visioconférences
+              </button>
+            </li>
+            <li>
               <button @click="activeTab = 'messages'" :class="activeTab === 'messages' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
                 Messagerie
               </button>
@@ -1244,8 +1249,134 @@
           </div>
         </div>
 
+        <!-- Visioconférences -->
+        <div v-if="activeTab === 'meetings'" class="animate-fade-in">
+          <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Visioconférences</h1>
+            <button @click="showScheduleMeetingModal = true" class="py-3 px-6 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-300">
+              Planifier une réunion
+            </button>
+          </div>
+
+          <!-- Réunions à venir -->
+          <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Réunions à venir</h2>
+            <div class="space-y-4">
+              <div v-for="meeting in upcomingMeetings" :key="meeting.id" class="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div class="flex items-center">
+                  <div class="p-3 rounded-full bg-blue-100">
+                    <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-900">{{ meeting.title }}</p>
+                    <p class="text-sm text-gray-600">{{ meeting.client }} • {{ meeting.date }} à {{ meeting.time }}</p>
+                  </div>
+                </div>
+                <div class="flex space-x-2">
+                  <button @click="joinMeeting(meeting)" class="py-2 px-4 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-500 transition-colors">
+                    Rejoindre
+                  </button>
+                  <button @click="editMeeting(meeting)" class="py-2 px-4 bg-gray-100 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
+                    Modifier
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Historique des réunions -->
+          <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
+            <div class="p-6 border-b border-gray-200">
+              <h2 class="text-xl font-bold text-gray-900">Historique des réunions</h2>
+            </div>
+            <div class="p-6">
+              <div class="space-y-4">
+                <div v-for="meeting in pastMeetings" :key="meeting.id" class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div class="flex items-center">
+                    <div class="p-2 rounded-full bg-gray-100">
+                      <svg class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <div class="ml-3">
+                      <p class="text-sm font-medium text-gray-900">{{ meeting.title }}</p>
+                      <p class="text-sm text-gray-600">{{ meeting.client }} • {{ meeting.date }}</p>
+                    </div>
+                  </div>
+                  <div class="flex space-x-2">
+                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Terminée</span>
+                    <button @click="viewMeetingNotes(meeting)" class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal planification réunion -->
+          <div 
+            v-if="showScheduleMeetingModal" 
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            @click="closeScheduleMeetingModal"
+          >
+            <div 
+              class="bg-white rounded-2xl shadow-2xl max-w-lg w-full"
+              @click.stop
+            >
+              <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                  <h3 class="text-xl font-bold text-gray-900">Planifier une visioconférence</h3>
+                  <button @click="closeScheduleMeetingModal" class="text-gray-400 hover:text-gray-600">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="p-6">
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Titre de la réunion</label>
+                    <input v-model="meetingForm.title" type="text" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Ex: Point d'avancement projet" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Client</label>
+                    <select v-model="meetingForm.clientId" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                      <option value="">Sélectionner un client</option>
+                      <option v-for="client in clients" :key="client.id" :value="client.id">{{ client.name }}</option>
+                    </select>
+                  </div>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                      <input v-model="meetingForm.date" type="date" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Heure</label>
+                      <input v-model="meetingForm.time" type="time" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
+                  </div>
+                </div>
+                <div class="flex space-x-3 mt-6">
+                  <button @click="closeScheduleMeetingModal" class="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                    Annuler
+                  </button>
+                  <button @click="scheduleMeeting" class="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors">
+                    Planifier
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Autres sections -->
-        <div v-if="activeTab !== 'overview' && activeTab !== 'projects' && activeTab !== 'documents' && activeTab !== 'payments' && activeTab !== 'clients'" class="animate-fade-in">
+        <div v-if="activeTab !== 'overview' && activeTab !== 'projects' && activeTab !== 'documents' && activeTab !== 'payments' && activeTab !== 'clients' && activeTab !== 'meetings'" class="animate-fade-in">
           <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 text-center">
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Section {{ activeTab }}</h2>
             <p class="text-gray-600">Cette section sera développée avec les fonctionnalités spécifiques.</p>
@@ -1942,6 +2073,86 @@ const addNewClient = () => {
     }
     clients.value.push(newClient)
     closeAddClientModal()
+  }
+}
+
+// Données pour la section visioconférences
+const upcomingMeetings = ref([
+  {
+    id: 1,
+    title: 'Point d\'avancement salle de bain',
+    client: 'Plomberie Dupuis',
+    date: 'Demain',
+    time: '14h30'
+  },
+  {
+    id: 2,
+    title: 'Validation électricité',
+    client: 'Martin Electricité',
+    date: 'Vendredi',
+    time: '10h00'
+  }
+])
+
+const pastMeetings = ref([
+  {
+    id: 1,
+    title: 'Réunion de démarrage',
+    client: 'Plomberie Dupuis',
+    date: '01/06/2023'
+  },
+  {
+    id: 2,
+    title: 'Présentation devis',
+    client: 'Martin Electricité',
+    date: '28/05/2023'
+  }
+])
+
+const showScheduleMeetingModal = ref(false)
+const meetingForm = ref({
+  title: '',
+  clientId: '',
+  date: '',
+  time: ''
+})
+
+// Méthodes pour les visioconférences
+const joinMeeting = (meeting) => {
+  console.log('Rejoindre la réunion:', meeting.title)
+  // Logique de connexion à la visioconférence
+}
+
+const editMeeting = (meeting) => {
+  console.log('Modifier la réunion:', meeting.title)
+  // Logique d'édition de réunion
+}
+
+const viewMeetingNotes = (meeting) => {
+  console.log('Voir les notes de:', meeting.title)
+  // Logique d'affichage des notes de réunion
+}
+
+const closeScheduleMeetingModal = () => {
+  showScheduleMeetingModal.value = false
+  meetingForm.value = {
+    title: '',
+    clientId: '',
+    date: '',
+    time: ''
+  }
+}
+
+const scheduleMeeting = () => {
+  if (meetingForm.value.title && meetingForm.value.clientId && meetingForm.value.date && meetingForm.value.time) {
+    const newMeeting = {
+      id: upcomingMeetings.value.length + 100,
+      ...meetingForm.value,
+      client: clients.value.find(c => c.id == meetingForm.value.clientId)?.name || ''
+    }
+    upcomingMeetings.value.push(newMeeting)
+    closeScheduleMeetingModal()
+    console.log('Nouvelle réunion planifiée:', newMeeting)
   }
 }
 
