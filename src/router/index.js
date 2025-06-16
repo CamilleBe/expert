@@ -5,6 +5,7 @@ import RegisterPage from '../components/RegisterPage.vue'
 import ArtisanSearch from '../components/ArtisanSearch.vue'
 import ArtisanProfile from '../components/ArtisanProfile.vue'
 import ClientDashboard from '../components/ClientDashboard.vue'
+import ArtisanDashboard from '../components/ArtisanDashboard.vue'
 
 const routes = [
   {
@@ -37,6 +38,11 @@ const routes = [
     path: '/dashboard',
     name: 'ClientDashboard',
     component: ClientDashboard
+  },
+  {
+    path: '/artisan-dashboard',
+    name: 'ArtisanDashboard',
+    component: ArtisanDashboard
   },
   {
     path: '/services',
