@@ -21,14 +21,15 @@
                 Documents
               </button>
             </li>
-            <li>
-              <button @click="activeTab = 'invoices'" :class="activeTab === 'invoices' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
-                Factures
-              </button>
-            </li>
+
             <li>
               <button @click="activeTab = 'payments'" :class="activeTab === 'payments' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
                 Paiements
+              </button>
+            </li>
+            <li>
+              <button @click="activeTab = 'clients'" :class="activeTab === 'clients' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
+                Mes clients
               </button>
             </li>
             <li>
@@ -990,8 +991,261 @@
           </div>
         </div>
 
+        <!-- Section Mes Clients -->
+        <div v-if="activeTab === 'clients'" class="animate-fade-in">
+          <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Mes clients</h1>
+            <div class="flex space-x-3">
+              <div class="relative">
+                <input 
+                  v-model="clientSearchTerm" 
+                  type="text" 
+                  placeholder="Rechercher un client..." 
+                  class="pl-10 pr-4 py-2 rounded-xl border-gray-300 border bg-white shadow-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                <svg class="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <button @click="showAddClientModal = true" class="py-3 px-6 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-300 flex items-center">
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Ajouter un client
+              </button>
+            </div>
+          </div>
+
+          <!-- Statistiques clients -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100">
+                  <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-gray-600">Total clients</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ clientStats.total }}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100">
+                  <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-gray-600">Actifs</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ clientStats.active }}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-yellow-100">
+                  <svg class="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-gray-600">Projets en cours</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ clientStats.ongoing }}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-purple-100">
+                  <svg class="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-gray-600">Note moyenne</p>
+                  <p class="text-2xl font-bold text-gray-900">4.8/5</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Liste des clients -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div 
+              v-for="client in filteredClients" 
+              :key="client.id" 
+              class="bg-white rounded-2xl shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300"
+            >
+              <!-- En-tête client -->
+              <div class="p-6 border-b border-gray-100">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                      {{ getClientInitials(client.name) }}
+                    </div>
+                    <div class="ml-3">
+                      <h3 class="text-lg font-bold text-gray-900">{{ client.name }}</h3>
+                      <p class="text-sm text-gray-600">{{ client.location }}</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-1">
+                    <span :class="getClientStatusClass(client.status)" class="px-2 py-1 text-xs font-medium rounded-full">
+                      {{ getClientStatusLabel(client.status) }}
+                    </span>
+                    <button @click="toggleClientFavorite(client)" class="p-1 rounded-full hover:bg-gray-100 transition-colors">
+                      <svg :class="client.favorite ? 'text-yellow-500' : 'text-gray-400'" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118l-3.388-2.46a1 1 0 00-1.175 0l-3.388 2.46c-.784.57-1.838-.197-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.049 9.394c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.967z"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Coordonnées client -->
+              <div class="p-6">
+                <!-- Email -->
+                <div class="flex items-center mb-4">
+                  <div class="p-2 rounded-full bg-blue-100">
+                    <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div class="ml-3 flex-1">
+                    <p class="text-xs font-medium text-gray-500">Email</p>
+                    <div class="flex items-center justify-between">
+                      <p class="text-sm font-medium text-gray-900">{{ client.email }}</p>
+                      <button @click="copyToClipboard(client.email)" class="p-1 text-gray-400 hover:text-blue-600 transition-colors">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Téléphone -->
+                <div class="flex items-center mb-4">
+                  <div class="p-2 rounded-full bg-green-100">
+                    <svg class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                  </div>
+                  <div class="ml-3 flex-1">
+                    <p class="text-xs font-medium text-gray-500">Téléphone</p>
+                    <div class="flex items-center justify-between">
+                      <p class="text-sm font-medium text-gray-900">{{ client.phone }}</p>
+                      <button @click="copyToClipboard(client.phone)" class="p-1 text-gray-400 hover:text-green-600 transition-colors">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Informations supplémentaires -->
+                <div class="grid grid-cols-2 gap-4 mb-4 pt-4 border-t border-gray-100">
+                  <div>
+                    <p class="text-xs font-medium text-gray-500">Projets</p>
+                    <p class="text-sm font-bold text-gray-900">{{ client.projectCount }}</p>
+                  </div>
+                  <div>
+                    <p class="text-xs font-medium text-gray-500">Chiffre d'affaires</p>
+                    <p class="text-sm font-bold text-gray-900">{{ client.totalRevenue }}€</p>
+                  </div>
+                </div>
+
+                <!-- Date du dernier projet -->
+                <div class="mb-4">
+                  <p class="text-xs font-medium text-gray-500">Dernier projet</p>
+                  <p class="text-sm font-medium text-gray-900">{{ client.lastProject }}</p>
+                  <p class="text-xs text-gray-600">{{ client.lastProjectDate }}</p>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex space-x-2">
+                  <button @click="callClient(client)" class="flex-1 py-2 px-3 bg-green-100 text-green-700 text-sm font-medium rounded-lg hover:bg-green-200 transition-colors flex items-center justify-center">
+                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    Appeler
+                  </button>
+                  <button @click="emailClient(client)" class="flex-1 py-2 px-3 bg-blue-100 text-blue-700 text-sm font-medium rounded-lg hover:bg-blue-200 transition-colors flex items-center justify-center">
+                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Email
+                  </button>
+                  <button @click="editClient(client)" class="py-2 px-3 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal ajout client -->
+          <div 
+            v-if="showAddClientModal" 
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            @click="closeAddClientModal"
+          >
+            <div 
+              class="bg-white rounded-2xl shadow-2xl max-w-md w-full"
+              @click.stop
+            >
+              <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                  <h3 class="text-xl font-bold text-gray-900">Ajouter un nouveau client</h3>
+                  <button @click="closeAddClientModal" class="text-gray-400 hover:text-gray-600">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="p-6">
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nom complet</label>
+                    <input v-model="newClientForm.name" type="text" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Jean Dupont" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input v-model="newClientForm.email" type="email" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="jean.dupont@email.com" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                    <input v-model="newClientForm.phone" type="tel" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="06 12 34 56 78" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Adresse</label>
+                    <input v-model="newClientForm.location" type="text" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Paris 15ème" />
+                  </div>
+                </div>
+                <div class="flex space-x-3 mt-6">
+                  <button @click="closeAddClientModal" class="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                    Annuler
+                  </button>
+                  <button @click="addNewClient" class="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors">
+                    Ajouter
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Autres sections -->
-        <div v-if="activeTab !== 'overview' && activeTab !== 'projects' && activeTab !== 'documents' && activeTab !== 'payments'" class="animate-fade-in">
+        <div v-if="activeTab !== 'overview' && activeTab !== 'projects' && activeTab !== 'documents' && activeTab !== 'payments' && activeTab !== 'clients'" class="animate-fade-in">
           <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 text-center">
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Section {{ activeTab }}</h2>
             <p class="text-gray-600">Cette section sera développée avec les fonctionnalités spécifiques.</p>
@@ -1476,6 +1730,219 @@ const viewDocument = (document) => {
 const downloadDocument = (document) => {
   console.log('Télécharger le document:', document.name)
   // Logique de téléchargement
+}
+
+// Données pour la section clients
+const clients = ref([
+  {
+    id: 1,
+    name: 'Marie Dupont',
+    email: 'marie.dupont@email.com',
+    phone: '06 12 34 56 78',
+    location: 'Paris 15ème',
+    status: 'active',
+    favorite: true,
+    projectCount: 3,
+    totalRevenue: 4200,
+    lastProject: 'Rénovation salle de bain',
+    lastProjectDate: '15/01/2024'
+  },
+  {
+    id: 2,
+    name: 'Pierre Martin',
+    email: 'pierre.martin@gmail.com',
+    phone: '06 87 65 43 21',
+    location: 'Neuilly-sur-Seine',
+    status: 'active',
+    favorite: false,
+    projectCount: 2,
+    totalRevenue: 2100,
+    lastProject: 'Installation électrique',
+    lastProjectDate: '25/01/2024'
+  },
+  {
+    id: 3,
+    name: 'Anne Dubois',
+    email: 'anne.dubois@outlook.fr',
+    phone: '07 45 23 67 89',
+    location: 'Boulogne-Billancourt',
+    status: 'active',
+    favorite: true,
+    projectCount: 1,
+    totalRevenue: 800,
+    lastProject: 'Peinture salon',
+    lastProjectDate: '20/01/2024'
+  },
+  {
+    id: 4,
+    name: 'Thomas Leroy',
+    email: 'thomas.leroy@yahoo.fr',
+    phone: '06 78 90 12 34',
+    location: 'Vincennes',
+    status: 'active',
+    favorite: false,
+    projectCount: 1,
+    totalRevenue: 650,
+    lastProject: 'Pose parquet chambre',
+    lastProjectDate: '30/01/2024'
+  },
+  {
+    id: 5,
+    name: 'Sophie Moreau',
+    email: 'sophie.moreau@free.fr',
+    phone: '07 56 78 90 23',
+    location: 'Saint-Cloud',
+    status: 'active',
+    favorite: false,
+    projectCount: 2,
+    totalRevenue: 1050,
+    lastProject: 'Réparation toiture',
+    lastProjectDate: '12/01/2024'
+  },
+  {
+    id: 6,
+    name: 'Marc Dubois',
+    email: 'marc.dubois@orange.fr',
+    phone: '06 34 56 78 12',
+    location: 'Issy-les-Moulineaux',
+    status: 'inactive',
+    favorite: false,
+    projectCount: 1,
+    totalRevenue: 890,
+    lastProject: 'Plomberie cuisine',
+    lastProjectDate: '15/12/2023'
+  },
+  {
+    id: 7,
+    name: 'Claire Lefevre',
+    email: 'claire.lefevre@gmail.com',
+    phone: '07 23 45 67 89',
+    location: 'Levallois-Perret',
+    status: 'active',
+    favorite: true,
+    projectCount: 2,
+    totalRevenue: 2400,
+    lastProject: 'Rénovation cuisine',
+    lastProjectDate: '28/02/2024'
+  },
+  {
+    id: 8,
+    name: 'Jean-Luc Bernard',
+    email: 'jl.bernard@hotmail.fr',
+    phone: '06 89 01 23 45',
+    location: 'Puteaux',
+    status: 'active',
+    favorite: false,
+    projectCount: 1,
+    totalRevenue: 1200,
+    lastProject: 'Installation chauffage',
+    lastProjectDate: '10/02/2024'
+  }
+])
+
+const clientSearchTerm = ref('')
+const showAddClientModal = ref(false)
+const newClientForm = ref({
+  name: '',
+  email: '',
+  phone: '',
+  location: ''
+})
+
+// Computed properties pour les clients
+const clientStats = computed(() => {
+  const total = clients.value.length
+  const active = clients.value.filter(c => c.status === 'active').length
+  const ongoing = clients.value.filter(c => c.status === 'active').length // Clients avec projets actifs
+  return { total, active, ongoing }
+})
+
+const filteredClients = computed(() => {
+  if (!clientSearchTerm.value) {
+    return clients.value
+  }
+  const searchLower = clientSearchTerm.value.toLowerCase()
+  return clients.value.filter(client =>
+    client.name.toLowerCase().includes(searchLower) ||
+    client.email.toLowerCase().includes(searchLower) ||
+    client.location.toLowerCase().includes(searchLower) ||
+    client.phone.includes(searchLower)
+  )
+})
+
+// Méthodes pour les clients
+const getClientInitials = (name) => {
+  return name.split(' ').map(n => n[0]).join('').toUpperCase()
+}
+
+const getClientStatusClass = (status) => {
+  const classes = {
+    active: 'bg-green-100 text-green-800',
+    inactive: 'bg-gray-100 text-gray-800'
+  }
+  return classes[status] || 'bg-gray-100 text-gray-800'
+}
+
+const getClientStatusLabel = (status) => {
+  const labels = {
+    active: 'Actif',
+    inactive: 'Inactif'
+  }
+  return labels[status] || status
+}
+
+const toggleClientFavorite = (client) => {
+  client.favorite = !client.favorite
+}
+
+const copyToClipboard = async (text) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    // Vous pouvez ajouter une notification ici
+    console.log('Copié dans le presse-papiers:', text)
+  } catch (err) {
+    console.error('Erreur lors de la copie:', err)
+  }
+}
+
+const callClient = (client) => {
+  window.open(`tel:${client.phone}`)
+}
+
+const emailClient = (client) => {
+  window.open(`mailto:${client.email}`)
+}
+
+const editClient = (client) => {
+  // Ouvrir modal d'édition
+  console.log('Éditer client:', client.name)
+}
+
+const closeAddClientModal = () => {
+  showAddClientModal.value = false
+  newClientForm.value = {
+    name: '',
+    email: '',
+    phone: '',
+    location: ''
+  }
+}
+
+const addNewClient = () => {
+  if (newClientForm.value.name && newClientForm.value.email && newClientForm.value.phone) {
+    const newClient = {
+      id: clients.value.length + 1,
+      ...newClientForm.value,
+      status: 'active',
+      favorite: false,
+      projectCount: 0,
+      totalRevenue: 0,
+      lastProject: 'Aucun projet',
+      lastProjectDate: ''
+    }
+    clients.value.push(newClient)
+    closeAddClientModal()
+  }
 }
 
 // Données pour la section paiements
