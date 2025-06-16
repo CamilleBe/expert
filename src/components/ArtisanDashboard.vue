@@ -467,13 +467,275 @@
           </div>
         </div>
 
+        <!-- Section Documents -->
+        <div v-if="activeTab === 'documents'" class="animate-fade-in">
+          <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Gestion des documents</h1>
+            <div class="flex space-x-3">
+              <select v-model="selectedDocumentFilter" class="rounded-xl border-gray-300 border px-4 py-2 bg-white shadow-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Tous les projets</option>
+                <option v-for="project in projects" :key="project.id" :value="project.id">{{ project.title }}</option>
+              </select>
+              <button @click="showUploadModal = true" class="py-3 px-6 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-300 flex items-center">
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Envoyer un document
+              </button>
+            </div>
+          </div>
+
+          <!-- Statistiques documents -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100">
+                  <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-xs font-medium text-gray-600">Docs envoyés</p>
+                  <p class="text-xl font-bold text-gray-900">{{ documentStats.sent }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100">
+                  <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-xs font-medium text-gray-600">Validés</p>
+                  <p class="text-xl font-bold text-gray-900">{{ documentStats.validated }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-yellow-100">
+                  <svg class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-xs font-medium text-gray-600">En attente</p>
+                  <p class="text-xl font-bold text-gray-900">{{ documentStats.pending }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-orange-100">
+                  <svg class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-xs font-medium text-gray-600">Des clients</p>
+                  <p class="text-xl font-bold text-gray-900">{{ documentStats.fromClients }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Zone d'upload rapide -->
+          <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Envoi rapide de documents</h2>
+            <div 
+              class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors"
+              @dragover.prevent
+              @drop.prevent="handleFileDrop"
+            >
+              <svg class="h-12 w-12 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <p class="text-lg font-medium text-gray-900 mb-2">Glissez vos documents ici ou cliquez pour sélectionner</p>
+              <p class="text-sm text-gray-500 mb-4">Factures, devis, photos de chantier, certificats - PDF, DOC, JPG, PNG jusqu'à 10MB</p>
+              <input type="file" multiple class="hidden" ref="fileInput" @change="handleFileUpload" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
+              <button @click="$refs.fileInput.click()" class="py-2 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors font-medium">
+                Sélectionner des fichiers
+              </button>
+            </div>
+          </div>
+
+          <!-- Documents par projet -->
+          <div class="space-y-6">
+            <div v-for="project in filteredDocumentProjects" :key="project.id" class="bg-white rounded-2xl shadow-xl border border-gray-100">
+              <!-- En-tête projet -->
+              <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                  <div>
+                    <h3 class="text-lg font-bold text-gray-900">{{ project.title }}</h3>
+                    <p class="text-sm text-gray-600">{{ project.client.name }} • {{ project.location }}</p>
+                  </div>
+                  <div class="flex items-center space-x-3">
+                    <span :class="getStatusClass(project.status)" class="px-3 py-1 text-xs font-medium rounded-full">
+                      {{ getStatusLabel(project.status) }}
+                    </span>
+                    <button @click="openUploadModal(project)" class="py-2 px-4 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-500 transition-colors">
+                      Ajouter un document
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Documents du projet -->
+              <div class="p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <!-- Documents envoyés par l'artisan -->
+                  <div>
+                    <h4 class="text-md font-semibold text-gray-900 mb-4 flex items-center">
+                      <svg class="h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      Mes documents ({{ project.sentDocuments.length }})
+                    </h4>
+                    <div class="space-y-3">
+                      <div v-for="doc in project.sentDocuments" :key="doc.id" class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
+                        <div class="flex items-center">
+                          <div class="p-2 rounded-full bg-blue-100">
+                            <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </div>
+                          <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-900">{{ doc.name }}</p>
+                            <p class="text-xs text-gray-600">{{ doc.type }} • {{ doc.size }} • {{ doc.date }}</p>
+                          </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                          <span :class="getDocumentStatusClass(doc.status)" class="px-2 py-1 text-xs font-medium rounded-full">
+                            {{ getDocumentStatusLabel(doc.status) }}
+                          </span>
+                          <button @click="viewDocument(doc)" class="p-1 text-blue-600 hover:bg-blue-100 rounded transition-colors">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      <button @click="openUploadModal(project)" class="w-full py-2 px-4 border-2 border-dashed border-blue-300 text-blue-600 text-sm font-medium rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                        + Ajouter un document
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Documents reçus du client -->
+                  <div>
+                    <h4 class="text-md font-semibold text-gray-900 mb-4 flex items-center">
+                      <svg class="h-5 w-5 text-orange-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                      </svg>
+                      Documents client ({{ project.clientDocuments.length }})
+                    </h4>
+                    <div class="space-y-3">
+                      <div v-for="doc in project.clientDocuments" :key="doc.id" class="flex items-center justify-between p-3 bg-orange-50 rounded-lg border border-orange-100">
+                        <div class="flex items-center">
+                          <div class="p-2 rounded-full bg-orange-100">
+                            <svg class="h-4 w-4 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </div>
+                          <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-900">{{ doc.name }}</p>
+                            <p class="text-xs text-gray-600">{{ doc.type }} • {{ doc.size }} • {{ doc.date }}</p>
+                          </div>
+                        </div>
+                        <div class="flex space-x-1">
+                          <button @click="viewDocument(doc)" class="p-1 text-orange-600 hover:bg-orange-100 rounded transition-colors">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          </button>
+                          <button @click="downloadDocument(doc)" class="p-1 text-orange-600 hover:bg-orange-100 rounded transition-colors">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      <div v-if="project.clientDocuments.length === 0" class="text-center py-4 text-gray-500 text-sm">
+                        Aucun document reçu du client
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal d'upload -->
+          <div 
+            v-if="showUploadModal" 
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            @click="closeUploadModal"
+          >
+            <div 
+              class="bg-white rounded-2xl shadow-2xl max-w-md w-full"
+              @click.stop
+            >
+              <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                  <h3 class="text-lg font-bold text-gray-900">Envoyer un document</h3>
+                  <button @click="closeUploadModal" class="text-gray-400 hover:text-gray-600">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="p-6">
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Projet</label>
+                  <select v-model="uploadForm.projectId" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Sélectionner un projet</option>
+                    <option v-for="project in projects" :key="project.id" :value="project.id">{{ project.title }}</option>
+                  </select>
+                </div>
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Type de document</label>
+                  <select v-model="uploadForm.type" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Sélectionner le type</option>
+                    <option value="devis">Devis</option>
+                    <option value="facture">Facture</option>
+                    <option value="photo">Photo de chantier</option>
+                    <option value="certificat">Certificat</option>
+                    <option value="plan">Plan/Schéma</option>
+                    <option value="autre">Autre</option>
+                  </select>
+                </div>
+                <div class="mb-6">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Fichier</label>
+                  <input type="file" ref="uploadFileInput" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
+                </div>
+                <div class="flex space-x-3">
+                  <button @click="closeUploadModal" class="flex-1 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                    Annuler
+                  </button>
+                  <button @click="submitDocument" class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors">
+                    Envoyer
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Autres sections -->
-        <div v-if="activeTab !== 'overview' && activeTab !== 'projects'" class="animate-fade-in">
+        <div v-if="activeTab !== 'overview' && activeTab !== 'projects' && activeTab !== 'documents'" class="animate-fade-in">
           <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 text-center">
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Section {{ activeTab }}</h2>
             <p class="text-gray-600">Cette section sera développée avec les fonctionnalités spécifiques.</p>
             <div class="mt-6 space-y-2">
-              <p class="text-sm text-gray-500" v-if="activeTab === 'documents'">Envoi de documents validés et consultation des pièces clients</p>
               <p class="text-sm text-gray-500" v-if="activeTab === 'invoices'">Création et envoi de factures via l'interface</p>
               <p class="text-sm text-gray-500" v-if="activeTab === 'payments'">Suivi des paiements et historique des prestations réalisées</p>
               <p class="text-sm text-gray-500" v-if="activeTab === 'messages'">Messagerie directe avec les clients sur l'application</p>
@@ -496,6 +758,15 @@ const activeTab = ref('overview')
 const selectedStatusFilter = ref('')
 const searchTerm = ref('')
 const selectedProject = ref(null)
+
+// Variables pour la section documents
+const selectedDocumentFilter = ref('')
+const showUploadModal = ref(false)
+const uploadForm = ref({
+  projectId: '',
+  type: '',
+  file: null
+})
 
 const urgentProjects = ref([
   {
@@ -792,6 +1063,149 @@ const contactClient = (project) => {
 const viewDocuments = (project) => {
   console.log('Voir les documents du projet:', project.title)
   // Logique d'affichage des documents
+}
+
+// Ajout des données de documents pour chaque projet
+projects.value = projects.value.map(project => ({
+  ...project,
+  sentDocuments: getSentDocumentsForProject(project.id),
+  clientDocuments: getClientDocumentsForProject(project.id)
+}))
+
+function getSentDocumentsForProject(projectId) {
+  const documentsData = {
+    1: [ // Rénovation salle de bain
+      { id: 1, name: 'Devis détaillé.pdf', type: 'Devis', size: '450 KB', date: '16/01/2024', status: 'validated' },
+      { id: 2, name: 'Photos avancement.jpg', type: 'Photo', size: '2.1 MB', date: '25/01/2024', status: 'pending' },
+      { id: 3, name: 'Facture matériaux.pdf', type: 'Facture', size: '680 KB', date: '28/01/2024', status: 'validated' }
+    ],
+    2: [ // Installation électrique cuisine
+      { id: 4, name: 'Devis installation.pdf', type: 'Devis', size: '320 KB', date: '30/01/2024', status: 'pending' }
+    ],
+    3: [ // Peinture salon
+      { id: 5, name: 'Facture finale.pdf', type: 'Facture', size: '410 KB', date: '20/01/2024', status: 'validated' },
+      { id: 6, name: 'Photos finition.jpg', type: 'Photo', size: '3.2 MB', date: '20/01/2024', status: 'validated' }
+    ],
+    4: [ // Pose parquet chambre
+      { id: 7, name: 'Devis parquet.pdf', type: 'Devis', size: '380 KB', date: '22/01/2024', status: 'validated' },
+      { id: 8, name: 'Certificat pose.pdf', type: 'Certificat', size: '290 KB', date: '29/01/2024', status: 'pending' }
+    ],
+    5: [ // Réparation toiture
+      { id: 9, name: 'Facture réparation.pdf', type: 'Facture', size: '520 KB', date: '12/01/2024', status: 'validated' }
+    ]
+  }
+  return documentsData[projectId] || []
+}
+
+function getClientDocumentsForProject(projectId) {
+  const clientDocsData = {
+    1: [ // Rénovation salle de bain
+      { id: 10, name: 'Plan original.pdf', type: 'Plan', size: '1.2 MB', date: '15/01/2024' },
+      { id: 11, name: 'Cahier des charges.docx', type: 'Contrat', size: '280 KB', date: '15/01/2024' }
+    ],
+    2: [ // Installation électrique cuisine
+      { id: 12, name: 'Schéma existant.pdf', type: 'Plan', size: '890 KB', date: '28/01/2024' }
+    ],
+    3: [], // Peinture salon - pas de docs client
+    4: [
+      { id: 13, name: 'Photos chambre.jpg', type: 'Photo', size: '2.5 MB', date: '20/01/2024' }
+    ],
+    5: [
+      { id: 14, name: 'Photos dégâts.jpg', type: 'Photo', size: '1.8 MB', date: '10/01/2024' }
+    ]
+  }
+  return clientDocsData[projectId] || []
+}
+
+// Computed properties pour les documents
+const documentStats = computed(() => {
+  let sent = 0
+  let validated = 0
+  let pending = 0
+  let fromClients = 0
+  
+  projects.value.forEach(project => {
+    if (project.sentDocuments) {
+      sent += project.sentDocuments.length
+      validated += project.sentDocuments.filter(doc => doc.status === 'validated').length
+      pending += project.sentDocuments.filter(doc => doc.status === 'pending').length
+    }
+    if (project.clientDocuments) {
+      fromClients += project.clientDocuments.length
+    }
+  })
+  
+  return { sent, validated, pending, fromClients }
+})
+
+const filteredDocumentProjects = computed(() => {
+  if (!selectedDocumentFilter.value) {
+    return projects.value
+  }
+  return projects.value.filter(project => project.id === parseInt(selectedDocumentFilter.value))
+})
+
+// Méthodes pour les documents
+const getDocumentStatusClass = (status) => {
+  const classes = {
+    validated: 'bg-green-100 text-green-800',
+    pending: 'bg-yellow-100 text-yellow-800',
+    rejected: 'bg-red-100 text-red-800'
+  }
+  return classes[status] || 'bg-gray-100 text-gray-800'
+}
+
+const getDocumentStatusLabel = (status) => {
+  const labels = {
+    validated: 'Validé',
+    pending: 'En attente',
+    rejected: 'Refusé'
+  }
+  return labels[status] || status
+}
+
+const handleFileUpload = (event) => {
+  const files = event.target.files
+  console.log('Fichiers sélectionnés:', files)
+  // Logique de traitement des fichiers
+}
+
+const handleFileDrop = (event) => {
+  const files = event.dataTransfer.files
+  console.log('Fichiers déposés:', files)
+  // Logique de traitement des fichiers par drag & drop
+}
+
+const openUploadModal = (project = null) => {
+  if (project) {
+    uploadForm.value.projectId = project.id
+  }
+  showUploadModal.value = true
+}
+
+const closeUploadModal = () => {
+  showUploadModal.value = false
+  uploadForm.value = {
+    projectId: '',
+    type: '',
+    file: null
+  }
+}
+
+const submitDocument = () => {
+  console.log('Envoi du document:', uploadForm.value)
+  // Logique d'envoi du document
+  closeUploadModal()
+}
+
+const viewDocument = (document) => {
+  console.log('Visualiser le document:', document.name)
+  // Logique d'ouverture du document
+}
+
+const downloadDocument = (document) => {
+  console.log('Télécharger le document:', document.name)
+  // Logique de téléchargement
 }
 </script>
 
