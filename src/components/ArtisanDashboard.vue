@@ -730,14 +730,273 @@
           </div>
         </div>
 
+        <!-- Section Paiements -->
+        <div v-if="activeTab === 'payments'" class="animate-fade-in">
+          <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Suivi des paiements</h1>
+            <div class="flex space-x-3">
+              <select v-model="selectedPaymentFilter" class="rounded-xl border-gray-300 border px-4 py-2 bg-white shadow-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Tous les statuts</option>
+                <option value="paye">Payé</option>
+                <option value="en_attente">En attente</option>
+                <option value="en_retard">En retard</option>
+                <option value="annule">Annulé</option>
+              </select>
+              <button @click="showCreateInvoiceModal = true" class="py-3 px-6 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-300 flex items-center">
+                <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Créer une facture
+              </button>
+            </div>
+          </div>
+
+          <!-- Résumé financier -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100">
+                  <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-gray-600">Factures payées</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ paymentStats.paid }}€</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-yellow-100">
+                  <svg class="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-gray-600">En attente</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ paymentStats.pending }}€</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-red-100">
+                  <svg class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-gray-600">En retard</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ paymentStats.overdue }}€</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100">
+                  <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-gray-600">Chiffre d'affaires</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ paymentStats.total }}€</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Factures en retard (si il y en a) -->
+          <div v-if="overdueInvoices.length > 0" class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+              <svg class="h-6 w-6 text-red-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              Factures en retard de paiement
+            </h2>
+            <div class="space-y-4">
+              <div v-for="invoice in overdueInvoices" :key="invoice.id" class="flex items-center justify-between p-4 bg-red-50 rounded-lg border border-red-200">
+                <div class="flex items-center">
+                  <div class="p-3 rounded-full bg-red-100">
+                    <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-900">{{ invoice.number }}</p>
+                    <p class="text-sm text-gray-600">{{ invoice.client }} • {{ invoice.project }}</p>
+                    <p class="text-xs text-red-600 font-medium">En retard de {{ getDaysLate(invoice.dueDate) }} jours</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="text-lg font-bold text-gray-900">{{ invoice.amount }}€</p>
+                  <div class="flex space-x-2 mt-2">
+                    <button @click="sendReminder(invoice)" class="px-3 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-lg hover:bg-orange-200 transition-colors">
+                      Relancer
+                    </button>
+                    <button @click="viewInvoice(invoice)" class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg hover:bg-blue-200 transition-colors">
+                      Voir
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Graphique des revenus mensuels -->
+          <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Évolution des revenus</h2>
+            <div class="h-64 flex items-end space-x-2">
+              <div v-for="(month, index) in monthlyRevenue" :key="index" class="flex-1 flex flex-col items-center">
+                <div 
+                  class="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg transition-all duration-300 hover:from-blue-600 hover:to-blue-500"
+                  :style="{ height: (month.amount / Math.max(...monthlyRevenue.map(m => m.amount))) * 200 + 'px' }"
+                ></div>
+                <p class="text-xs text-gray-600 mt-2">{{ month.name }}</p>
+                <p class="text-xs font-medium text-gray-900">{{ month.amount }}€</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Historique des factures -->
+          <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
+            <div class="p-6 border-b border-gray-200">
+              <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold text-gray-900">Historique des factures</h2>
+                <div class="flex items-center space-x-2">
+                  <button @click="exportInvoices" class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
+                    Exporter
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Facture</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Projet</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Échéance</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr v-for="invoice in filteredInvoices" :key="invoice.id" class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="flex items-center">
+                        <div class="p-2 rounded-full bg-blue-100">
+                          <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
+                        <div class="ml-3">
+                          <p class="text-sm font-medium text-gray-900">{{ invoice.number }}</p>
+                          <p class="text-xs text-gray-500">{{ invoice.date }}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ invoice.client }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ invoice.project }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ invoice.amount }}€</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span :class="getPaymentStatusClass(invoice.status)" class="px-2 py-1 text-xs font-medium rounded-full">
+                        {{ getPaymentStatusLabel(invoice.status) }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ invoice.dueDate }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                      <div class="flex space-x-2">
+                        <button @click="viewInvoice(invoice)" class="text-blue-600 hover:text-blue-900 font-medium">Voir</button>
+                        <button v-if="invoice.status === 'en_attente'" @click="sendReminder(invoice)" class="text-orange-600 hover:text-orange-900 font-medium">Relancer</button>
+                        <button @click="downloadInvoice(invoice)" class="text-gray-600 hover:text-gray-900 font-medium">Télécharger</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Modal création de facture -->
+          <div 
+            v-if="showCreateInvoiceModal" 
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            @click="closeCreateInvoiceModal"
+          >
+            <div 
+              class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              @click.stop
+            >
+              <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                  <h3 class="text-xl font-bold text-gray-900">Créer une nouvelle facture</h3>
+                  <button @click="closeCreateInvoiceModal" class="text-gray-400 hover:text-gray-600">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="p-6">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Projet</label>
+                    <select v-model="invoiceForm.projectId" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                      <option value="">Sélectionner un projet</option>
+                      <option v-for="project in projects" :key="project.id" :value="project.id">{{ project.title }} - {{ project.client.name }}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Montant (€)</label>
+                    <input v-model="invoiceForm.amount" type="number" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="0.00" />
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Date d'échéance</label>
+                    <input v-model="invoiceForm.dueDate" type="date" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">TVA (%)</label>
+                    <select v-model="invoiceForm.vat" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                      <option value="20">20%</option>
+                      <option value="10">10%</option>
+                      <option value="5.5">5.5%</option>
+                      <option value="0">0%</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mb-6">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Description des prestations</label>
+                  <textarea v-model="invoiceForm.description" rows="4" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Détaillez les prestations réalisées..."></textarea>
+                </div>
+                <div class="flex space-x-3">
+                  <button @click="closeCreateInvoiceModal" class="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                    Annuler
+                  </button>
+                  <button @click="createInvoiceSubmit" class="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors">
+                    Créer la facture
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Autres sections -->
-        <div v-if="activeTab !== 'overview' && activeTab !== 'projects' && activeTab !== 'documents'" class="animate-fade-in">
+        <div v-if="activeTab !== 'overview' && activeTab !== 'projects' && activeTab !== 'documents' && activeTab !== 'payments'" class="animate-fade-in">
           <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 text-center">
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Section {{ activeTab }}</h2>
             <p class="text-gray-600">Cette section sera développée avec les fonctionnalités spécifiques.</p>
             <div class="mt-6 space-y-2">
               <p class="text-sm text-gray-500" v-if="activeTab === 'invoices'">Création et envoi de factures via l'interface</p>
-              <p class="text-sm text-gray-500" v-if="activeTab === 'payments'">Suivi des paiements et historique des prestations réalisées</p>
               <p class="text-sm text-gray-500" v-if="activeTab === 'messages'">Messagerie directe avec les clients sur l'application</p>
               <p class="text-sm text-gray-500" v-if="activeTab === 'profile'">Modification et complétion du profil artisan</p>
             </div>
@@ -766,6 +1025,17 @@ const uploadForm = ref({
   projectId: '',
   type: '',
   file: null
+})
+
+// Variables pour la section paiements
+const selectedPaymentFilter = ref('')
+const showCreateInvoiceModal = ref(false)
+const invoiceForm = ref({
+  projectId: '',
+  amount: '',
+  dueDate: '',
+  vat: '20',
+  description: ''
 })
 
 const urgentProjects = ref([
@@ -1206,6 +1476,169 @@ const viewDocument = (document) => {
 const downloadDocument = (document) => {
   console.log('Télécharger le document:', document.name)
   // Logique de téléchargement
+}
+
+// Données pour la section paiements
+const invoices = ref([
+  {
+    id: 1,
+    number: 'FAC-2024-001',
+    client: 'Marie Dupont',
+    project: 'Rénovation salle de bain',
+    amount: 3500,
+    status: 'paye',
+    date: '15/01/2024',
+    dueDate: '15/02/2024',
+    paidDate: '10/02/2024'
+  },
+  {
+    id: 2,
+    number: 'FAC-2024-002',
+    client: 'Pierre Martin',
+    project: 'Installation électrique',
+    amount: 1200,
+    status: 'en_attente',
+    date: '25/01/2024',
+    dueDate: '25/02/2024'
+  },
+  {
+    id: 3,
+    number: 'FAC-2024-003',
+    client: 'Anne Dubois',
+    project: 'Peinture salon',
+    amount: 800,
+    status: 'paye',
+    date: '20/01/2024',
+    dueDate: '20/02/2024',
+    paidDate: '18/02/2024'
+  },
+  {
+    id: 4,
+    number: 'FAC-2024-004',
+    client: 'Thomas Leroy',
+    project: 'Pose parquet chambre',
+    amount: 650,
+    status: 'en_attente',
+    date: '30/01/2024',
+    dueDate: '01/03/2024'
+  },
+  {
+    id: 5,
+    number: 'FAC-2024-005',
+    client: 'Sophie Moreau',
+    project: 'Réparation toiture',
+    amount: 450,
+    status: 'paye',
+    date: '12/01/2024',
+    dueDate: '12/02/2024',
+    paidDate: '08/02/2024'
+  },
+  {
+    id: 6,
+    number: 'FAC-2023-089',
+    client: 'Marc Dubois',
+    project: 'Plomberie cuisine',
+    amount: 890,
+    status: 'en_retard',
+    date: '15/12/2023',
+    dueDate: '15/01/2024'
+  }
+])
+
+const monthlyRevenue = ref([
+  { name: 'Oct', amount: 2400 },
+  { name: 'Nov', amount: 3200 },
+  { name: 'Dec', amount: 2800 },
+  { name: 'Jan', amount: 4100 },
+  { name: 'Fév', amount: 3600 },
+  { name: 'Mar', amount: 2900 }
+])
+
+// Computed properties pour les paiements
+const paymentStats = computed(() => {
+  const paid = invoices.value.filter(inv => inv.status === 'paye').reduce((sum, inv) => sum + inv.amount, 0)
+  const pending = invoices.value.filter(inv => inv.status === 'en_attente').reduce((sum, inv) => sum + inv.amount, 0)
+  const overdue = invoices.value.filter(inv => inv.status === 'en_retard').reduce((sum, inv) => sum + inv.amount, 0)
+  const total = paid + pending + overdue
+  
+  return { paid, pending, overdue, total }
+})
+
+const overdueInvoices = computed(() => {
+  return invoices.value.filter(invoice => invoice.status === 'en_retard')
+})
+
+const filteredInvoices = computed(() => {
+  if (!selectedPaymentFilter.value) {
+    return invoices.value
+  }
+  return invoices.value.filter(invoice => invoice.status === selectedPaymentFilter.value)
+})
+
+// Méthodes pour les paiements
+const getPaymentStatusClass = (status) => {
+  const classes = {
+    paye: 'bg-green-100 text-green-800',
+    en_attente: 'bg-yellow-100 text-yellow-800',
+    en_retard: 'bg-red-100 text-red-800',
+    annule: 'bg-gray-100 text-gray-800'
+  }
+  return classes[status] || 'bg-gray-100 text-gray-800'
+}
+
+const getPaymentStatusLabel = (status) => {
+  const labels = {
+    paye: 'Payé',
+    en_attente: 'En attente',
+    en_retard: 'En retard',
+    annule: 'Annulé'
+  }
+  return labels[status] || status
+}
+
+const getDaysLate = (dueDate) => {
+  const due = new Date(dueDate.split('/').reverse().join('-'))
+  const today = new Date()
+  const diffTime = Math.abs(today - due)
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  return diffDays
+}
+
+const sendReminder = (invoice) => {
+  console.log('Envoyer une relance pour:', invoice.number)
+  // Logique d'envoi de relance
+}
+
+const viewInvoice = (invoice) => {
+  console.log('Voir la facture:', invoice.number)
+  // Logique d'affichage de la facture
+}
+
+const downloadInvoice = (invoice) => {
+  console.log('Télécharger la facture:', invoice.number)
+  // Logique de téléchargement
+}
+
+const exportInvoices = () => {
+  console.log('Exporter les factures')
+  // Logique d'export
+}
+
+const closeCreateInvoiceModal = () => {
+  showCreateInvoiceModal.value = false
+  invoiceForm.value = {
+    projectId: '',
+    amount: '',
+    dueDate: '',
+    vat: '20',
+    description: ''
+  }
+}
+
+const createInvoiceSubmit = () => {
+  console.log('Créer la facture:', invoiceForm.value)
+  // Logique de création de facture
+  closeCreateInvoiceModal()
 }
 </script>
 
