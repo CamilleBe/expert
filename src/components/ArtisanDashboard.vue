@@ -38,13 +38,8 @@
               </button>
             </li>
             <li>
-              <button @click="activeTab = 'messages'" :class="activeTab === 'messages' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
-                Messagerie
-              </button>
-            </li>
-            <li>
-              <button @click="activeTab = 'profile'" :class="activeTab === 'profile' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
-                Mon profil
+              <button @click="activeTab = 'reviews'" :class="activeTab === 'reviews' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
+                Mes évaluations
               </button>
             </li>
           </ul>
@@ -1375,8 +1370,44 @@
           </div>
         </div>
 
+        <!-- Évaluations -->
+        <div v-if="activeTab === 'reviews'" class="animate-fade-in">
+          <h1 class="text-3xl font-bold text-gray-900 mb-8">Évaluations des clients</h1>
+
+          <!-- Mes évaluations -->
+          <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
+            <div class="p-6 border-b border-gray-200">
+              <h2 class="text-xl font-bold text-gray-900">Mes évaluations</h2>
+            </div>
+            <div class="p-6">
+              <div class="space-y-6">
+                <div v-for="review in myReviews" :key="review.id" class="border-b border-gray-200 pb-6">
+                  <div class="flex items-start">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                      {{ getClientInitials(review.client) }}
+                    </div>
+                    <div class="ml-4 flex-1">
+                      <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-medium text-gray-900">{{ review.client }}</h3>
+                        <span class="text-sm text-gray-500">{{ review.date }}</span>
+                      </div>
+                      <p class="text-sm text-gray-600 mb-2">{{ review.project }}</p>
+                      <div class="flex mb-3">
+                        <svg v-for="i in 5" :key="i" :class="i <= review.rating ? 'text-yellow-500' : 'text-gray-300'" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118l-3.388-2.46a1 1 0 00-1.175 0l-3.388 2.46c-.784.57-1.838-.197-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.049 9.394c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.967z"></path>
+                        </svg>
+                      </div>
+                      <p class="text-gray-700">{{ review.comment }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Autres sections -->
-        <div v-if="activeTab !== 'overview' && activeTab !== 'projects' && activeTab !== 'documents' && activeTab !== 'payments' && activeTab !== 'clients' && activeTab !== 'meetings'" class="animate-fade-in">
+        <div v-if="activeTab !== 'overview' && activeTab !== 'projects' && activeTab !== 'documents' && activeTab !== 'payments' && activeTab !== 'clients' && activeTab !== 'meetings' && activeTab !== 'reviews'" class="animate-fade-in">
           <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 text-center">
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Section {{ activeTab }}</h2>
             <p class="text-gray-600">Cette section sera développée avec les fonctionnalités spécifiques.</p>
@@ -1862,6 +1893,67 @@ const downloadDocument = (document) => {
   console.log('Télécharger le document:', document.name)
   // Logique de téléchargement
 }
+
+// Données pour les évaluations
+const myReviews = ref([
+  {
+    id: 1,
+    client: 'Marie Dupont',
+    project: 'Rénovation salle de bain',
+    rating: 5,
+    comment: 'Travail impeccable ! Martin est très professionnel, ponctuel et soigneux. La salle de bain est magnifique, exactement ce que nous voulions. Je recommande vivement !',
+    date: '15 janvier 2024'
+  },
+  {
+    id: 2,
+    client: 'Pierre Martin',
+    project: 'Installation électrique',
+    rating: 5,
+    comment: 'Excellent électricien. Installation réalisée dans les temps, travail propre et conforme aux normes. Très bon contact et explications claires.',
+    date: '12 janvier 2024'
+  },
+  {
+    id: 3,
+    client: 'Sophie Laurent',
+    project: 'Peinture salon',
+    rating: 4,
+    comment: 'Bon travail dans l\'ensemble. Peinture bien réalisée et finitions soignées. Petit retard sur les délais mais résultat satisfaisant.',
+    date: '8 janvier 2024'
+  },
+  {
+    id: 4,
+    client: 'Jean Moreau',
+    project: 'Pose de parquet',
+    rating: 5,
+    comment: 'Artisan de qualité ! Pose parfaite du parquet, conseils avisés sur le choix du matériau. Très content du résultat final.',
+    date: '5 janvier 2024'
+  },
+  {
+    id: 5,
+    client: 'Anne Petit',
+    project: 'Réparation toiture',
+    rating: 5,
+    comment: 'Intervention rapide et efficace. Problème de fuite résolu définitivement. Tarif correct et devis respecté.',
+    date: '2 janvier 2024'
+  },
+  {
+    id: 6,
+    client: 'Luc Rousseau',
+    project: 'Isolation combles',
+    rating: 4,
+    comment: 'Bonne isolation réalisée. Quelques difficultés de communication au début mais résultat conforme aux attentes.',
+    date: '28 décembre 2023'
+  }
+])
+
+// Computed properties pour les évaluations
+const averageRating = computed(() => {
+  if (myReviews.value.length === 0) return 0
+  const sum = myReviews.value.reduce((acc, review) => acc + review.rating, 0)
+  return (sum / myReviews.value.length).toFixed(1)
+})
+
+const totalReviews = computed(() => myReviews.value.length)
 
 // Données pour la section clients
 const clients = ref([
