@@ -1,32 +1,32 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomePage from '../components/HomePage.vue'
-import AuthPage from '../components/AuthPage.vue'
-import RegisterPage from '../components/RegisterPage.vue'
-import ArtisanSearch from '../components/ArtisanSearch.vue'
-import ArtisanProfile from '../components/ArtisanProfile.vue'
-import ClientDashboard from '../components/ClientDashboard.vue'
-import ArtisanDashboard from '../components/ArtisanDashboard.vue'
+import HomeView from '../views/HomeView.vue'
+import AuthView from '../views/AuthView.vue'
+import RegisterView from '../views/RegisterView.vue'
+import ArtisanSearchView from '../views/ArtisanSearchView.vue'
+import ArtisanProfile from '../views/ArtisanProfile.vue'
+import ClientDashboard from '../views/ClientDashboard.vue'
+import ArtisanDashboard from '../views/ArtisanDashboard.vue'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: HomePage
+    component: HomeView
   },
   {
     path: '/auth',
     name: 'Auth',
-    component: AuthPage
+    component: AuthView
   },
   {
     path: '/register',
     name: 'Register',
-    component: RegisterPage
+    component: RegisterView
   },
   {
     path: '/search',
     name: 'Search',
-    component: ArtisanSearch
+    component: ArtisanSearchView
   },
   {
     path: '/artisan/:id',
@@ -47,23 +47,23 @@ const routes = [
   {
     path: '/services',
     name: 'Services',
-    component: () => import('../components/HomePage.vue') // Redirection temporaire vers HomePage
+    component: () => import('../views/HomeView.vue') // Redirection temporaire vers HomeView
   },
   {
     path: '/how-it-works',
     name: 'HowItWorks',
-    component: () => import('../components/HomePage.vue') // Redirection temporaire vers HomePage
+    component: () => import('../views/HomeView.vue') // Redirection temporaire vers HomeView
   },
   {
     path: '/contact',
     name: 'Contact',
-    component: () => import('../components/HomePage.vue') // Redirection temporaire vers HomePage
+    component: () => import('../views/HomeView.vue') // Redirection temporaire vers HomeView
   },
   // Route 404 - doit être en dernier
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: () => import('../components/HomePage.vue') // Redirection vers HomePage pour les pages non trouvées
+    component: () => import('../views/HomeView.vue') // Redirection vers HomeView pour les pages non trouvées
   }
 ]
 

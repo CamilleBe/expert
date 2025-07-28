@@ -8,7 +8,7 @@
         <!-- Titre de la page -->
         <div class="text-center mb-10 animate-fade-in">
           <h1 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
-            {{ activeTab === 'login' ? 'Connectez-vous à votre compte' : 'Créez votre compte gratuit' }}
+            Connectez-vous à votre compte
           </h1>
           <p class="text-xl text-gray-600">
             Accédez à votre espace personnel Experta
