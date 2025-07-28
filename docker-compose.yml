@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # Service pour le développement
+  experta-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      # Mount du code source pour le hot-reload
+      - .:/app
+      # Exclure node_modules pour éviter les conflits
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:3000/api
+      - VITE_APP_URL=http://localhost:5173
+      - VITE_MAPS_API_KEY=development-test-key
+      - VITE_DEBUG_MODE=true
+      - VITE_SHOW_DEBUG_INFO=true
+    env_file:
+      - .env.development
+    command: npm run dev -- --host 0.0.0.0
+    networks:
+      - experta-network
+
+  # Service pour la production
+  experta-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+      args:
+        - NODE_ENV=production
+        - VITE_API_URL=https://api.experta.com/api
+        - VITE_APP_URL=https://experta.com
+        - VITE_MAPS_API_KEY=${VITE_MAPS_API_KEY}
+        - VITE_DEBUG_MODE=false
+        - VITE_SHOW_DEBUG_INFO=false
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env.production
+    networks:
+      - experta-network
+    profiles:
+      - production
+
+networks:
+  experta-network:
+    driver: bridge 
