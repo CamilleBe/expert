@@ -1,7 +1,6 @@
 <template>
   <div class="w-screen min-h-screen overflow-x-hidden bg-white text-gray-800">
 
-
     <!-- Section principale avec formulaires -->
     <div class="w-full px-4 sm:px-6 lg:px-8 py-16 md:py-24">
       <div class="w-full max-w-md mx-auto">
@@ -13,6 +12,11 @@
           <p class="text-xl text-gray-600">
             Accédez à votre espace personnel Experta
           </p>
+        </div>
+
+        <!-- Affichage des erreurs -->
+        <div v-if="userStore.error" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p class="text-red-600 text-sm">{{ userStore.error }}</p>
         </div>
 
         <!-- Formulaire de connexion -->
@@ -33,6 +37,7 @@
                   placeholder="votre@email.com" 
                   class="pl-10 pr-4 py-3 w-full bg-gray-50 border border-transparent rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900" 
                   required
+                  :disabled="userStore.loading"
                 />
               </div>
             </div>
@@ -55,6 +60,7 @@
                   placeholder="••••••••" 
                   class="pl-10 pr-10 py-3 w-full bg-gray-50 border border-transparent rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900" 
                   required
+                  :disabled="userStore.loading"
                 />
                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
                   <button 
@@ -80,15 +86,24 @@
                 id="remember" 
                 v-model="loginForm.remember" 
                 class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                :disabled="userStore.loading"
               />
               <label for="remember" class="ml-2 block text-sm text-gray-700">Se souvenir de moi</label>
             </div>
 
             <button 
               type="submit" 
-              class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg"
+              class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              :disabled="userStore.loading"
             >
-              Se connecter
+              <span v-if="userStore.loading" class="flex items-center justify-center">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Connexion en cours...
+              </span>
+              <span v-else>Se connecter</span>
             </button>
 
             <div class="text-center mt-8">
@@ -101,6 +116,18 @@
             </div>
           </form>
         </div>
+
+        <!-- Message de succès -->
+        <div v-if="userStore.isAuthenticated" class="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <p class="text-green-700">
+              Bienvenue {{ userStore.userName }} ! Redirection en cours...
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -108,6 +135,13 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import { useNotificationsStore } from '@/stores/notifications'
+
+const router = useRouter()
+const userStore = useUserStore()
+const notificationsStore = useNotificationsStore()
 
 // Formulaire de connexion
 const loginForm = reactive({
@@ -119,10 +153,28 @@ const loginForm = reactive({
 // Variable pour afficher/masquer le mot de passe
 const showPassword = ref(false)
 
-// Méthode de connexion
-const handleLogin = () => {
-  // Logique de connexion à implémenter
-  console.log('Tentative de connexion avec:', loginForm)
+// Méthode de connexion avec Pinia
+const handleLogin = async () => {
+  const result = await userStore.login(loginForm)
+  
+  if (result.success) {
+    // Afficher une notification de succès
+    notificationsStore.showSuccess('Connexion réussie ! Bienvenue sur Experta.')
+    
+    // Rediriger selon le type d'utilisateur
+    setTimeout(() => {
+      if (userStore.isClient) {
+        router.push('/dashboard')
+      } else if (userStore.isArtisan) {
+        router.push('/artisan-dashboard')
+      } else {
+        router.push('/')
+      }
+    }, 1500)
+  } else {
+    // Afficher une notification d'erreur
+    notificationsStore.showError(result.error || 'Erreur de connexion')
+  }
 }
 </script>
 
