@@ -18,16 +18,14 @@ const routes = [
     name: 'Auth',
     component: AuthView
   },
+  
+
   {
-    path: '/register',
-    name: 'Register',
+    path: '/inscription',
+    name: 'Inscription',
     component: RegisterView
   },
-  {
-    path: '/search',
-    name: 'Search',
-    component: ArtisanSearchView
-  },
+
   {
     path: '/artisan/:id',
     name: 'ArtisanProfile',

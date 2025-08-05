@@ -14,6 +14,25 @@
           </p>
         </div>
 
+        <!-- Messages de succès/erreur -->
+        <div v-if="successMessage" class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg animate-fade-in">
+          <div class="flex">
+            <svg class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            {{ successMessage }}
+          </div>
+        </div>
+
+        <div v-if="errorMessage" class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg animate-fade-in">
+          <div class="flex">
+            <svg class="h-5 w-5 text-red-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+            {{ errorMessage }}
+          </div>
+        </div>
+
         <!-- Formulaire d'inscription -->
         <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 animate-fade-in">
           <form @submit.prevent="handleRegister">
@@ -135,9 +154,16 @@
 
             <button 
               type="submit" 
-              class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg"
+              :disabled="loading"
+              class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
-              Créer mon compte
+              <span v-if="loading" class="mr-2">
+                <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                </svg>
+              </span>
+              {{ loading ? 'Création en cours...' : 'Créer mon compte' }}
             </button>
 
             <div class="text-center mt-8">
@@ -157,6 +183,11 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import authService from '../services/authService.js'
+
+// Router pour redirection
+const router = useRouter()
 
 // Formulaire d'inscription
 const registerForm = reactive({
@@ -168,19 +199,108 @@ const registerForm = reactive({
   terms: false
 })
 
-// Variable pour afficher/masquer le mot de passe
+// États de l'interface
 const showPassword = ref(false)
+const loading = ref(false)
+const errorMessage = ref('')
+const successMessage = ref('')
 
-// Méthode d'inscription
-const handleRegister = () => {
-  // Vérification que les mots de passe correspondent
-  if (registerForm.password !== registerForm.confirmPassword) {
-    alert('Les mots de passe ne correspondent pas')
-    return
+// Validation du formulaire
+const validateForm = () => {
+  // Réinitialiser les erreurs
+  errorMessage.value = ''
+  
+  if (!registerForm.firstName.trim()) {
+    errorMessage.value = 'Le prénom est obligatoire'
+    return false
   }
   
-  // Logique d'inscription à implémenter
-  console.log("Tentative d'inscription avec:", registerForm)
+  if (!registerForm.lastName.trim()) {
+    errorMessage.value = 'Le nom est obligatoire'
+    return false
+  }
+  
+  if (!registerForm.email.trim()) {
+    errorMessage.value = 'L\'email est obligatoire'
+    return false
+  }
+  
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(registerForm.email)) {
+    errorMessage.value = 'Format d\'email invalide'
+    return false
+  }
+  
+  if (!registerForm.password) {
+    errorMessage.value = 'Le mot de passe est obligatoire'
+    return false
+  }
+  
+  if (registerForm.password.length < 8) {
+    errorMessage.value = 'Le mot de passe doit contenir au moins 8 caractères'
+    return false
+  }
+  
+  if (registerForm.password !== registerForm.confirmPassword) {
+    errorMessage.value = 'Les mots de passe ne correspondent pas'
+    return false
+  }
+  
+  if (!registerForm.terms) {
+    errorMessage.value = 'Vous devez accepter les conditions d\'utilisation'
+    return false
+  }
+  
+  return true
+}
+
+// Méthode d'inscription
+const handleRegister = async () => {
+  if (!validateForm()) {
+    return
+  }
+
+  loading.value = true
+  errorMessage.value = ''
+  successMessage.value = ''
+
+  try {
+    // Appel à l'API d'inscription via authService
+    const result = await authService.register({
+      firstName: registerForm.firstName.trim(),
+      lastName: registerForm.lastName.trim(),
+      email: registerForm.email.trim(),
+      password: registerForm.password
+    })
+
+    // Succès de l'inscription
+    successMessage.value = `Bienvenue ${result.user?.firstName} ! Votre compte a été créé avec succès.`
+    
+    console.log('✅ Inscription réussie:', result)
+    
+    // Redirection vers le tableau de bord après 2 secondes
+    setTimeout(() => {
+      router.push('/dashboard')
+    }, 2000)
+    
+  } catch (error) {
+    // Gestion des erreurs
+    let message = 'Erreur lors de l\'inscription'
+    
+    if (error.response?.data?.message) {
+      message = error.response.data.message
+    } else if (error.response?.status === 409) {
+      message = 'Cet email est déjà utilisé'
+    } else if (error.response?.status === 400) {
+      message = 'Données invalides'
+    }
+    
+    errorMessage.value = message
+    console.error('❌ Erreur d\'inscription:', error)
+    
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 

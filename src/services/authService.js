@@ -108,6 +108,28 @@ class AuthService {
     });
   }
   
+  /**
+   * Méthode d'inscription générique (par défaut: client)
+   * @param {object} userData - Données de l'utilisateur
+   * @param {string} type - Type d'inscription ('client', 'amo', 'partner')
+   * @returns {Promise} - Promesse avec les données de l'utilisateur créé
+   */
+  async register(userData, type = 'client') {
+    console.log(`📝 Inscription générique (type: ${type})...`);
+    
+    switch (type.toLowerCase()) {
+      case 'client':
+        return await this.registerClient(userData);
+      case 'amo':
+        return await this.registerAMO(userData);
+      case 'partner':
+        return await this.registerPartner(userData);
+      default:
+        console.log('ℹ️ Type non spécifié, inscription en tant que client par défaut');
+        return await this.registerClient(userData);
+    }
+  }
+
   // ================================================
   // MÉTHODES D'AUTHENTIFICATION
   // ================================================
@@ -177,6 +199,34 @@ class AuthService {
       }
     }
     return null;
+  }
+
+  /**
+   * Obtenir le token d'authentification
+   * @returns {string|null} - Token ou null
+   */
+  getToken() {
+    return localStorage.getItem('token');
+  }
+
+  /**
+   * Obtenir le profil utilisateur depuis l'API
+   * @returns {Promise} - Promesse avec les données du profil
+   */
+  async getProfile() {
+    console.log('👤 Récupération du profil utilisateur...');
+    
+    const response = await this.makeRequest(API_CONFIG.ENDPOINTS.PROFILE, {
+      method: 'GET'
+    });
+    
+    // Mettre à jour les données locales
+    if (response.success && response.data) {
+      localStorage.setItem('user', JSON.stringify(response.data));
+      console.log('✅ Profil utilisateur mis à jour');
+    }
+    
+    return response.data;
   }
   
   // ================================================

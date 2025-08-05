@@ -109,7 +109,7 @@
             <div class="text-center mt-8">
               <p class="text-sm text-gray-600">
                 Vous n'avez pas de compte ?
-                <router-link to="/register" class="text-blue-600 font-medium hover:text-blue-500">
+                <router-link to="/inscription" class="text-blue-600 font-medium hover:text-blue-500">
                   Inscrivez-vous
                 </router-link>
               </p>
