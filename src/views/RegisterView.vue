@@ -3,7 +3,7 @@
 
     <!-- Section principale avec formulaire d'inscription -->
     <div class="w-full px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-      <div class="w-full max-w-lg mx-auto">
+      <div class="w-full max-w-2xl mx-auto">
         <!-- Titre de la page -->
         <div class="text-center mb-10 animate-fade-in">
           <h1 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
@@ -19,7 +19,7 @@
           <button 
             @click="registrationType = 'client'"
             :class="[
-              'flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all duration-200',
+              'flex-1 py-3 px-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-200',
               registrationType === 'client' 
                 ? 'bg-white text-blue-600 shadow-sm' 
                 : 'text-gray-600 hover:text-gray-900'
@@ -30,13 +30,24 @@
           <button 
             @click="registrationType = 'amo'"
             :class="[
-              'flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all duration-200',
+              'flex-1 py-3 px-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-200',
               registrationType === 'amo' 
                 ? 'bg-white text-blue-600 shadow-sm' 
                 : 'text-gray-600 hover:text-gray-900'
             ]"
           >
-            🏢 AMO (Professionnel)
+            🏢 AMO
+          </button>
+          <button 
+            @click="registrationType = 'partner'"
+            :class="[
+              'flex-1 py-3 px-2 rounded-md text-xs sm:text-sm font-medium transition-all duration-200',
+              registrationType === 'partner' 
+                ? 'bg-white text-blue-600 shadow-sm' 
+                : 'text-gray-600 hover:text-gray-900'
+            ]"
+          >
+            🔨 Artisan
           </button>
         </div>
 
@@ -151,6 +162,127 @@
               </div>
             </div>
 
+            <!-- Champs spécifiques Partner/Artisan -->
+            <div v-if="registrationType === 'partner'" class="space-y-6 mb-6">
+              <!-- Nom de l'entreprise -->
+              <div>
+                <label for="nomEntreprise" class="block text-sm font-medium text-gray-700 mb-2">Nom de l'entreprise</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h4a1 1 0 011 1v5m-6 0V9a1 1 0 011-1h4a1 1 0 011 1v8.5" />
+                    </svg>
+                  </div>
+                  <input 
+                    type="text" 
+                    id="nomEntreprise" 
+                    v-model="registerForm.nomEntreprise" 
+                    placeholder="Ma Société SARL" 
+                    class="pl-10 pr-4 py-3 w-full bg-gray-50 border border-transparent rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900" 
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Téléphone -->
+              <div>
+                <label for="telephonePartner" class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                  </div>
+                  <input 
+                    type="tel" 
+                    id="telephonePartner" 
+                    v-model="registerForm.telephone" 
+                    placeholder="01 23 45 67 89" 
+                    class="pl-10 pr-4 py-3 w-full bg-gray-50 border border-transparent rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900" 
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- SIRET -->
+              <div>
+                <label for="siretPartner" class="block text-sm font-medium text-gray-700 mb-2">SIRET</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h4a1 1 0 011 1v5m-6 0V9a1 1 0 011-1h4a1 1 0 011 1v8.5" />
+                    </svg>
+                  </div>
+                  <input 
+                    type="text" 
+                    id="siretPartner" 
+                    v-model="registerForm.siret" 
+                    placeholder="12345678901234" 
+                    maxlength="14"
+                    class="pl-10 pr-4 py-3 w-full bg-gray-50 border border-transparent rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900" 
+                    required
+                  />
+                </div>
+                <p class="mt-2 text-xs text-gray-500">14 chiffres exactement</p>
+              </div>
+
+              <!-- Tags Métiers -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Métiers <span class="text-red-500">*</span></label>
+                <div class="space-y-2 max-h-32 overflow-y-auto bg-gray-50 p-3 rounded-lg">
+                  <div v-for="tag in availableTagsMetiers" :key="tag" class="flex items-center">
+                    <input 
+                      type="checkbox" 
+                      :id="`tag-${tag}`"
+                      :value="tag" 
+                      v-model="registerForm.tagsMetiers" 
+                      class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
+                    />
+                    <label :for="`tag-${tag}`" class="ml-3 text-sm text-gray-700">{{ tag }}</label>
+                  </div>
+                </div>
+                <p class="mt-2 text-xs text-gray-500">Sélectionnez au moins un métier</p>
+              </div>
+
+              <!-- Zones d'intervention -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Zones d'intervention <span class="text-red-500">*</span></label>
+                <div class="space-y-2 max-h-32 overflow-y-auto bg-gray-50 p-3 rounded-lg">
+                  <div v-for="zone in availableZones" :key="zone" class="flex items-center">
+                    <input 
+                      type="checkbox" 
+                      :id="`zone-${zone}`"
+                      :value="zone" 
+                      v-model="registerForm.zoneIntervention" 
+                      class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
+                    />
+                    <label :for="`zone-${zone}`" class="ml-3 text-sm text-gray-700">{{ zone }}</label>
+                  </div>
+                </div>
+                <p class="mt-2 text-xs text-gray-500">Sélectionnez au moins une zone</p>
+              </div>
+
+              <!-- Site Web (optionnel) -->
+              <div>
+                <label for="siteWeb" class="block text-sm font-medium text-gray-700 mb-2">Site web (optionnel)</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0 9a9 9 0 009-9m-9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                    </svg>
+                  </div>
+                  <input 
+                    type="url" 
+                    id="siteWeb" 
+                    v-model="registerForm.siteWeb" 
+                    placeholder="https://www.monsite.fr" 
+                    class="pl-10 pr-4 py-3 w-full bg-gray-50 border border-transparent rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900" 
+                  />
+                </div>
+                <p class="mt-2 text-xs text-gray-500">Doit commencer par http:// ou https://</p>
+              </div>
+            </div>
+
             <!-- Mot de passe -->
             <div class="mb-6">
               <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
@@ -188,8 +320,8 @@
               <p class="mt-2 text-xs text-gray-500">Le mot de passe doit contenir au moins 8 caractères</p>
             </div>
 
-            <!-- Confirmation mot de passe (uniquement pour AMO) -->
-            <div v-if="registrationType === 'amo'" class="mb-6">
+            <!-- Confirmation mot de passe (pour AMO et Partner) -->
+            <div v-if="registrationType === 'amo' || registrationType === 'partner'" class="mb-6">
               <label for="passwordConfirm" class="block text-sm font-medium text-gray-700 mb-2">Confirmer le mot de passe</label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -256,7 +388,7 @@
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
                 </svg>
               </span>
-              {{ loading ? 'Création en cours...' : (registrationType === 'amo' ? 'Créer mon compte AMO' : 'Créer mon compte') }}
+              {{ loading ? 'Création en cours...' : (registrationType === 'amo' ? 'Créer mon compte AMO' : registrationType === 'partner' ? 'Créer mon compte Artisan' : 'Créer mon compte') }}
             </button>
 
             <div class="text-center mt-8">
@@ -292,9 +424,14 @@ const registerForm = reactive({
   email: '',
   password: '',
   confirmPassword: '', // Pour client
-  passwordConfirm: '', // Pour AMO
-  telephone: '', // Pour AMO
-  siret: '', // Pour AMO
+  passwordConfirm: '', // Pour AMO et Partner
+  telephone: '', // Pour AMO et Partner
+  siret: '', // Pour AMO et Partner
+  // Nouveaux champs spécifiques Partner
+  nomEntreprise: '', // Pour Partner
+  tagsMetiers: [], // Pour Partner
+  zoneIntervention: [], // Pour Partner
+  siteWeb: '', // Pour Partner (optionnel)
   terms: false
 })
 
@@ -304,14 +441,38 @@ const loading = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
 
+// Options pour les champs Partner
+const availableTagsMetiers = [
+  'Plomberie', 'Électricité', 'Menuiserie', 'Peinture', 'Carrelage', 
+  'Maçonnerie', 'Toiture', 'Chauffage', 'Climatisation', 'Isolation'
+]
+
+const availableZones = [
+  'Paris', 'Lyon', 'Marseille', 'Toulouse', 'Nice', 'Nantes', 
+  'Montpellier', 'Strasbourg', 'Bordeaux', 'Lille'
+]
+
 // Réinitialiser les champs spécifiques quand on change de type
 watch(registrationType, (newType) => {
-  // Nettoyer les champs non utilisés
+  // Nettoyer les champs non utilisés selon le type
   if (newType === 'client') {
+    // Client : nettoyer tous les champs pro
     registerForm.telephone = ''
     registerForm.siret = ''
     registerForm.passwordConfirm = ''
-  } else {
+    registerForm.nomEntreprise = ''
+    registerForm.tagsMetiers = []
+    registerForm.zoneIntervention = []
+    registerForm.siteWeb = ''
+  } else if (newType === 'amo') {
+    // AMO : nettoyer les champs client et partner
+    registerForm.confirmPassword = ''
+    registerForm.nomEntreprise = ''
+    registerForm.tagsMetiers = []
+    registerForm.zoneIntervention = []
+    registerForm.siteWeb = ''
+  } else if (newType === 'partner') {
+    // Partner : nettoyer les champs client
     registerForm.confirmPassword = ''
   }
 })
@@ -388,6 +549,63 @@ const validateForm = () => {
       errorMessage.value = 'Le SIRET doit contenir exactement 14 chiffres'
       return false
     }
+  } else if (registrationType.value === 'partner') {
+    // Validations Partner/Artisan
+    if (registerForm.password !== registerForm.passwordConfirm) {
+      errorMessage.value = 'Les mots de passe ne correspondent pas'
+      return false
+    }
+    
+    if (!registerForm.nomEntreprise.trim()) {
+      errorMessage.value = 'Le nom de l\'entreprise est obligatoire'
+      return false
+    }
+    
+    if (!registerForm.telephone.trim()) {
+      errorMessage.value = 'Le téléphone est obligatoire'
+      return false
+    }
+    
+    // Validation format téléphone
+    const phoneRegex = /^[\d\s\+\-\(\)\.]{8,20}$/
+    if (!phoneRegex.test(registerForm.telephone)) {
+      errorMessage.value = 'Format de téléphone invalide'
+      return false
+    }
+    
+    if (!registerForm.siret.trim()) {
+      errorMessage.value = 'Le SIRET est obligatoire'
+      return false
+    }
+    
+    // Validation SIRET (exactement 14 chiffres)
+    const siretRegex = /^\d{14}$/
+    if (!siretRegex.test(registerForm.siret)) {
+      errorMessage.value = 'Le SIRET doit contenir exactement 14 chiffres'
+      return false
+    }
+    
+    // Validation tags métiers (au moins 1)
+    if (!registerForm.tagsMetiers || registerForm.tagsMetiers.length === 0) {
+      errorMessage.value = 'Vous devez sélectionner au moins un métier'
+      return false
+    }
+    
+    // Validation zones d'intervention (au moins 1)
+    if (!registerForm.zoneIntervention || registerForm.zoneIntervention.length === 0) {
+      errorMessage.value = 'Vous devez sélectionner au moins une zone d\'intervention'
+      return false
+    }
+    
+    // Validation site web (optionnel mais format requis si rempli)
+    if (registerForm.siteWeb && registerForm.siteWeb.trim() !== '') {
+      const urlRegex = /^https?:\/\/.+/
+      if (!urlRegex.test(registerForm.siteWeb)) {
+        errorMessage.value = 'Le site web doit commencer par http:// ou https://'
+        return false
+      }
+    }
+
   }
   
   if (!registerForm.terms) {
@@ -417,18 +635,31 @@ const handleRegister = async () => {
       password: registerForm.password
     }
     
-    // Ajouter les champs spécifiques AMO
+    // Ajouter les champs spécifiques selon le type
     if (registrationType.value === 'amo') {
       userData.passwordConfirm = registerForm.passwordConfirm
       userData.telephone = registerForm.telephone.trim()
       userData.siret = registerForm.siret.trim()
+    } else if (registrationType.value === 'partner') {
+      userData.passwordConfirm = registerForm.passwordConfirm
+      userData.nomEntreprise = registerForm.nomEntreprise.trim()
+      userData.telephone = registerForm.telephone.trim()
+      userData.siret = registerForm.siret.trim()
+      userData.tagsMetiers = registerForm.tagsMetiers
+      userData.zoneIntervention = registerForm.zoneIntervention
+      
+      // Site web optionnel
+      if (registerForm.siteWeb && registerForm.siteWeb.trim() !== '') {
+        userData.siteWeb = registerForm.siteWeb.trim()
+      }
     }
 
     // Appel à l'API d'inscription via authService
     const result = await authService.register(userData, registrationType.value)
 
     // Succès de l'inscription
-    const userType = registrationType.value === 'amo' ? 'AMO' : 'client'
+    const userType = registrationType.value === 'amo' ? 'AMO' : 
+                     registrationType.value === 'partner' ? 'artisan' : 'client'
     successMessage.value = `Bienvenue ${result.user?.firstName} ! Votre compte ${userType} a été créé avec succès.`
     
     console.log('✅ Inscription réussie:', result)
