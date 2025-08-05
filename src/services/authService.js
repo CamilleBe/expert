@@ -174,13 +174,26 @@ class AuthService {
   }
   
   /**
-   * Vérifier si l'utilisateur est connecté
-   * @returns {boolean} - True si connecté
+   * Vérifier si l'utilisateur est connecté ET que le token est valide
+   * @returns {boolean} - True si connecté avec token valide
    */
   isAuthenticated() {
-    const token = localStorage.getItem('token');
+    const token = this.getToken();
     const user = localStorage.getItem('user');
-    return !!(token && user);
+    
+    // Vérifier que les données existent
+    if (!token || !user) {
+      return false;
+    }
+    
+    // Vérifier que le token n'est pas expiré
+    if (this.isTokenExpired(token)) {
+      console.log('🔒 Token expiré, nettoyage automatique...');
+      this.logout(); // Nettoyer automatiquement
+      return false;
+    }
+    
+    return true;
   }
   
   /**
@@ -227,6 +240,103 @@ class AuthService {
     }
     
     return response.data;
+  }
+
+  /**
+   * Décoder un token JWT pour récupérer les informations
+   * @param {string} token - Le token JWT
+   * @returns {object|null} - Payload décodé ou null si invalide
+   */
+  decodeToken(token) {
+    try {
+      if (!token) return null;
+      
+      // Un JWT a 3 parties séparées par des points : header.payload.signature
+      const parts = token.split('.');
+      if (parts.length !== 3) return null;
+      
+      // Décoder le payload (partie 2)
+      const payload = parts[1];
+      
+      // Décoder base64 → JSON
+      const decoded = JSON.parse(atob(payload));
+      
+      return decoded;
+    } catch (error) {
+      console.error('❌ Erreur lors du décodage du token:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Vérifier si le token est expiré
+   * @param {string} token - Le token à vérifier
+   * @returns {boolean} - True si expiré
+   */
+  isTokenExpired(token = null) {
+    const tokenToCheck = token || this.getToken();
+    if (!tokenToCheck) return true;
+    
+    const decoded = this.decodeToken(tokenToCheck);
+    if (!decoded || !decoded.exp) return true;
+    
+    // Comparer avec l'heure actuelle (en secondes)
+    const currentTime = Math.floor(Date.now() / 1000);
+    const isExpired = decoded.exp < currentTime;
+    
+    if (isExpired) {
+      console.log('⚠️ Token expiré depuis:', new Date(decoded.exp * 1000));
+    }
+    
+    return isExpired;
+  }
+
+  /**
+   * Obtenir le temps restant avant expiration (en secondes)
+   * @param {string} token - Le token à vérifier
+   * @returns {number} - Secondes restantes (0 si expiré)
+   */
+  getTokenTimeRemaining(token = null) {
+    const tokenToCheck = token || this.getToken();
+    if (!tokenToCheck) return 0;
+    
+    const decoded = this.decodeToken(tokenToCheck);
+    if (!decoded || !decoded.exp) return 0;
+    
+    const currentTime = Math.floor(Date.now() / 1000);
+    const timeRemaining = decoded.exp - currentTime;
+    
+    return Math.max(0, timeRemaining); // Retourner 0 si négatif
+  }
+
+  /**
+   * Obtenir des informations détaillées sur le token
+   * @returns {object} - Informations sur le token
+   */
+  getTokenInfo() {
+    const token = this.getToken();
+    if (!token) {
+      return { valid: false, expired: true, timeRemaining: 0 };
+    }
+    
+    const decoded = this.decodeToken(token);
+    if (!decoded) {
+      return { valid: false, expired: true, timeRemaining: 0 };
+    }
+    
+    const timeRemaining = this.getTokenTimeRemaining(token);
+    const expired = this.isTokenExpired(token);
+    
+    return {
+      valid: !expired,
+      expired: expired,
+      timeRemaining: timeRemaining,
+      expiresAt: decoded.exp ? new Date(decoded.exp * 1000) : null,
+      issuedAt: decoded.iat ? new Date(decoded.iat * 1000) : null,
+      userId: decoded.userId || decoded.id,
+      email: decoded.email,
+      role: decoded.role
+    };
   }
   
   // ================================================

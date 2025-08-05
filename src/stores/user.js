@@ -44,6 +44,9 @@ export const useUserStore = defineStore('user', () => {
         // Mais on peut double-vérifier
         console.log('✅ Utilisateur connecté:', userData)
         
+        // Démarrer la vérification automatique du token après connexion réussie
+        startTokenCheck()
+        
         return { success: true, user: userData }
       } else {
         throw new Error('Réponse de connexion invalide')
@@ -125,6 +128,9 @@ export const useUserStore = defineStore('user', () => {
   const logout = () => {
     console.log('🚪 Déconnexion...')
     
+    // Arrêter la vérification automatique du token
+    stopTokenCheck()
+    
     // Utiliser authService pour nettoyer proprement
     authService.logout()
     
@@ -174,8 +180,104 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  // ================================================
+  // GESTION DE L'EXPIRATION DU TOKEN
+  // ================================================
+  
+  // Variable pour gérer l'interval de vérification
+  let tokenCheckInterval = null
+  
+  /**
+   * Démarrer la vérification périodique du token
+   */
+  const startTokenCheck = () => {
+    // Nettoyer l'ancien interval s'il existe
+    if (tokenCheckInterval) {
+      clearInterval(tokenCheckInterval)
+    }
+    
+    console.log('🕒 Démarrage de la vérification automatique du token...')
+    
+    // Vérifier toutes les 5 minutes (300000 ms)
+    tokenCheckInterval = setInterval(() => {
+      console.log('🔍 Vérification automatique du token...')
+      
+      const tokenInfo = authService.getTokenInfo()
+      
+      if (!tokenInfo.valid) {
+        console.log('⚠️ Token expiré ou invalide, déconnexion automatique...')
+        logout()
+        
+        // Rediriger vers la page de connexion si pas déjà dessus
+        if (window.location.pathname !== '/auth' && window.location.pathname !== '/') {
+          alert('⚠️ Votre session a expiré. Veuillez vous reconnecter.')
+          window.location.href = '/auth'
+        }
+      } else {
+        // Calculer le temps restant en heures et minutes
+        const hours = Math.floor(tokenInfo.timeRemaining / 3600)
+        const minutes = Math.floor((tokenInfo.timeRemaining % 3600) / 60)
+        
+        console.log(`✅ Token valide - Temps restant: ${hours}h ${minutes}min`)
+        
+        // Avertir si moins de 1 heure restante (une seule fois)
+        if (tokenInfo.timeRemaining <= 3600 && tokenInfo.timeRemaining > 3540) {
+          console.log('⚠️ Avertissement: Session expire bientôt')
+          
+          // Proposer de renouveler la session
+          if (confirm('⚠️ Votre session expire dans moins d\'1 heure. Voulez-vous la renouveler ?')) {
+            // Optionnel : appeler une méthode pour renouveler le token
+            refreshToken()
+          }
+        }
+      }
+    }, 5 * 60 * 1000) // Toutes les 5 minutes
+  }
+  
+  /**
+   * Arrêter la vérification périodique
+   */
+  const stopTokenCheck = () => {
+    if (tokenCheckInterval) {
+      clearInterval(tokenCheckInterval)
+      tokenCheckInterval = null
+      console.log('🛑 Vérification automatique du token arrêtée')
+    }
+  }
+  
+  /**
+   * Renouveler le token (optionnel)
+   */
+  const refreshToken = async () => {
+    try {
+      console.log('🔄 Tentative de renouvellement du token...')
+      
+      // Si votre backend supporte le refresh token
+      const response = await authService.makeRequest('/auth/refresh', {
+        method: 'POST'
+      })
+      
+      if (response.success && response.data.token) {
+        // Mettre à jour le token
+        localStorage.setItem('token', response.data.token)
+        console.log('✅ Token renouvelé avec succès')
+        return true
+      }
+    } catch (error) {
+      console.error('❌ Erreur lors du renouvellement:', error)
+      // Si le renouvellement échoue, déconnecter
+      logout()
+      return false
+    }
+  }
+
   // Initialiser au chargement du store
   loadUserFromStorage()
+  
+  // Si un utilisateur est déjà connecté, démarrer la vérification
+  if (isAuthenticated.value) {
+    startTokenCheck()
+  }
 
   return {
     // État
@@ -195,6 +297,11 @@ export const useUserStore = defineStore('user', () => {
     register,
     logout,
     updateProfile,
-    loadUserFromStorage
+    loadUserFromStorage,
+    
+    // Gestion du token
+    startTokenCheck,
+    stopTokenCheck,
+    refreshToken
   }
 }) 
