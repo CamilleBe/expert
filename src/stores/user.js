@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import authService from '@/services/authService.js'
 
 export const useUserStore = defineStore('user', () => {
   // État réactif
@@ -24,34 +25,61 @@ export const useUserStore = defineStore('user', () => {
     error.value = null
     
     try {
-      // Simulation d'un appel API - À remplacer par votre vraie API
-      console.log('Tentative de connexion avec:', credentials)
+      console.log('🔐 Tentative de connexion avec:', credentials.email)
       
-      // Simuler une réponse d'API
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Appel réel à l'API via authService
+      const response = await authService.login(credentials.email, credentials.password)
       
-      // Données utilisateur simulées
-      const userData = {
-        id: 1,
-        firstName: 'Jean',
-        lastName: 'Dupont',
-        email: credentials.email,
-        type: 'client', // ou 'artisan'
-        avatar: 'https://randomuser.me/api/portraits/men/32.jpg'
+      console.log('✅ Réponse de connexion:', response)
+      
+      // Vérifier que la réponse contient les données utilisateur
+      if (response.success && response.data && response.data.user) {
+        const userData = response.data.user
+        
+        currentUser.value = userData
+        userType.value = userData.role || userData.type || 'client' // Adapter selon la structure de votre API
+        isAuthenticated.value = true
+        
+        // La sauvegarde est déjà faite par authService.login()
+        // Mais on peut double-vérifier
+        console.log('✅ Utilisateur connecté:', userData)
+        
+        return { success: true, user: userData }
+      } else {
+        throw new Error('Réponse de connexion invalide')
       }
       
-      currentUser.value = userData
-      userType.value = userData.type
-      isAuthenticated.value = true
-      
-      // Sauvegarder dans localStorage pour la persistance
-      localStorage.setItem('user', JSON.stringify(userData))
-      localStorage.setItem('isAuthenticated', 'true')
-      
-      return { success: true, user: userData }
     } catch (err) {
-      error.value = err.message || 'Erreur de connexion'
-      return { success: false, error: error.value }
+      console.error('❌ Erreur de connexion:', err)
+      
+      // Mapper les erreurs serveur aux messages appropriés
+      let errorMessage = 'Erreur lors de la connexion'
+      
+      if (err.status) {
+        switch (err.status) {
+          case 400:
+            errorMessage = 'Email et mot de passe sont requis'
+            break
+          case 401:
+            // Distinguer entre identifiants invalides et compte désactivé
+            if (err.data && err.data.message && err.data.message.includes('désactivé')) {
+              errorMessage = 'Compte désactivé - Contactez l\'administrateur'
+            } else {
+              errorMessage = 'Email ou mot de passe incorrect'
+            }
+            break
+          case 500:
+            errorMessage = 'Erreur lors de la connexion'
+            break
+          default:
+            errorMessage = err.message || 'Erreur lors de la connexion'
+        }
+      } else if (err.message) {
+        errorMessage = err.message
+      }
+      
+      error.value = errorMessage
+      return { success: false, error: errorMessage }
     } finally {
       loading.value = false
     }
@@ -95,24 +123,35 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const logout = () => {
+    console.log('🚪 Déconnexion...')
+    
+    // Utiliser authService pour nettoyer proprement
+    authService.logout()
+    
+    // Réinitialiser l'état du store
     currentUser.value = null
     isAuthenticated.value = false
     userType.value = null
     error.value = null
     
-    // Nettoyer localStorage
-    localStorage.removeItem('user')
-    localStorage.removeItem('isAuthenticated')
+    console.log('✅ Déconnexion terminée')
   }
 
   const loadUserFromStorage = () => {
-    const storedUser = localStorage.getItem('user')
-    const storedAuth = localStorage.getItem('isAuthenticated')
+    console.log('🔄 Chargement utilisateur depuis le stockage...')
     
-    if (storedUser && storedAuth === 'true') {
-      currentUser.value = JSON.parse(storedUser)
-      userType.value = currentUser.value.type
+    // Utiliser authService pour vérifier l'authentification
+    const isAuth = authService.isAuthenticated()
+    const userData = authService.getCurrentUser()
+    
+    if (isAuth && userData) {
+      currentUser.value = userData
+      userType.value = userData.role || userData.type || 'client'
       isAuthenticated.value = true
+      
+      console.log('✅ Utilisateur chargé:', userData)
+    } else {
+      console.log('ℹ️ Aucun utilisateur connecté trouvé')
     }
   }
 
