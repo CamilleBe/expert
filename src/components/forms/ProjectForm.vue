@@ -1,4 +1,41 @@
 <template>
+  <!-- Modal de succès -->
+  <div v-if="showSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click="closeSuccessModal">
+    <div class="bg-white rounded-lg p-8 max-w-md mx-4 relative" @click.stop>
+      <!-- Icône de fermeture -->
+      <button @click="closeSuccessModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+      
+      <!-- Contenu de la modal -->
+      <div class="text-center">
+        <!-- Icône de succès -->
+        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+          <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        
+        <!-- Titre -->
+        <h3 class="text-lg font-medium text-gray-900 mb-4">
+          Projet créé avec succès !
+        </h3>
+        
+        <!-- Message personnalisé -->
+        <p class="text-sm text-gray-600 mb-6">
+          {{ modalSuccessMessage }}
+        </p>
+        
+        <!-- Bouton de fermeture -->
+        <button @click="closeSuccessModal" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+          Parfait !
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
     <div class="mb-6">
       <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
@@ -461,7 +498,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useNotificationsStore } from '@/stores/notifications'
 import projetService from '@/services/projetService'
@@ -480,6 +517,10 @@ const errors = ref([])
 // État pour afficher/masquer les mots de passe
 const showPassword = ref(false)
 const showPasswordConfirm = ref(false)
+
+// État pour la popup de succès
+const showSuccessModal = ref(false)
+const modalSuccessMessage = ref('')
 
 // Données du formulaire
 const formData = reactive({
@@ -628,7 +669,31 @@ const resetMessages = () => {
   successMessage.value = ''
   errors.value = []
   passwordMismatchError.value = ''
+  showSuccessModal.value = false
+  modalSuccessMessage.value = ''
 }
+
+// Fermer la modal de succès
+const closeSuccessModal = () => {
+  showSuccessModal.value = false
+  modalSuccessMessage.value = ''
+}
+
+// Gestion de la touche Escape pour fermer la modal
+const handleKeydown = (event) => {
+  if (event.key === 'Escape' && showSuccessModal.value) {
+    closeSuccessModal()
+  }
+}
+
+// Écouter les événements clavier
+onMounted(() => {
+  document.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown)
+})
 
 // Préparer les données pour l'API
 const prepareDataForAPI = () => {
@@ -749,25 +814,45 @@ const handleSubmit = async () => {
   try {
     const result = await projetService.createProject(dataToValidate)
     
+    console.log('🔍 Debug - Résultat API complet:', result)
+    console.log('🔍 Debug - result.success:', result.success)
+    console.log('🔍 Debug - showSuccess avant:', showSuccess.value)
+    
     if (result.success) {
+      console.log('✅ Entrée dans le bloc de succès')
       showSuccess.value = true
+      console.log('✅ showSuccess après:', showSuccess.value)
       
       // Messages personnalisés selon le contexte
       if (userStore.isAuthenticated) {
         // Utilisateur connecté - projet créé directement
-        successMessage.value = '🎉 Projet bien envoyé ! Nous allons vous mettre en relation avec des artisans qualifiés.'
+        const message = '🎉 Projet bien envoyé ! Nous allons vous mettre en relation avec des artisans qualifiés.'
+        successMessage.value = message
+        modalSuccessMessage.value = message
+        console.log('✅ Message utilisateur connecté défini:', successMessage.value)
         notificationsStore.showSuccess('Projet créé avec succès !')
       } else {
         // Utilisateur anonyme - compte + projet créés
         if (result.userCreated) {
-          successMessage.value = '🎉 Compte créé et projet bien envoyé ! Un email de bienvenue vous a été envoyé pour confirmer votre inscription.'
+          const message = '🎉 Compte créé et projet bien envoyé ! Un email de bienvenue vous a été envoyé pour confirmer votre inscription.'
+          successMessage.value = message
+          modalSuccessMessage.value = message
+          console.log('✅ Message nouveau compte défini:', successMessage.value)
           notificationsStore.showSuccess('Compte créé et projet envoyé avec succès !')
         } else {
           // Email existant mais projet créé
-          successMessage.value = '🎉 Projet bien envoyé ! Nous allons vous mettre en relation avec des artisans qualifiés.'
+          const message = '🎉 Projet bien envoyé ! Nous allons vous mettre en relation avec des artisans qualifiés.'
+          successMessage.value = message
+          modalSuccessMessage.value = message
+          console.log('✅ Message compte existant défini:', successMessage.value)
           notificationsStore.showSuccess('Projet créé avec succès !')
         }
       }
+      
+      // Afficher la modal de succès
+      showSuccessModal.value = true
+      
+      console.log('✅ État final - showSuccess:', showSuccess.value, 'successMessage:', successMessage.value, 'showSuccessModal:', showSuccessModal.value)
       
       // Afficher un message d'information supplémentaire
       setTimeout(() => {
@@ -775,6 +860,11 @@ const handleSubmit = async () => {
           notificationsStore.showInfo('💡 Vous pouvez maintenant vous connecter avec votre email et mot de passe pour suivre l\'avancement de votre projet.')
         }
       }, 2000)
+      
+      // Fermer automatiquement la modal après 8 secondes
+      setTimeout(() => {
+        closeSuccessModal()
+      }, 8000)
       
       // Réinitialiser le formulaire après un délai plus long pour laisser lire
       setTimeout(() => {
@@ -789,11 +879,14 @@ const handleSubmit = async () => {
         // Réinitialiser aussi l'état des mots de passe
         showPassword.value = false
         showPasswordConfirm.value = false
-      }, 5000)
+      }, 10000)
     }
     
   } catch (error) {
-    console.error('Erreur lors de la création du projet:', error)
+    console.error('❌ Erreur lors de la création du projet:', error)
+    console.log('❌ Type d\'erreur:', typeof error)
+    console.log('❌ Status:', error.status)
+    console.log('❌ Message:', error.message)
     
     if (error.errors && Array.isArray(error.errors)) {
       // Erreurs de validation du serveur - afficher sous les champs
