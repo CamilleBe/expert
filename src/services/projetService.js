@@ -5,12 +5,12 @@ import { API_CONFIG, buildUrl, getAuthHeaders } from '../utils/apiConfig.js'
 class ProjetService {
   
   /**
-   * Récupérer les projets du client connecté
-   * @returns {Promise} - Promesse avec la liste des projets
+   * Récupérer le dashboard complet du client connecté
+   * @returns {Promise} - Promesse avec les projets et statistiques
    */
-  async getClientProjects() {
+  async getClientDashboard() {
     try {
-      console.log('📋 Récupération des projets du client...')
+      console.log('📊 Récupération du dashboard client...')
       
       // Configuration de la requête
       const config = {
@@ -18,13 +18,13 @@ class ProjetService {
         headers: getAuthHeaders()
       }
       
-      // Faire la requête vers l'endpoint projets du client
+      // Faire la requête vers l'endpoint projets client
       const response = await fetch(buildUrl('/projets'), config)
       
       // Parser la réponse JSON
       const data = await response.json()
       
-      console.log(`📥 Réponse projets client (${response.status}):`, data)
+      console.log(`📥 Réponse dashboard client (${response.status}):`, data)
       
       // Vérifier si la requête a réussi
       if (!response.ok) {
@@ -35,11 +35,45 @@ class ProjetService {
         throw error
       }
       
-      // Retourner les projets (soit data directement soit data.data selon la structure de l'API)
-      return data.data || data
+      // Retourner les données selon la structure reçue
+      // Si l'API retourne directement un tableau de projets
+      if (Array.isArray(data)) {
+        return {
+          projets: data,
+          statistiques: {
+            total: data.length,
+            enCours: data.filter(p => ['en_attente_AMO', 'en_mise_en_relation', 'devis_reçus'].includes(p.statut)).length,
+            termines: data.filter(p => p.statut === 'clôturé').length,
+            brouillons: data.filter(p => p.statut === 'brouillon').length,
+            budgetTotal: data.reduce((sum, p) => sum + (p.budget || 0), 0)
+          }
+        }
+      }
+      
+      // Si l'API retourne { data: { projets: [...], statistiques: {...} } }
+      if (data.data) {
+        return data.data
+      }
+      
+      // Si l'API retourne { projets: [...] }
+      if (data.projets) {
+        return data
+      }
+      
+      // Fallback : créer la structure nous-mêmes
+      return {
+        projets: data || [],
+        statistiques: {
+          total: 0,
+          enCours: 0,
+          termines: 0,
+          brouillons: 0,
+          budgetTotal: 0
+        }
+      }
       
     } catch (error) {
-      console.error('❌ Erreur lors de la récupération des projets:', error)
+      console.error('❌ Erreur lors de la récupération du dashboard:', error)
       throw error
     }
   }

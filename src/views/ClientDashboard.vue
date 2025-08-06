@@ -105,7 +105,7 @@
                 </div>
                 <div class="ml-4">
                   <p class="text-sm font-medium text-gray-600">Projets actifs</p>
-                  <p class="text-2xl font-bold text-gray-900">{{ allProjects.filter(p => ['soumis', 'en_cours'].includes(p.statut)).length }}</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ dashboardStats.enCours }}</p>
                 </div>
               </div>
             </div>
@@ -119,7 +119,7 @@
                 </div>
                 <div class="ml-4">
                   <p class="text-sm font-medium text-gray-600">Projets terminés</p>
-                  <p class="text-2xl font-bold text-gray-900">12</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ dashboardStats.termines }}</p>
                 </div>
               </div>
             </div>
@@ -132,8 +132,8 @@
                   </svg>
                 </div>
                 <div class="ml-4">
-                  <p class="text-sm font-medium text-gray-600">Documents en attente</p>
-                  <p class="text-2xl font-bold text-gray-900">2</p>
+                  <p class="text-sm font-medium text-gray-600">Projets brouillons</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ dashboardStats.brouillons }}</p>
                 </div>
               </div>
             </div>
@@ -147,7 +147,7 @@
                 </div>
                 <div class="ml-4">
                   <p class="text-sm font-medium text-gray-600">Budget total</p>
-                  <p class="text-2xl font-bold text-gray-900">15 240€</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ dashboardStats.budgetTotal.toLocaleString('fr-FR') }}€</p>
                 </div>
               </div>
             </div>
@@ -171,7 +171,7 @@
                 </svg>
                 <span class="text-red-700 font-medium">{{ projectsError }}</span>
               </div>
-              <button @click="loadProjects" class="mt-2 text-sm text-red-600 hover:text-red-500 underline">
+              <button @click="loadDashboard" class="mt-2 text-sm text-red-600 hover:text-red-500 underline">
                 Réessayer
               </button>
             </div>
@@ -204,14 +204,14 @@
                   </div>
                   <div class="ml-3">
                     <p class="text-sm font-medium text-gray-900">{{ project.description ? project.description.substring(0, 50) + '...' : 'Projet sans titre' }}</p>
-                    <p class="text-sm text-gray-600">{{ project.city }}, {{ project.postalCode }}</p>
+                    <p class="text-sm text-gray-600">{{ project.adresseComplete || (project.city + ', ' + project.postalCode) }}</p>
                   </div>
                 </div>
                 <div class="text-right">
                   <span :class="getStatusClass(project.statut)" class="px-2 py-1 text-xs font-medium rounded-full">
                     {{ getStatusLabel(project.statut) }}
                   </span>
-                  <p class="text-sm text-gray-500 mt-1">{{ project.budget ? project.budget + '€' : 'Budget non défini' }}</p>
+                  <p class="text-sm text-gray-500 mt-1">{{ project.budgetFormate || (project.budget ? project.budget + '€' : 'Budget non défini') }}</p>
                 </div>
               </div>
             </div>
@@ -580,6 +580,13 @@ const notifications = ref([])
 
 const recentProjects = ref([])
 const allProjects = ref([])
+const dashboardStats = ref({
+  total: 0,
+  enCours: 0,
+  termines: 0,
+  brouillons: 0,
+  budgetTotal: 0
+})
 
 // États de chargement et d'erreur
 const isLoadingProjects = ref(false)
@@ -602,30 +609,40 @@ const newReview = ref({
   comment: ''
 })
 
-// Méthodes pour charger les projets
-async function loadProjects() {
+// Méthodes pour charger les données du dashboard
+async function loadDashboard() {
   isLoadingProjects.value = true
   projectsError.value = ''
   
   try {
-    console.log('🔄 Chargement des projets du client...')
-    const projects = await projetService.getClientProjects()
+    console.log('🔄 Chargement du dashboard client...')
+    const dashboardData = await projetService.getClientDashboard()
     
-    console.log('✅ Projets récupérés:', projects)
+    console.log('✅ Dashboard récupéré:', dashboardData)
     
-    // Mettre à jour les listes de projets
-    allProjects.value = projects || []
+    // Mettre à jour les projets
+    allProjects.value = dashboardData.projets || []
     
     // Prendre les 3 projets les plus récents pour la vue d'ensemble
-    recentProjects.value = (projects || [])
+    recentProjects.value = (dashboardData.projets || [])
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 3)
     
+    // Mettre à jour les statistiques
+    dashboardStats.value = dashboardData.statistiques || {
+      total: 0,
+      enCours: 0,
+      termines: 0,
+      brouillons: 0,
+      budgetTotal: 0
+    }
+    
     console.log('📊 Projets récents:', recentProjects.value)
+    console.log('📈 Statistiques:', dashboardStats.value)
     
   } catch (error) {
-    console.error('❌ Erreur lors du chargement des projets:', error)
-    projectsError.value = error.message || 'Erreur lors du chargement des projets'
+    console.error('❌ Erreur lors du chargement du dashboard:', error)
+    projectsError.value = error.message || 'Erreur lors du chargement du dashboard'
   } finally {
     isLoadingProjects.value = false
   }
@@ -635,10 +652,10 @@ async function loadProjects() {
 function getStatusLabel(statut) {
   const statusMap = {
     'brouillon': 'Brouillon',
-    'soumis': 'Soumis',
-    'en_cours': 'En cours',
-    'termine': 'Terminé',
-    'annule': 'Annulé'
+    'en_attente_AMO': 'En attente AMO',
+    'en_mise_en_relation': 'Mise en relation',
+    'devis_reçus': 'Devis reçus',
+    'clôturé': 'Clôturé'
   }
   return statusMap[statut] || statut || 'Inconnu'
 }
@@ -646,10 +663,10 @@ function getStatusLabel(statut) {
 function getStatusClass(statut) {
   const classMap = {
     'brouillon': 'bg-gray-100 text-gray-800',
-    'soumis': 'bg-blue-100 text-blue-800',
-    'en_cours': 'bg-yellow-100 text-yellow-800',
-    'termine': 'bg-green-100 text-green-800',
-    'annule': 'bg-red-100 text-red-800'
+    'en_attente_AMO': 'bg-orange-100 text-orange-800', 
+    'en_mise_en_relation': 'bg-blue-100 text-blue-800',
+    'devis_reçus': 'bg-purple-100 text-purple-800',
+    'clôturé': 'bg-green-100 text-green-800'
   }
   return classMap[statut] || 'bg-gray-100 text-gray-800'
 }
@@ -678,7 +695,7 @@ function submitReview() {
 // Charger les données au montage du composant
 onMounted(() => {
   console.log('🚀 Initialisation du tableau de bord client')
-  loadProjects()
+  loadDashboard()
 })
 </script>
 
