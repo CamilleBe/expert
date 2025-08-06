@@ -105,7 +105,7 @@
                 </div>
                 <div class="ml-4">
                   <p class="text-sm font-medium text-gray-600">Projets actifs</p>
-                  <p class="text-2xl font-bold text-gray-900">3</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ allProjects.filter(p => ['soumis', 'en_cours'].includes(p.statut)).length }}</p>
                 </div>
               </div>
             </div>
@@ -156,7 +156,45 @@
           <!-- Projets récents -->
           <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
             <h2 class="text-xl font-bold text-gray-900 mb-4">Projets récents</h2>
-            <div class="space-y-4">
+            
+            <!-- Chargement -->
+            <div v-if="isLoadingProjects" class="flex items-center justify-center py-8">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span class="ml-3 text-gray-600">Chargement de vos projets...</span>
+            </div>
+            
+            <!-- Erreur -->
+            <div v-else-if="projectsError" class="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div class="flex items-center">
+                <svg class="h-5 w-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-red-700 font-medium">{{ projectsError }}</span>
+              </div>
+              <button @click="loadProjects" class="mt-2 text-sm text-red-600 hover:text-red-500 underline">
+                Réessayer
+              </button>
+            </div>
+            
+            <!-- Aucun projet -->
+            <div v-else-if="recentProjects.length === 0" class="text-center py-8">
+              <div class="p-3 rounded-full bg-gray-100 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m4 0V9a1 1 0 011-1h4a1 1 0 011 1v12m-6 0h6" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun projet pour le moment</h3>
+              <p class="text-gray-600 mb-4">Créez votre premier projet pour commencer</p>
+              <button @click="activeTab = 'projects'" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Créer un projet
+              </button>
+            </div>
+            
+            <!-- Liste des projets -->
+            <div v-else class="space-y-4">
               <div v-for="project in recentProjects" :key="project.id" class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div class="flex items-center">
                   <div class="p-2 rounded-full bg-blue-100">
@@ -165,15 +203,15 @@
                     </svg>
                   </div>
                   <div class="ml-3">
-                    <p class="text-sm font-medium text-gray-900">{{ project.title }}</p>
-                    <p class="text-sm text-gray-600">{{ project.contractor }}</p>
+                    <p class="text-sm font-medium text-gray-900">{{ project.description ? project.description.substring(0, 50) + '...' : 'Projet sans titre' }}</p>
+                    <p class="text-sm text-gray-600">{{ project.city }}, {{ project.postalCode }}</p>
                   </div>
                 </div>
                 <div class="text-right">
-                  <span :class="project.status === 'En cours' ? 'bg-yellow-100 text-yellow-800' : project.status === 'Terminé' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'" class="px-2 py-1 text-xs font-medium rounded-full">
-                    {{ project.status }}
+                  <span :class="getStatusClass(project.statut)" class="px-2 py-1 text-xs font-medium rounded-full">
+                    {{ getStatusLabel(project.statut) }}
                   </span>
-                  <p class="text-sm text-gray-500 mt-1">{{ project.budget }}</p>
+                  <p class="text-sm text-gray-500 mt-1">{{ project.budget ? project.budget + '€' : 'Budget non défini' }}</p>
                 </div>
               </div>
             </div>
@@ -526,7 +564,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import projetService from '@/services/projetService'
 
 // État réactif
 const activeTab = ref('overview')
@@ -540,8 +579,11 @@ const unreadNotifications = ref(0)
 const notifications = ref([])
 
 const recentProjects = ref([])
-
 const allProjects = ref([])
+
+// États de chargement et d'erreur
+const isLoadingProjects = ref(false)
+const projectsError = ref('')
 
 const documents = ref([])
 
@@ -559,6 +601,58 @@ const newReview = ref({
   rating: 0,
   comment: ''
 })
+
+// Méthodes pour charger les projets
+async function loadProjects() {
+  isLoadingProjects.value = true
+  projectsError.value = ''
+  
+  try {
+    console.log('🔄 Chargement des projets du client...')
+    const projects = await projetService.getClientProjects()
+    
+    console.log('✅ Projets récupérés:', projects)
+    
+    // Mettre à jour les listes de projets
+    allProjects.value = projects || []
+    
+    // Prendre les 3 projets les plus récents pour la vue d'ensemble
+    recentProjects.value = (projects || [])
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 3)
+    
+    console.log('📊 Projets récents:', recentProjects.value)
+    
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des projets:', error)
+    projectsError.value = error.message || 'Erreur lors du chargement des projets'
+  } finally {
+    isLoadingProjects.value = false
+  }
+}
+
+// Méthodes utilitaires pour les statuts de projets
+function getStatusLabel(statut) {
+  const statusMap = {
+    'brouillon': 'Brouillon',
+    'soumis': 'Soumis',
+    'en_cours': 'En cours',
+    'termine': 'Terminé',
+    'annule': 'Annulé'
+  }
+  return statusMap[statut] || statut || 'Inconnu'
+}
+
+function getStatusClass(statut) {
+  const classMap = {
+    'brouillon': 'bg-gray-100 text-gray-800',
+    'soumis': 'bg-blue-100 text-blue-800',
+    'en_cours': 'bg-yellow-100 text-yellow-800',
+    'termine': 'bg-green-100 text-green-800',
+    'annule': 'bg-red-100 text-red-800'
+  }
+  return classMap[statut] || 'bg-gray-100 text-gray-800'
+}
 
 // Méthodes
 function handleFileUpload(event) {
@@ -580,6 +674,12 @@ function submitReview() {
   // Retirer le projet de la liste des projets à évaluer
   projectsToReview.value = projectsToReview.value.filter(p => p.id !== selectedProject.value.id)
 }
+
+// Charger les données au montage du composant
+onMounted(() => {
+  console.log('🚀 Initialisation du tableau de bord client')
+  loadProjects()
+})
 </script>
 
 <style scoped>

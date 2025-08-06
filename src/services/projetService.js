@@ -5,6 +5,46 @@ import { API_CONFIG, buildUrl, getAuthHeaders } from '../utils/apiConfig.js'
 class ProjetService {
   
   /**
+   * Récupérer les projets du client connecté
+   * @returns {Promise} - Promesse avec la liste des projets
+   */
+  async getClientProjects() {
+    try {
+      console.log('📋 Récupération des projets du client...')
+      
+      // Configuration de la requête
+      const config = {
+        method: 'GET',
+        headers: getAuthHeaders()
+      }
+      
+      // Faire la requête vers l'endpoint projets du client
+      const response = await fetch(buildUrl('/projets'), config)
+      
+      // Parser la réponse JSON
+      const data = await response.json()
+      
+      console.log(`📥 Réponse projets client (${response.status}):`, data)
+      
+      // Vérifier si la requête a réussi
+      if (!response.ok) {
+        // Créer une erreur avec le message du serveur
+        const error = new Error(data.message || `Erreur HTTP ${response.status}`)
+        error.status = response.status
+        error.data = data
+        throw error
+      }
+      
+      // Retourner les projets (soit data directement soit data.data selon la structure de l'API)
+      return data.data || data
+      
+    } catch (error) {
+      console.error('❌ Erreur lors de la récupération des projets:', error)
+      throw error
+    }
+  }
+  
+  /**
    * Créer un nouveau projet
    * @param {object} projetData - Données du projet
    * @returns {Promise} - Promesse avec la réponse de l'API
