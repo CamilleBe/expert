@@ -9,25 +9,25 @@
       </p>
     </div>
 
-    <!-- Message d'erreur global -->
-    <div v-if="globalError" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+    <!-- Message d'erreur global seulement pour erreurs système -->
+    <div v-if="globalError && !hasValidationErrors" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
       <div class="flex items-start">
         <svg class="w-5 h-5 text-red-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
         </svg>
+        <p class="text-red-700 font-medium">{{ globalError }}</p>
+      </div>
+    </div>
+
+    <!-- Message récapitulatif pour erreurs de validation -->
+    <div v-if="hasValidationErrors" class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+      <div class="flex items-start">
+        <svg class="w-5 h-5 text-yellow-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+        </svg>
         <div>
-          <p class="text-red-700 font-medium">{{ globalError }}</p>
-          <!-- Liste des erreurs détaillées -->
-          <div v-if="errors.length > 0" class="mt-3">
-            <p class="text-red-600 text-sm font-medium mb-2">Détails des erreurs :</p>
-            <ul class="list-disc list-inside space-y-1">
-              <li v-for="(error, index) in errors" :key="index" class="text-red-600 text-sm">
-                <span v-if="typeof error === 'string'">{{ error }}</span>
-                <span v-else-if="error.message">{{ error.message }}</span>
-                <span v-else>{{ String(error) }}</span>
-              </li>
-            </ul>
-          </div>
+          <p class="text-yellow-700 font-medium">Veuillez corriger les erreurs ci-dessous</p>
+          <p class="text-yellow-600 text-sm mt-1">{{ validationErrorCount }} erreur(s) à corriger dans le formulaire</p>
         </div>
       </div>
     </div>
@@ -69,7 +69,12 @@
             :class="{ 'border-red-500': hasError('description') }"
           ></textarea>
           <div class="flex justify-between items-center mt-1">
-            <span v-if="hasError('description')" class="text-red-500 text-sm">{{ getError('description') }}</span>
+            <div v-if="hasError('description')" class="flex items-start text-red-500 text-sm">
+              <svg class="w-4 h-4 text-red-500 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{{ getError('description') }}</span>
+            </div>
             <span class="text-gray-500 text-sm ml-auto">{{ formData.description.length }}/5000 caractères</span>
           </div>
         </div>
@@ -88,7 +93,12 @@
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               :class="{ 'border-red-500': hasError('address') }"
             />
-            <span v-if="hasError('address')" class="text-red-500 text-sm">{{ getError('address') }}</span>
+            <div v-if="hasError('address')" class="flex items-start text-red-500 text-sm mt-1">
+              <svg class="w-4 h-4 text-red-500 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{{ getError('address') }}</span>
+            </div>
           </div>
 
           <div>
@@ -103,7 +113,12 @@
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               :class="{ 'border-red-500': hasError('city') }"
             />
-            <span v-if="hasError('city')" class="text-red-500 text-sm">{{ getError('city') }}</span>
+            <div v-if="hasError('city')" class="flex items-start text-red-500 text-sm mt-1">
+              <svg class="w-4 h-4 text-red-500 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{{ getError('city') }}</span>
+            </div>
           </div>
         </div>
 
@@ -122,7 +137,12 @@
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               :class="{ 'border-red-500': hasError('postalCode') }"
             />
-            <span v-if="hasError('postalCode')" class="text-red-500 text-sm">{{ getError('postalCode') }}</span>
+            <div v-if="hasError('postalCode')" class="flex items-start text-red-500 text-sm mt-1">
+              <svg class="w-4 h-4 text-red-500 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{{ getError('postalCode') }}</span>
+            </div>
           </div>
 
           <div>
@@ -138,7 +158,12 @@
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               :class="{ 'border-red-500': hasError('budget') }"
             />
-            <span v-if="hasError('budget')" class="text-red-500 text-sm">{{ getError('budget') }}</span>
+            <div v-if="hasError('budget')" class="flex items-start text-red-500 text-sm mt-1">
+              <svg class="w-4 h-4 text-red-500 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{{ getError('budget') }}</span>
+            </div>
           </div>
 
           <div>
@@ -154,7 +179,12 @@
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               :class="{ 'border-red-500': hasError('surfaceM2') }"
             />
-            <span v-if="hasError('surfaceM2')" class="text-red-500 text-sm">{{ getError('surfaceM2') }}</span>
+            <div v-if="hasError('surfaceM2')" class="flex items-start text-red-500 text-sm mt-1">
+              <svg class="w-4 h-4 text-red-500 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{{ getError('surfaceM2') }}</span>
+            </div>
           </div>
         </div>
 
@@ -173,7 +203,12 @@
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               :class="{ 'border-red-500': hasError('bedrooms') }"
             />
-            <span v-if="hasError('bedrooms')" class="text-red-500 text-sm">{{ getError('bedrooms') }}</span>
+            <div v-if="hasError('bedrooms')" class="flex items-start text-red-500 text-sm mt-1">
+              <svg class="w-4 h-4 text-red-500 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{{ getError('bedrooms') }}</span>
+            </div>
           </div>
 
           <div>
@@ -191,7 +226,12 @@
               <option value="étage">À étage</option>
               <option value="autre">Autre</option>
             </select>
-            <span v-if="hasError('houseType')" class="text-red-500 text-sm">{{ getError('houseType') }}</span>
+            <div v-if="hasError('houseType')" class="flex items-start text-red-500 text-sm mt-1">
+              <svg class="w-4 h-4 text-red-500 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{{ getError('houseType') }}</span>
+            </div>
           </div>
         </div>
 
@@ -231,7 +271,12 @@
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               :class="{ 'border-red-500': hasError('clientFirstName') }"
             />
-            <span v-if="hasError('clientFirstName')" class="text-red-500 text-sm">{{ getError('clientFirstName') }}</span>
+            <div v-if="hasError('clientFirstName')" class="flex items-start text-red-500 text-sm mt-1">
+              <svg class="w-4 h-4 text-red-500 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{{ getError('clientFirstName') }}</span>
+            </div>
           </div>
 
           <div>
@@ -246,7 +291,12 @@
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               :class="{ 'border-red-500': hasError('clientLastName') }"
             />
-            <span v-if="hasError('clientLastName')" class="text-red-500 text-sm">{{ getError('clientLastName') }}</span>
+            <div v-if="hasError('clientLastName')" class="flex items-start text-red-500 text-sm mt-1">
+              <svg class="w-4 h-4 text-red-500 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{{ getError('clientLastName') }}</span>
+            </div>
           </div>
         </div>
 
@@ -263,7 +313,12 @@
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               :class="{ 'border-red-500': hasError('clientEmail') }"
             />
-            <span v-if="hasError('clientEmail')" class="text-red-500 text-sm">{{ getError('clientEmail') }}</span>
+            <div v-if="hasError('clientEmail')" class="flex items-start text-red-500 text-sm mt-1">
+              <svg class="w-4 h-4 text-red-500 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{{ getError('clientEmail') }}</span>
+            </div>
           </div>
 
           <div>
@@ -278,7 +333,12 @@
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               :class="{ 'border-red-500': hasError('clientPhone') }"
             />
-            <span v-if="hasError('clientPhone')" class="text-red-500 text-sm">{{ getError('clientPhone') }}</span>
+            <div v-if="hasError('clientPhone')" class="flex items-start text-red-500 text-sm mt-1">
+              <svg class="w-4 h-4 text-red-500 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{{ getError('clientPhone') }}</span>
+            </div>
           </div>
         </div>
 
@@ -311,9 +371,12 @@
                 </svg>
               </button>
             </div>
-            <span v-if="hasError('clientPassword') || hasError('password')" class="text-red-500 text-sm">
-              {{ getError('clientPassword') || getError('password') }}
-            </span>
+            <div v-if="hasError('clientPassword') || hasError('password')" class="flex items-start text-red-500 text-sm mt-1">
+              <svg class="w-4 h-4 text-red-500 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{{ getError('clientPassword') || getError('password') }}</span>
+            </div>
             <!-- Indicateur de force du mot de passe -->
             <div v-if="formData.clientPassword" class="mt-2">
               <div class="text-xs text-gray-600">
@@ -356,7 +419,21 @@
                 </svg>
               </button>
             </div>
-            <span v-if="hasError('clientPasswordConfirm')" class="text-red-500 text-sm">{{ getError('clientPasswordConfirm') }}</span>
+            <!-- Erreur de correspondance -->
+            <div v-if="hasError('clientPasswordConfirm')" class="flex items-start text-red-500 text-sm mt-1">
+              <svg class="w-4 h-4 text-red-500 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{{ getError('clientPasswordConfirm') }}</span>
+            </div>
+            
+            <!-- Indicateur de correspondance (quand c'est bon) -->
+            <div v-else-if="formData.clientPasswordConfirm && formData.clientPassword && !passwordMismatchError" class="flex items-start text-green-500 text-sm mt-1">
+              <svg class="w-4 h-4 text-green-500 mr-1 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              <span>Les mots de passe correspondent</span>
+            </div>
           </div>
         </div>
       </div>
@@ -384,7 +461,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useNotificationsStore } from '@/stores/notifications'
 import projetService from '@/services/projetService'
@@ -437,17 +514,47 @@ const canSubmit = computed(() => {
     return basicFields
   }
   
+  // Pour les utilisateurs anonymes, vérifier tous les champs + correspondance des mots de passe
   return basicFields && 
          formData.clientFirstName.trim() && 
          formData.clientLastName.trim() && 
          formData.clientEmail.trim() && 
          formData.clientPhone.trim() &&
          formData.clientPassword.trim() &&
-         formData.clientPasswordConfirm.trim()
+         formData.clientPasswordConfirm.trim() &&
+         !passwordMismatchError.value // Les mots de passe doivent correspondre
 })
+
+// Computed pour gérer l'affichage des erreurs
+const hasValidationErrors = computed(() => {
+  return errors.value.length > 0 || passwordMismatchError.value
+})
+
+const validationErrorCount = computed(() => {
+  let count = errors.value.length
+  if (passwordMismatchError.value) count++
+  return count
+})
+
+// État pour l'erreur de correspondance des mots de passe en temps réel
+const passwordMismatchError = ref('')
+
+// Watcher pour vérifier la correspondance des mots de passe en temps réel
+watch(() => [formData.clientPassword, formData.clientPasswordConfirm], ([password, confirmPassword]) => {
+  if (!userStore.isAuthenticated && confirmPassword && password !== confirmPassword) {
+    passwordMismatchError.value = 'Les mots de passe ne correspondent pas'
+  } else {
+    passwordMismatchError.value = ''
+  }
+}, { immediate: true })
 
 // Méthodes de gestion des erreurs
 const hasError = (field) => {
+  // Vérification spéciale pour la confirmation du mot de passe
+  if (field === 'clientPasswordConfirm' && passwordMismatchError.value) {
+    return true
+  }
+  
   const fieldName = getFieldName(field)
   return errors.value.some(error => {
     if (typeof error === 'string') {
@@ -461,7 +568,14 @@ const hasError = (field) => {
   })
 }
 
+
+
 const getError = (field) => {
+  // Vérification spéciale pour la confirmation du mot de passe
+  if (field === 'clientPasswordConfirm' && passwordMismatchError.value) {
+    return passwordMismatchError.value
+  }
+  
   const fieldName = getFieldName(field)
   const foundError = errors.value.find(error => {
     if (typeof error === 'string') {
@@ -513,6 +627,7 @@ const resetMessages = () => {
   showSuccess.value = false
   successMessage.value = ''
   errors.value = []
+  passwordMismatchError.value = ''
 }
 
 // Préparer les données pour l'API
@@ -625,7 +740,7 @@ const handleSubmit = async () => {
   if (!validation.isValid) {
     // S'assurer que toutes les erreurs sont des chaînes
     errors.value = validation.errors.map(err => typeof err === 'string' ? err : String(err))
-    globalError.value = 'Veuillez corriger les erreurs ci-dessous'
+    globalError.value = '' // Pas de message global pour les erreurs de validation
     return
   }
   
@@ -681,15 +796,18 @@ const handleSubmit = async () => {
     console.error('Erreur lors de la création du projet:', error)
     
     if (error.errors && Array.isArray(error.errors)) {
-      // Erreurs de validation du serveur
-      errors.value = error.errors
-      globalError.value = 'Veuillez corriger les erreurs ci-dessous'
+      // Erreurs de validation du serveur - afficher sous les champs
+      errors.value = error.errors.map(err => typeof err === 'string' ? err : err)
+      globalError.value = '' // Pas de message global pour les erreurs de validation
     } else if (error.status === 403) {
       globalError.value = 'Accès refusé - Seuls les clients peuvent créer des projets'
+      errors.value = [] // Pas d'erreurs de champs
     } else if (error.status === 409) {
       globalError.value = 'Un compte avec cet email existe déjà mais n\'est pas un compte client. Veuillez vous connecter.'
+      errors.value = [] // Pas d'erreurs de champs
     } else {
       globalError.value = error.message || 'Une erreur est survenue lors de la création du projet'
+      errors.value = [] // Pas d'erreurs de champs
     }
     
     // Notification d'erreur
