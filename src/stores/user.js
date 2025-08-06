@@ -209,9 +209,9 @@ export const useUserStore = defineStore('user', () => {
         logout()
         
         // Rediriger vers la page de connexion si pas déjà dessus
-        if (window.location.pathname !== '/auth' && window.location.pathname !== '/') {
+        if (window.location.pathname !== '/connexion' && window.location.pathname !== '/') {
           alert('⚠️ Votre session a expiré. Veuillez vous reconnecter.')
-          window.location.href = '/auth'
+          window.location.href = '/connexion'
         }
       } else {
         // Calculer le temps restant en heures et minutes

@@ -101,7 +101,7 @@
 
           <!-- Si l'utilisateur n'est pas connecté -->
           <div v-else class="hidden md:flex items-center space-x-4">
-            <router-link to="/auth" class="text-gray-700 hover:text-blue-600 font-medium">Connexion</router-link>
+            <router-link to="/connexion" class="text-gray-700 hover:text-blue-600 font-medium">Connexion</router-link>
             <router-link to="/inscription" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2 rounded-lg transition-colors">Inscription</router-link>
           </div>
 
@@ -140,7 +140,7 @@
           </button>
         </div>
         <div v-else class="flex flex-col space-y-3 mt-4 pt-4 border-t border-gray-100">
-          <router-link @click="menuOpen = false" to="/auth" class="py-2 text-blue-600 hover:text-blue-700 transition font-medium">Connexion</router-link>
+          <router-link @click="menuOpen = false" to="/connexion" class="py-2 text-blue-600 hover:text-blue-700 transition font-medium">Connexion</router-link>
           <router-link @click="menuOpen = false" to="/inscription" class="bg-blue-600 hover:bg-blue-700 py-2 rounded-lg text-white font-medium transition shadow-sm text-center">Inscription</router-link>
         </div>
       </div>

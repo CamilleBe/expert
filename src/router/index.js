@@ -14,7 +14,7 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/auth',
+    path: '/connexion',
     name: 'Auth',
     component: AuthView
   },

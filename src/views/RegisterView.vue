@@ -394,7 +394,7 @@
             <div class="text-center mt-8">
               <p class="text-sm text-gray-600">
                 Vous avez déjà un compte ?
-                <router-link to="/auth" class="text-blue-600 font-medium hover:text-blue-500">
+                <router-link to="/connexion" class="text-blue-600 font-medium hover:text-blue-500">
                   Connectez-vous
                 </router-link>
               </p>
