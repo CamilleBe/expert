@@ -534,209 +534,26 @@ const showNotifications = ref(false)
 const showUploadModal = ref(false)
 const showReviewModal = ref(false)
 const selectedProject = ref(null)
-const unreadNotifications = ref(3)
+const unreadNotifications = ref(0)
 
 // Données du dashboard
-const notifications = ref([
-  {
-    id: 1,
-    title: 'Document manquant',
-    message: 'Veuillez fournir votre justificatif de domicile pour le projet salle de bain',
-    time: 'Il y a 2h',
-    read: false
-  },
-  {
-    id: 2,
-    title: 'Nouveau devis reçu',
-    message: 'Martin Electricité a envoyé un devis pour votre projet',
-    time: 'Il y a 4h',
-    read: false
-  },
-  {
-    id: 3,
-    title: 'Projet terminé',
-    message: 'La rénovation de votre cuisine est terminée',
-    time: 'Hier',
-    read: true
-  }
-])
+const notifications = ref([])
 
-const recentProjects = ref([
-  {
-    id: 1,
-    title: 'Rénovation salle de bain',
-    contractor: 'Plomberie Dupuis',
-    status: 'En cours',
-    budget: '3 500€'
-  },
-  {
-    id: 2,
-    title: 'Installation électrique',
-    contractor: 'Martin Electricité',
-    status: 'En cours',
-    budget: '2 800€'
-  },
-  {
-    id: 3,
-    title: 'Peinture salon',
-    contractor: 'Peinture Pro',
-    status: 'Terminé',
-    budget: '1 200€'
-  }
-])
+const recentProjects = ref([])
 
-const allProjects = ref([
-  {
-    id: 1,
-    title: 'Rénovation salle de bain',
-    description: 'Rénovation complète avec douche italienne',
-    contractor: 'Plomberie Dupuis',
-    status: 'En cours',
-    budget: '3 500€',
-    image: 'https://images.unsplash.com/photo-1620626011761-996317b8d101?w=800'
-  },
-  {
-    id: 2,
-    title: 'Installation électrique',
-    description: 'Mise aux normes électriques complètes',
-    contractor: 'Martin Electricité',
-    status: 'En cours',
-    budget: '2 800€',
-    image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800'
-  },
-  {
-    id: 3,
-    title: 'Peinture salon',
-    description: 'Peinture murs et plafond salon-séjour',
-    contractor: 'Peinture Pro',
-    status: 'Terminé',
-    budget: '1 200€',
-    image: 'https://images.unsplash.com/photo-1562259929-b4e1fd3aef09?w=800'
-  },
-  {
-    id: 4,
-    title: 'Carrelage cuisine',
-    description: 'Pose de carrelage mural et sol',
-    contractor: 'Carrelage Expert',
-    status: 'Terminé',
-    budget: '2 100€',
-    image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800'
-  }
-])
+const allProjects = ref([])
 
-const documents = ref([
-  {
-    id: 1,
-    name: 'Devis plomberie.pdf',
-    type: 'Devis',
-    size: '245 KB',
-    date: '15/06/2023'
-  },
-  {
-    id: 2,
-    name: 'Contrat électricité.pdf',
-    type: 'Contrat',
-    size: '189 KB',
-    date: '12/06/2023'
-  },
-  {
-    id: 3,
-    name: 'Facture peinture.pdf',
-    type: 'Facture',
-    size: '156 KB',
-    date: '08/06/2023'
-  }
-])
+const documents = ref([])
 
-const payments = ref([
-  {
-    id: 1,
-    invoice: 'FAC-2023-001',
-    contractor: 'Plomberie Dupuis',
-    amount: '1 750€',
-    status: 'En attente',
-    date: '15/06/2023'
-  },
-  {
-    id: 2,
-    invoice: 'FAC-2023-002',
-    contractor: 'Martin Electricité',
-    amount: '1 400€',
-    status: 'Payé',
-    date: '12/06/2023'
-  },
-  {
-    id: 3,
-    invoice: 'FAC-2023-003',
-    contractor: 'Peinture Pro',
-    amount: '1 200€',
-    status: 'Payé',
-    date: '08/06/2023'
-  }
-])
+const payments = ref([])
 
-const upcomingMeetings = ref([
-  {
-    id: 1,
-    title: 'Point d\'avancement salle de bain',
-    contractor: 'Plomberie Dupuis',
-    date: 'Demain',
-    time: '14h30'
-  },
-  {
-    id: 2,
-    title: 'Validation électricité',
-    contractor: 'Martin Electricité',
-    date: 'Vendredi',
-    time: '10h00'
-  }
-])
+const upcomingMeetings = ref([])
 
-const pastMeetings = ref([
-  {
-    id: 1,
-    title: 'Réunion de démarrage',
-    contractor: 'Plomberie Dupuis',
-    date: '01/06/2023'
-  },
-  {
-    id: 2,
-    title: 'Présentation devis',
-    contractor: 'Martin Electricité',
-    date: '28/05/2023'
-  }
-])
+const pastMeetings = ref([])
 
-const projectsToReview = ref([
-  {
-    id: 1,
-    title: 'Peinture salon',
-    contractor: 'Peinture Pro',
-    contractorImage: 'https://randomuser.me/api/portraits/men/45.jpg',
-    completedDate: '08/06/2023'
-  }
-])
+const projectsToReview = ref([])
 
-const myReviews = ref([
-  {
-    id: 1,
-    contractor: 'Carrelage Expert',
-    contractorImage: 'https://randomuser.me/api/portraits/men/32.jpg',
-    project: 'Carrelage cuisine',
-    rating: 5,
-    comment: 'Excellent travail, très professionnel et respectueux des délais. Je recommande vivement !',
-    date: '15/05/2023'
-  },
-  {
-    id: 2,
-    contractor: 'Maçonnerie Moderne',
-    contractorImage: 'https://randomuser.me/api/portraits/men/28.jpg',
-    project: 'Extension garage',
-    rating: 4,
-    comment: 'Bon travail dans l\'ensemble, quelques petits détails à revoir mais satisfait du résultat.',
-    date: '02/04/2023'
-  }
-])
+const myReviews = ref([])
 
 const newReview = ref({
   rating: 0,
