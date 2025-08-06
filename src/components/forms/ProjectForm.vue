@@ -11,11 +11,24 @@
 
     <!-- Message d'erreur global -->
     <div v-if="globalError" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-      <div class="flex items-center">
-        <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+      <div class="flex items-start">
+        <svg class="w-5 h-5 text-red-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
         </svg>
-        <p class="text-red-700 font-medium">{{ globalError }}</p>
+        <div>
+          <p class="text-red-700 font-medium">{{ globalError }}</p>
+          <!-- Liste des erreurs détaillées -->
+          <div v-if="errors.length > 0" class="mt-3">
+            <p class="text-red-600 text-sm font-medium mb-2">Détails des erreurs :</p>
+            <ul class="list-disc list-inside space-y-1">
+              <li v-for="(error, index) in errors" :key="index" class="text-red-600 text-sm">
+                <span v-if="typeof error === 'string'">{{ error }}</span>
+                <span v-else-if="error.message">{{ error.message }}</span>
+                <span v-else>{{ String(error) }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -275,31 +288,74 @@
             <label for="clientPassword" class="block text-sm font-medium text-gray-700 mb-2">
               Mot de passe temporaire *
             </label>
-            <input
-              id="clientPassword"
-              v-model="formData.clientPassword"
-              type="password"
-              placeholder="Minimum 6 caractères"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              :class="{ 'border-red-500': hasError('clientPassword') || hasError('password') }"
-            />
+            <div class="relative">
+              <input
+                id="clientPassword"
+                v-model="formData.clientPassword"
+                :type="showPassword ? 'text' : 'password'"
+                placeholder="Minimum 8 caractères"
+                class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                :class="{ 'border-red-500': hasError('clientPassword') || hasError('password') }"
+              />
+              <button
+                type="button"
+                @click="showPassword = !showPassword"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+              >
+                <svg v-if="showPassword" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                </svg>
+                <svg v-else class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+              </button>
+            </div>
             <span v-if="hasError('clientPassword') || hasError('password')" class="text-red-500 text-sm">
               {{ getError('clientPassword') || getError('password') }}
             </span>
+            <!-- Indicateur de force du mot de passe -->
+            <div v-if="formData.clientPassword" class="mt-2">
+              <div class="text-xs text-gray-600">
+                Force du mot de passe: 
+                <span :class="getPasswordStrengthClass()">{{ getPasswordStrengthText() }}</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
+                <div class="h-1.5 rounded-full transition-all duration-300" :class="getPasswordStrengthBarClass()" :style="{ width: getPasswordStrengthWidth() }"></div>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">
+                ✅ Seuls 8 caractères minimum sont requis • Majuscules et chiffres optionnels
+              </p>
+            </div>
           </div>
 
           <div>
             <label for="clientPasswordConfirm" class="block text-sm font-medium text-gray-700 mb-2">
               Confirmer le mot de passe *
             </label>
-            <input
-              id="clientPasswordConfirm"
-              v-model="formData.clientPasswordConfirm"
-              type="password"
-              placeholder="Répétez le mot de passe"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              :class="{ 'border-red-500': hasError('clientPasswordConfirm') }"
-            />
+            <div class="relative">
+              <input
+                id="clientPasswordConfirm"
+                v-model="formData.clientPasswordConfirm"
+                :type="showPasswordConfirm ? 'text' : 'password'"
+                placeholder="Répétez le mot de passe"
+                class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                :class="{ 'border-red-500': hasError('clientPasswordConfirm') }"
+              />
+              <button
+                type="button"
+                @click="showPasswordConfirm = !showPasswordConfirm"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+              >
+                <svg v-if="showPasswordConfirm" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                </svg>
+                <svg v-else class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+              </button>
+            </div>
             <span v-if="hasError('clientPasswordConfirm')" class="text-red-500 text-sm">{{ getError('clientPasswordConfirm') }}</span>
           </div>
         </div>
@@ -343,6 +399,10 @@ const globalError = ref('')
 const showSuccess = ref(false)
 const successMessage = ref('')
 const errors = ref([])
+
+// État pour afficher/masquer les mots de passe
+const showPassword = ref(false)
+const showPasswordConfirm = ref(false)
 
 // Données du formulaire
 const formData = reactive({
@@ -484,6 +544,69 @@ const prepareDataForAPI = () => {
   return data
 }
 
+// Fonctions pour évaluer la force du mot de passe (validation simple)
+const getPasswordStrength = () => {
+  const password = formData.clientPassword
+  let strength = 0
+  
+  // Critère principal : longueur (plus important)
+  if (password.length >= 8) strength += 2  // Valide selon nos règles
+  if (password.length >= 12) strength += 1 // Bonus pour longueur
+  
+  // Critères optionnels (bonus, pas obligatoires)
+  if (/[a-z]/.test(password)) strength += 1
+  if (/[A-Z]/.test(password)) strength += 1
+  if (/[0-9]/.test(password)) strength += 1
+  if (/[^A-Za-z0-9]/.test(password)) strength += 1
+  
+  return strength
+}
+
+const getPasswordStrengthText = () => {
+  const password = formData.clientPassword
+  const strength = getPasswordStrength()
+  
+  // Si moins de 8 caractères, toujours faible
+  if (password.length < 8) return 'Trop court'
+  
+  // À partir de 8 caractères, c'est au minimum "Correct"
+  if (strength <= 3) return 'Correct'
+  if (strength <= 5) return 'Bon'
+  return 'Excellent'
+}
+
+const getPasswordStrengthClass = () => {
+  const password = formData.clientPassword
+  const strength = getPasswordStrength()
+  
+  if (password.length < 8) return 'text-red-600 font-medium'
+  if (strength <= 3) return 'text-blue-600 font-medium' // Correct = bleu
+  if (strength <= 5) return 'text-green-600 font-medium'
+  return 'text-green-700 font-bold' // Excellent
+}
+
+const getPasswordStrengthBarClass = () => {
+  const password = formData.clientPassword
+  const strength = getPasswordStrength()
+  
+  if (password.length < 8) return 'bg-red-500'
+  if (strength <= 3) return 'bg-blue-500'    // Correct = bleu
+  if (strength <= 5) return 'bg-green-500'
+  return 'bg-green-600' // Excellent
+}
+
+const getPasswordStrengthWidth = () => {
+  const password = formData.clientPassword
+  const strength = getPasswordStrength()
+  
+  if (password.length < 8) return `${Math.min(password.length * 10, 60)}%`
+  
+  // À partir de 8 caractères, minimum 70% de la barre
+  const baseWidth = 70
+  const bonusWidth = Math.min(strength * 5, 30)
+  return `${baseWidth + bonusWidth}%`
+}
+
 // Gérer la soumission du formulaire
 const handleSubmit = async () => {
   resetMessages()
@@ -514,17 +637,31 @@ const handleSubmit = async () => {
     if (result.success) {
       showSuccess.value = true
       
-      // Message personnalisé selon le résultat
-      if (result.userCreated) {
-        successMessage.value = 'Un compte a été créé automatiquement. Vous recevrez bientôt un email pour définir votre mot de passe.'
+      // Messages personnalisés selon le contexte
+      if (userStore.isAuthenticated) {
+        // Utilisateur connecté - projet créé directement
+        successMessage.value = '🎉 Projet bien envoyé ! Nous allons vous mettre en relation avec des artisans qualifiés.'
+        notificationsStore.showSuccess('Projet créé avec succès !')
       } else {
-        successMessage.value = 'Nous allons vous mettre en relation avec des artisans qualifiés.'
+        // Utilisateur anonyme - compte + projet créés
+        if (result.userCreated) {
+          successMessage.value = '🎉 Compte créé et projet bien envoyé ! Un email de bienvenue vous a été envoyé pour confirmer votre inscription.'
+          notificationsStore.showSuccess('Compte créé et projet envoyé avec succès !')
+        } else {
+          // Email existant mais projet créé
+          successMessage.value = '🎉 Projet bien envoyé ! Nous allons vous mettre en relation avec des artisans qualifiés.'
+          notificationsStore.showSuccess('Projet créé avec succès !')
+        }
       }
       
-      // Notification
-      notificationsStore.showSuccess('Votre projet a été créé avec succès !')
+      // Afficher un message d'information supplémentaire
+      setTimeout(() => {
+        if (result.userCreated && !userStore.isAuthenticated) {
+          notificationsStore.showInfo('💡 Vous pouvez maintenant vous connecter avec votre email et mot de passe pour suivre l\'avancement de votre projet.')
+        }
+      }, 2000)
       
-      // Réinitialiser le formulaire après un délai
+      // Réinitialiser le formulaire après un délai plus long pour laisser lire
       setTimeout(() => {
         Object.keys(formData).forEach(key => {
           if (typeof formData[key] === 'boolean') {
@@ -534,7 +671,10 @@ const handleSubmit = async () => {
           }
         })
         showSuccess.value = false
-      }, 3000)
+        // Réinitialiser aussi l'état des mots de passe
+        showPassword.value = false
+        showPasswordConfirm.value = false
+      }, 5000)
     }
     
   } catch (error) {

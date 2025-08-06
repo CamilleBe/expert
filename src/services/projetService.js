@@ -123,8 +123,8 @@ class ProjetService {
       }
       
       // Validation du mot de passe
-      if (!projetData.clientPassword || projetData.clientPassword.length < 6) {
-        errors.push('Le mot de passe doit contenir au moins 6 caractères')
+      if (!projetData.clientPassword || projetData.clientPassword.length < 8) {
+        errors.push('Le mot de passe doit contenir au moins 8 caractères')
       }
       
       if (projetData.clientPassword !== projetData.clientPasswordConfirm) {
