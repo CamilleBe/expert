@@ -268,6 +268,41 @@
             <span v-if="hasError('clientPhone')" class="text-red-500 text-sm">{{ getError('clientPhone') }}</span>
           </div>
         </div>
+
+        <!-- Mot de passe temporaire -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="clientPassword" class="block text-sm font-medium text-gray-700 mb-2">
+              Mot de passe temporaire *
+            </label>
+            <input
+              id="clientPassword"
+              v-model="formData.clientPassword"
+              type="password"
+              placeholder="Minimum 6 caractères"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              :class="{ 'border-red-500': hasError('clientPassword') || hasError('password') }"
+            />
+            <span v-if="hasError('clientPassword') || hasError('password')" class="text-red-500 text-sm">
+              {{ getError('clientPassword') || getError('password') }}
+            </span>
+          </div>
+
+          <div>
+            <label for="clientPasswordConfirm" class="block text-sm font-medium text-gray-700 mb-2">
+              Confirmer le mot de passe *
+            </label>
+            <input
+              id="clientPasswordConfirm"
+              v-model="formData.clientPasswordConfirm"
+              type="password"
+              placeholder="Répétez le mot de passe"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              :class="{ 'border-red-500': hasError('clientPasswordConfirm') }"
+            />
+            <span v-if="hasError('clientPasswordConfirm')" class="text-red-500 text-sm">{{ getError('clientPasswordConfirm') }}</span>
+          </div>
+        </div>
       </div>
 
       <!-- Bouton de soumission -->
@@ -326,7 +361,9 @@ const formData = reactive({
   clientFirstName: '',
   clientLastName: '',
   clientEmail: '',
-  clientPhone: ''
+  clientPhone: '',
+  clientPassword: '',
+  clientPasswordConfirm: ''
 })
 
 // Computed
@@ -344,17 +381,49 @@ const canSubmit = computed(() => {
          formData.clientFirstName.trim() && 
          formData.clientLastName.trim() && 
          formData.clientEmail.trim() && 
-         formData.clientPhone.trim()
+         formData.clientPhone.trim() &&
+         formData.clientPassword.trim() &&
+         formData.clientPasswordConfirm.trim()
 })
 
 // Méthodes de gestion des erreurs
 const hasError = (field) => {
-  return errors.value.some(error => error.includes(getFieldName(field)))
+  const fieldName = getFieldName(field)
+  return errors.value.some(error => {
+    if (typeof error === 'string') {
+      // Erreur côté client (chaîne simple)
+      return error.toLowerCase().includes(fieldName.toLowerCase())
+    } else if (error && typeof error === 'object' && error.field) {
+      // Erreur côté serveur (objet avec field)
+      return error.field === field
+    }
+    return false
+  })
 }
 
 const getError = (field) => {
   const fieldName = getFieldName(field)
-  return errors.value.find(error => error.includes(fieldName)) || ''
+  const foundError = errors.value.find(error => {
+    if (typeof error === 'string') {
+      // Erreur côté client (chaîne simple)
+      return error.toLowerCase().includes(fieldName.toLowerCase())
+    } else if (error && typeof error === 'object' && error.field) {
+      // Erreur côté serveur (objet avec field)
+      return error.field === field
+    }
+    return false
+  })
+  
+  if (!foundError) return ''
+  
+  // Retourner le message approprié selon le type d'erreur
+  if (typeof foundError === 'string') {
+    return foundError
+  } else if (foundError.message) {
+    return foundError.message
+  } else {
+    return String(foundError)
+  }
 }
 
 const getFieldName = (field) => {
@@ -370,7 +439,10 @@ const getFieldName = (field) => {
     clientFirstName: 'prénom',
     clientLastName: 'nom',
     clientEmail: 'email',
-    clientPhone: 'téléphone'
+    clientPhone: 'téléphone',
+    clientPassword: 'mot de passe',
+    clientPasswordConfirm: 'confirmation mot de passe',
+    password: 'mot de passe'
   }
   return fieldNames[field] || field
 }
@@ -405,6 +477,8 @@ const prepareDataForAPI = () => {
     data.clientLastName = formData.clientLastName.trim()
     data.clientEmail = formData.clientEmail.trim()
     data.clientPhone = formData.clientPhone.trim()
+    data.clientPassword = formData.clientPassword.trim()
+    data.clientPasswordConfirm = formData.clientPasswordConfirm.trim()
   }
   
   return data
@@ -418,8 +492,16 @@ const handleSubmit = async () => {
   const dataToValidate = prepareDataForAPI()
   const validation = projetService.validateProjectData(dataToValidate, userStore.isAuthenticated)
   
+  console.log('🔍 Debug validation:', {
+    isAuthenticated: userStore.isAuthenticated,
+    dataToValidate,
+    validationResult: validation,
+    errorsTypes: validation.errors.map(err => typeof err)
+  })
+  
   if (!validation.isValid) {
-    errors.value = validation.errors
+    // S'assurer que toutes les erreurs sont des chaînes
+    errors.value = validation.errors.map(err => typeof err === 'string' ? err : String(err))
     globalError.value = 'Veuillez corriger les erreurs ci-dessous'
     return
   }

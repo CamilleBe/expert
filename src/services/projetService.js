@@ -121,6 +121,15 @@ class ProjetService {
       if (!projetData.clientPhone || !/^(?:(?:\+|00)33[\s.-]{0,3}(?:\(0\)[\s.-]{0,3})?|0)[1-9](?:(?:[\s.-]?\d{2}){4}|\d{2}(?:[\s.-]?\d{3}){2})$/.test(projetData.clientPhone)) {
         errors.push('Un numéro de téléphone français valide est obligatoire')
       }
+      
+      // Validation du mot de passe
+      if (!projetData.clientPassword || projetData.clientPassword.length < 6) {
+        errors.push('Le mot de passe doit contenir au moins 6 caractères')
+      }
+      
+      if (projetData.clientPassword !== projetData.clientPasswordConfirm) {
+        errors.push('Les mots de passe ne correspondent pas')
+      }
     }
     
     return {
