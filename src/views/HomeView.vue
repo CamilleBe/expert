@@ -14,33 +14,28 @@
             Des milliers d'artisans qualifiés prêts à réaliser vos travaux en toute confiance
           </p>
           <div class="animate-fade-in-delay-2 w-full">
-            <form class="bg-white rounded-xl shadow-lg p-2 sm:p-3 md:p-4 flex flex-col sm:flex-row items-stretch w-full">
-              <div class="flex-1 mb-2 sm:mb-0 sm:mr-2">
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </div>
-                  <input type="text" placeholder="Quel type d'artisan recherchez-vous ?" class="pl-10 pr-4 py-3 w-full bg-gray-50 border border-transparent rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900" />
-                </div>
+            <!-- Message pour inciter à créer un projet -->
+            <div class="text-center mb-8">
+              <div class="inline-flex items-center px-4 py-2 bg-yellow-100 border border-yellow-300 rounded-full text-yellow-800 text-sm font-medium mb-4">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                Nouveau : Créez votre projet et recevez des devis personnalisés
               </div>
-              <div class="flex-1 mb-2 sm:mb-0 sm:mr-2">
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  </div>
-                  <input type="text" placeholder="Où ? (ville, code postal)" class="pl-10 pr-4 py-3 w-full bg-gray-50 border border-transparent rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-gray-900" />
-                </div>
-              </div>
-              <button type="submit" class="py-3 px-6 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg">
-                Rechercher
-              </button>
-            </form>
+              <a href="#project-form" class="inline-block py-3 px-8 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all duration-300 ease-in-out hover:shadow-lg">
+                Démarrer mon projet
+              </a>
+            </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Formulaire de Projet -->
+    <div id="project-form" class="w-screen px-4 sm:px-6 lg:px-8 py-16 md:py-20 bg-gray-50">
+      <div class="w-full mx-auto">
+        <div class="max-w-4xl mx-auto">
+          <ProjectForm />
         </div>
       </div>
     </div>
@@ -648,6 +643,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import ProjectForm from '@/components/forms/ProjectForm.vue'
 
 // Variable pour gérer l'accordéon de la FAQ
 const openFaq = ref(null)
