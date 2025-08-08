@@ -1,262 +1,350 @@
-# 📊 Dashboard Client - Documentation API
+# 📋 Documentation API - Formulaire de Création de Projet
 
-## 🎯 Endpoint Principal pour le Dashboard
+## 🎯 Endpoint pour le Formulaire de Page d'Accueil
 
-### **GET** `/api/projets/my-projects`
+### **POST** `/api/projets`
 
-Récupère tous les projets du client connecté avec statistiques pour le dashboard.
-
----
-
-## 🔐 Authentification
-
-- **Obligatoire** : Token JWT dans le header `Authorization: Bearer <token>`
-- **Rôle requis** : `client` uniquement
+Créer un nouveau projet via le formulaire de la page d'accueil.
 
 ---
 
-## 📤 Requête
+## 🔐 Authentification - FLEXIBLE
+
+### **Deux modes de fonctionnement :**
+
+#### 1. 👤 **Utilisateur Connecté (Client)**
+- **Header requis** : `Authorization: Bearer <token>`
+- **Condition** : L'utilisateur doit avoir le rôle `client`
+- **Comportement** : Le projet sera automatiquement assigné au client connecté
+
+#### 2. 🌐 **Utilisateur Anonyme (Non Connecté)**
+- **Header** : Aucun token requis
+- **Condition** : Fournir les informations client dans le formulaire
+- **Comportement** : 
+  - Si l'email existe déjà → Assigne le projet à ce client
+  - Si l'email n'existe pas → Crée un nouveau compte client automatiquement
+
+> ⚠️ **Important** : Les utilisateurs connectés avec d'autres rôles (AMO, admin) ne peuvent pas créer de projets via ce formulaire.
+
+---
+
+## 📝 Champs du Formulaire
+
+### **Champs Obligatoires - Projet**
+
+| Champ | Type | Validation | Description |
+|-------|------|------------|-------------|
+| `description` | `string` | 10-5000 caractères | Description détaillée du projet |
+| `address` | `string` | 5-255 caractères | Adresse complète du projet |
+| `city` | `string` | 2-100 caractères | Ville du projet |
+| `postalCode` | `string` | 5 chiffres exactement | Code postal français |
+
+### **Champs Obligatoires - Client (Utilisateurs NON connectés uniquement)**
+
+| Champ | Type | Validation | Description |
+|-------|------|------------|-------------|
+| `clientFirstName` | `string` | 2-50 caractères | Prénom du client |
+| `clientLastName` | `string` | 2-50 caractères | Nom du client |
+| `clientEmail` | `string` | Format email valide | Email du client |
+| `clientPhone` | `string` | Numéro français valide | Téléphone du client |
+| `clientPassword` | `string` | 8+ caractères minimum | Mot de passe du compte client |
+
+### **Champs Optionnels - Projet**
+
+| Champ | Type | Validation | Description |
+|-------|------|------------|-------------|
+| `budget` | `number` | ≥ 0 | Budget estimé en euros |
+| `surfaceM2` | `integer` | ≥ 1 | Surface en mètres carrés |
+| `bedrooms` | `integer` | ≥ 0 | Nombre de chambres |
+| `houseType` | `enum` | 'plain-pied', 'étage', 'autre' | Type de maison |
+| `hasLand` | `boolean` | true/false | Terrain inclus dans le projet |
+
+---
+
+## 📤 Exemples de Requêtes
+
+### **1. Utilisateur Connecté (Client)**
 
 ```javascript
-const response = await fetch('/api/projets/my-projects', {
-  method: 'GET',
-  headers: {
-    'Authorization': `Bearer ${userToken}`,
-    'Content-Type': 'application/json'
-  }
-});
+// Données minimales pour client connecté
+const projetDataConnected = {
+  description: "Rénovation complète d'une maison de famille avec extension moderne. Nous souhaitons ouvrir l'espace de vie et moderniser la cuisine.",
+  address: "123 Rue de la Paix",
+  city: "Lyon",
+  postalCode: "69001"
+};
 
-const dashboard = await response.json();
+// Requête avec token d'authentification
+const response = await fetch('/api/projets', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${userToken}` // Token requis
+  },
+  body: JSON.stringify(projetDataConnected)
+});
+```
+
+### **2. Utilisateur Anonyme (Non Connecté)**
+
+```javascript
+// Données pour utilisateur anonyme (inclut les infos client)
+const projetDataAnonymous = {
+  // Informations du projet
+  description: "Construction d'une maison contemporaine avec jardin paysager. Recherche d'un style architectural moderne.",
+  address: "456 Avenue des Champs",
+  city: "Marseille",
+  postalCode: "13001",
+  budget: 250000,
+  surfaceM2: 150,
+  bedrooms: 4,
+  houseType: "étage",
+  hasLand: true,
+  
+  // Informations du client (OBLIGATOIRES pour anonymes)
+  clientFirstName: "Jean",
+  clientLastName: "Dupont",
+  clientEmail: "jean.dupont@email.com",
+  clientPhone: "0123456789",
+  clientPassword: "MonMotDePasse123!"
+};
+
+// Requête sans token d'authentification
+const response = await fetch('/api/projets', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+    // Pas d'Authorization header
+  },
+  body: JSON.stringify(projetDataAnonymous)
+});
 ```
 
 ---
 
-## 📥 Réponse (200 OK)
+## 📥 Réponses de l'API
 
+### ✅ **Succès (201 Created)**
+
+#### **Client Connecté :**
 ```json
 {
   "success": true,
   "data": {
-    "projets": [
-      {
-        "id": 1,
-        "clientId": 5,
-        "amoId": 2,
-        "statut": "en_mise_en_relation",
-        "description": "Rénovation complète d'une maison de famille...",
-        "address": "123 Rue de la Paix",
-        "city": "Lyon",
-        "postalCode": "69001",
-        "budget": 150000,
-        "surfaceM2": 120,
-        "bedrooms": 3,
-        "houseType": "étage",
-        "hasLand": true,
-        "dateSubmission": "2024-01-15T10:30:00.000Z",
-        "createdAt": "2024-01-15T10:30:00.000Z",
-        "updatedAt": "2024-01-20T14:15:00.000Z",
-        
-        // Champs enrichis automatiquement
-        "estEnCours": true,
-        "estTermine": false,
-        "budgetFormate": "150 000,00 €",
-        "dureeJours": 15,
-        "adresseComplete": "123 Rue de la Paix, 69001 Lyon",
-        
-        // Relations
-        "amo": {
-          "id": 2,
-          "firstName": "Marie",
-          "lastName": "Martin",
-          "email": "marie.martin@experta.fr",
-          "telephone": "0234567890"
-        },
-        "missions": [
-          {
-            "id": 1,
-            "titre": "Étude de faisabilité",
-            "statut": "en_cours",
-            "createdAt": "2024-01-16T09:00:00.000Z"
-          }
-        ]
-      }
-    ],
-    "statistiques": {
-      "total": 3,
-      "enCours": 2,
-      "termines": 1,
-      "brouillons": 0,
-      "budgetTotal": 450000
-    }
+    "id": 1,
+    "clientId": 5,
+    "description": "Rénovation complète d'une maison...",
+    "address": "123 Rue de la Paix",
+    "city": "Lyon",
+    "postalCode": "69001",
+    "budget": 150000,
+    "surfaceM2": 120,
+    "bedrooms": 3,
+    "houseType": "étage",
+    "hasLand": true,
+    "statut": "brouillon",
+    "isActive": true,
+    "dateSubmission": "2024-01-15T10:30:00.000Z",
+    "createdAt": "2024-01-15T10:30:00.000Z",
+    "updatedAt": "2024-01-15T10:30:00.000Z",
+    "client": {
+      "id": 5,
+      "firstName": "Jean",
+      "lastName": "Dupont",
+      "email": "jean.dupont@email.com",
+      "telephone": "0123456789"
+    },
+    "amo": null
   },
-  "message": "Dashboard client - 3 projet(s) récupéré(s)"
+  "message": "Projet créé avec succès",
+  "userCreated": false,
+  "accountReady": true
 }
 ```
 
----
+#### **Utilisateur Anonyme (Nouveau compte créé) :**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 2,
+    "clientId": 6,
+    "description": "Construction d'une maison contemporaine...",
+    "address": "456 Avenue des Champs",
+    "city": "Marseille",
+    "postalCode": "13001",
+    "budget": 250000,
+    "surfaceM2": 150,
+    "bedrooms": 4,
+    "houseType": "étage",
+    "hasLand": true,
+    "statut": "brouillon",
+    "isActive": true,
+    "dateSubmission": "2024-01-15T10:35:00.000Z",
+    "createdAt": "2024-01-15T10:35:00.000Z",
+    "updatedAt": "2024-01-15T10:35:00.000Z",
+    "client": {
+      "id": 6,
+      "firstName": "Jean",
+      "lastName": "Dupont",
+      "email": "jean.dupont@email.com",
+      "telephone": "0123456789"
+    },
+    "amo": null
+  },
+  "message": "Projet créé avec succès",
+  "userCreated": true,
+  "accountReady": true
+}
+```
 
-## 📊 Statistiques Disponibles
+### ❌ **Erreurs de Validation (400 Bad Request)**
 
-| Statistique | Description |
-|-------------|-------------|
-| `total` | Nombre total de projets |
-| `enCours` | Projets avec statut : `en_attente_AMO`, `en_mise_en_relation`, `devis_reçus` |
-| `termines` | Projets avec statut : `clôturé` |
-| `brouillons` | Projets avec statut : `brouillon` |
-| `budgetTotal` | Somme de tous les budgets des projets (en euros) |
-
----
-
-## 🏷️ Statuts des Projets
-
-| Statut | Description | Interface Recommandée |
-|--------|-------------|----------------------|
-| `brouillon` | Projet en cours de création | Badge gris |
-| `en_attente_AMO` | En attente d'assignation d'un AMO | Badge orange |
-| `en_mise_en_relation` | AMO assigné, mise en relation en cours | Badge bleu |
-| `devis_reçus` | Devis reçus, en attente de validation | Badge violet |
-| `clôturé` | Projet terminé | Badge vert |
-
----
-
-## 🎨 Champs Enrichis pour l'Interface
-
-### **Indicateurs Booléens :**
-- `estEnCours` : `true` si le projet est actif (statuts intermédiaires)
-- `estTermine` : `true` si statut = `clôturé`
-
-### **Données Formatées :**
-- `budgetFormate` : Budget affiché avec symbole € (ex: "150 000,00 €")
-- `adresseComplete` : Adresse complète formatée
-- `dureeJours` : Nombre de jours depuis la soumission
-
----
-
-## 🚫 Erreurs Possibles
-
-### **403 Forbidden - Rôle Incorrect**
+#### **Erreurs Projet (tous utilisateurs) :**
 ```json
 {
   "success": false,
-  "message": "Accès refusé - Seuls les clients peuvent accéder à leur dashboard"
+  "message": "Erreurs de validation",
+  "errors": [
+    "La description du projet est obligatoire",
+    "L'adresse du projet est obligatoire",
+    "Le code postal doit contenir exactement 5 chiffres"
+  ]
 }
 ```
 
-### **401 Unauthorized - Token Manquant**
+#### **Erreurs Client (utilisateurs anonymes) :**
 ```json
 {
   "success": false,
-  "message": "Token d'accès requis"
+  "message": "Erreurs de validation",
+  "errors": [
+    "Le prénom du client est obligatoire",
+    "L'email du client est obligatoire",
+    "L'email doit être valide",
+    "Le numéro de téléphone doit être un numéro français valide",
+    "Le mot de passe est obligatoire",
+    "Le mot de passe doit contenir au moins 8 caractères"
+  ]
+}
+```
+
+### 🚫 **Erreurs d'Autorisation (403 Forbidden)**
+
+#### **Utilisateur connecté non-client :**
+```json
+{
+  "success": false,
+  "message": "Accès refusé - Seuls les clients peuvent créer des projets"
+}
+```
+
+### 🔄 **Conflit Email (409 Conflict)**
+
+#### **Email existe avec rôle différent :**
+```json
+{
+  "success": false,
+  "message": "Un compte avec cet email existe déjà mais n'est pas un compte client. Veuillez vous connecter."
 }
 ```
 
 ---
 
-## 💡 Exemple d'Usage Frontend
+## 🎨 Recommandations pour le Frontend
 
-### **React Hook Personnalisé :**
+### **1. Validation côté Client**
+- Implémenter la même validation que le backend pour une meilleure UX
+- Afficher les erreurs en temps réel pendant la saisie
+- Désactiver le bouton submit si les champs obligatoires ne sont pas remplis
 
+### **2. Gestion des États**
 ```javascript
-import { useState, useEffect } from 'react';
+const [formData, setFormData] = useState({
+  description: '',
+  address: '',
+  city: '',
+  postalCode: '',
+  budget: '',
+  surfaceM2: '',
+  bedrooms: '',
+  houseType: '',
+  hasLand: false
+});
 
-const useDashboardData = () => {
-  const [dashboard, setDashboard] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const [errors, setErrors] = useState({});
+const [isSubmitting, setIsSubmitting] = useState(false);
+```
 
-  useEffect(() => {
-    const fetchDashboard = async () => {
-      try {
-        const token = localStorage.getItem('jwt_token');
-        const response = await fetch('/api/projets/my-projects', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+### **3. Types de Champs Recommandés**
+- `description` : Textarea avec compteur de caractères
+- `address` : Input text avec autocomplétion possible
+- `city` : Input text
+- `postalCode` : Input text avec masque de saisie (12345)
+- `budget` : Input number avec formatage euros
+- `surfaceM2` : Input number 
+- `bedrooms` : Select ou input number
+- `houseType` : Select avec options fixes
+- `hasLand` : Checkbox ou toggle
 
-        if (!response.ok) {
-          throw new Error('Erreur lors du chargement du dashboard');
-        }
+### **4. Gestion d'Erreurs**
+```javascript
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+  setErrors({});
 
-        const data = await response.json();
-        setDashboard(data.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+  try {
+    const response = await fetch('/api/projets', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(formData)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      if (result.errors) {
+        // Afficher les erreurs de validation
+        setErrors(result.errors);
+      } else {
+        // Erreur générale
+        alert(result.message);
       }
-    };
+      return;
+    }
 
-    fetchDashboard();
-  }, []);
-
-  return { dashboard, loading, error };
-};
-
-// Utilisation dans un composant
-const DashboardClient = () => {
-  const { dashboard, loading, error } = useDashboardData();
-
-  if (loading) return <div>Chargement...</div>;
-  if (error) return <div>Erreur: {error}</div>;
-
-  return (
-    <div>
-      <h1>Mon Dashboard</h1>
-      
-      {/* Statistiques */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <h3>{dashboard.statistiques.total}</h3>
-          <p>Projets Total</p>
-        </div>
-        <div className="stat-card">
-          <h3>{dashboard.statistiques.enCours}</h3>
-          <p>En Cours</p>
-        </div>
-        <div className="stat-card">
-          <h3>{dashboard.statistiques.termines}</h3>
-          <p>Terminés</p>
-        </div>
-        <div className="stat-card">
-          <h3>{dashboard.statistiques.budgetTotal.toLocaleString('fr-FR')} €</h3>
-          <p>Budget Total</p>
-        </div>
-      </div>
-
-      {/* Liste des projets */}
-      <div className="projects-list">
-        {dashboard.projets.map(projet => (
-          <div key={projet.id} className="project-card">
-            <h3>{projet.description.substring(0, 50)}...</h3>
-            <p>📍 {projet.adresseComplete}</p>
-            <p>💰 {projet.budgetFormate}</p>
-            <p>⏱️ {projet.dureeJours} jours</p>
-            <span className={`status-badge ${projet.statut}`}>
-              {projet.statut.replace('_', ' ')}
-            </span>
-            {projet.amo && (
-              <p>👥 AMO: {projet.amo.firstName} {projet.amo.lastName}</p>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+    // Succès - rediriger ou afficher confirmation
+    console.log('Projet créé:', result.data);
+    
+  } catch (error) {
+    console.error('Erreur réseau:', error);
+    alert('Erreur de connexion. Veuillez réessayer.');
+  } finally {
+    setIsSubmitting(false);
+  }
 };
 ```
 
 ---
 
-## 🔄 Autres Endpoints Disponibles
+## 🔄 États du Projet
 
-Si vous avez besoin d'endpoints plus spécifiques :
-
-- `GET /api/projets/client/:clientId` - Projets d'un client spécifique (pour admins/AMO)
-- `GET /api/projets/status/:statut` - Projets par statut
-- `GET /api/projets/:id` - Détails d'un projet spécifique
+Après création, le projet aura automatiquement :
+- **Statut** : `brouillon`
+- **Client assigné** : L'utilisateur connecté
+- **AMO** : `null` (sera assigné plus tard)
+- **Actif** : `true`
 
 ---
 
-**Votre dashboard client est maintenant prêt côté backend ! 🚀**
+## 📞 Support
+
+Pour toute question sur l'intégration de cette API, référez-vous aux fichiers sources :
+- `src/controllers/projetController.js`
+- `src/middlewares/validateProject.js`
+- `src/routes/projetRoutes.js`
+- `src/models/Projet.js`
