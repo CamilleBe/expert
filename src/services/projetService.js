@@ -19,8 +19,7 @@ class ProjetService {
       }
       
       // Faire la requête vers l'endpoint dashboard client
-      const response = await fetch('/api/projets/my-projects', config)
-      
+      const response = await fetch(buildUrl('/projets/my-projects'), config);      
       console.log(`🌐 Statut de réponse: ${response.status} ${response.statusText}`)
       console.log(`📡 URL appelée: ${response.url}`)
       
@@ -47,6 +46,12 @@ class ProjetService {
       
       // Vérifier si la requête a réussi
       if (!response.ok) {
+        // Gestion spéciale pour les erreurs SQL liées aux missions
+        if (data.error && data.error.includes("Unknown column 'missions.titre'")) {
+          console.warn('⚠️ Problème de base de données détecté:', data.error)
+          throw new Error(`Problème de configuration de la base de données. La colonne 'missions.titre' n'existe pas. Contactez l'administrateur.`)
+        }
+        
         // Créer une erreur avec le message du serveur
         const error = new Error(data.message || `Erreur HTTP ${response.status}`)
         error.status = response.status
