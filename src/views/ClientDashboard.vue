@@ -185,7 +185,7 @@
               </div>
               <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun projet pour le moment</h3>
               <p class="text-gray-600 mb-4">Créez votre premier projet pour commencer</p>
-              <button @click="activeTab = 'projects'" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+              <button @click="showCreateProjectModal = true" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
                 <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
@@ -222,7 +222,7 @@
         <div v-if="activeTab === 'projects'" class="animate-fade-in">
           <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold text-gray-900">Mes projets</h1>
-            <button class="py-3 px-6 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-300">
+            <button @click="showCreateProjectModal = true" class="py-3 px-6 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-300">
               Nouveau projet
             </button>
           </div>
@@ -560,6 +560,230 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal de création de projet -->
+    <div v-if="showCreateProjectModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <form @submit.prevent="submitProject">
+          <!-- En-tête du modal -->
+          <div class="sticky top-0 bg-white border-b border-gray-200 px-8 py-6 rounded-t-2xl">
+            <div class="flex justify-between items-center">
+              <h3 class="text-2xl font-bold text-gray-900">Créer un nouveau projet</h3>
+              <button type="button" @click="closeCreateProjectModal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Contenu du formulaire -->
+          <div class="px-8 py-6">
+            <!-- Erreur générale -->
+            <div v-if="projectFormErrors.general" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div class="flex items-center">
+                <svg class="h-5 w-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-red-700 font-medium">{{ projectFormErrors.general }}</span>
+              </div>
+            </div>
+
+            <div class="space-y-6">
+              <!-- Description du projet -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Description du projet <span class="text-red-500">*</span>
+                </label>
+                <textarea 
+                  v-model="projectFormData.description"
+                  rows="4" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  :class="{ 'border-red-500': projectFormErrors.description }"
+                  placeholder="Décrivez votre projet en détail : type de travaux, objectifs, contraintes particulières..."
+                  required
+                ></textarea>
+                <div class="mt-1 text-sm text-gray-500">
+                  {{ projectFormData.description.length }}/5000 caractères
+                </div>
+                <div v-if="projectFormErrors.description" class="mt-1 text-sm text-red-600">
+                  {{ projectFormErrors.description }}
+                </div>
+              </div>
+
+              <!-- Adresse complète -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Adresse complète <span class="text-red-500">*</span>
+                </label>
+                <input 
+                  v-model="projectFormData.address"
+                  type="text" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  :class="{ 'border-red-500': projectFormErrors.address }"
+                  placeholder="123 Rue de la République"
+                  required
+                />
+                <div v-if="projectFormErrors.address" class="mt-1 text-sm text-red-600">
+                  {{ projectFormErrors.address }}
+                </div>
+              </div>
+
+              <!-- Ville et Code postal -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Ville <span class="text-red-500">*</span>
+                  </label>
+                  <input 
+                    v-model="projectFormData.city"
+                    type="text" 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    :class="{ 'border-red-500': projectFormErrors.city }"
+                    placeholder="Paris"
+                    required
+                  />
+                  <div v-if="projectFormErrors.city" class="mt-1 text-sm text-red-600">
+                    {{ projectFormErrors.city }}
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Code postal <span class="text-red-500">*</span>
+                  </label>
+                  <input 
+                    v-model="projectFormData.postalCode"
+                    type="text" 
+                    pattern="[0-9]{5}"
+                    maxlength="5"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    :class="{ 'border-red-500': projectFormErrors.postalCode }"
+                    placeholder="75001"
+                    required
+                  />
+                  <div v-if="projectFormErrors.postalCode" class="mt-1 text-sm text-red-600">
+                    {{ projectFormErrors.postalCode }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Budget estimé -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Budget estimé (€)
+                </label>
+                <input 
+                  v-model="projectFormData.budget"
+                  type="number" 
+                  min="0"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  :class="{ 'border-red-500': projectFormErrors.budget }"
+                  placeholder="150000"
+                />
+                <div v-if="projectFormErrors.budget" class="mt-1 text-sm text-red-600">
+                  {{ projectFormErrors.budget }}
+                </div>
+              </div>
+
+              <!-- Surface et chambres -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Surface (m²)
+                  </label>
+                  <input 
+                    v-model="projectFormData.surfaceM2"
+                    type="number" 
+                    min="1"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    :class="{ 'border-red-500': projectFormErrors.surfaceM2 }"
+                    placeholder="120"
+                  />
+                  <div v-if="projectFormErrors.surfaceM2" class="mt-1 text-sm text-red-600">
+                    {{ projectFormErrors.surfaceM2 }}
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Nombre de chambres
+                  </label>
+                  <select 
+                    v-model="projectFormData.bedrooms"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    :class="{ 'border-red-500': projectFormErrors.bedrooms }"
+                  >
+                    <option value="">Sélectionner</option>
+                    <option value="0">Studio</option>
+                    <option value="1">1 chambre</option>
+                    <option value="2">2 chambres</option>
+                    <option value="3">3 chambres</option>
+                    <option value="4">4 chambres</option>
+                    <option value="5">5 chambres et +</option>
+                  </select>
+                  <div v-if="projectFormErrors.bedrooms" class="mt-1 text-sm text-red-600">
+                    {{ projectFormErrors.bedrooms }}
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Type de logement
+                  </label>
+                  <select 
+                    v-model="projectFormData.houseType"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Sélectionner</option>
+                    <option value="plain-pied">Plain-pied</option>
+                    <option value="étage">À étage</option>
+                    <option value="autre">Autre</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Terrain inclus -->
+              <div>
+                <label class="flex items-center">
+                  <input 
+                    v-model="projectFormData.hasLand"
+                    type="checkbox" 
+                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  />
+                  <span class="ml-2 text-sm text-gray-700">Le projet inclut un terrain</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pied du modal -->
+          <div class="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-8 py-6 rounded-b-2xl">
+            <div class="flex space-x-4">
+              <button 
+                type="submit"
+                :disabled="isSubmittingProject"
+                class="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-300 text-white font-semibold rounded-lg transition-colors flex items-center justify-center"
+              >
+                <svg v-if="isSubmittingProject" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {{ isSubmittingProject ? 'Création en cours...' : 'Créer le projet' }}
+              </button>
+              <button 
+                type="button"
+                @click="closeCreateProjectModal"
+                :disabled="isSubmittingProject"
+                class="flex-1 py-3 px-6 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 text-gray-700 font-semibold rounded-lg transition-colors"
+              >
+                Annuler
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -572,6 +796,7 @@ const activeTab = ref('overview')
 const showNotifications = ref(false)
 const showUploadModal = ref(false)
 const showReviewModal = ref(false)
+const showCreateProjectModal = ref(false)
 const selectedProject = ref(null)
 const unreadNotifications = ref(0)
 
@@ -608,6 +833,21 @@ const newReview = ref({
   rating: 0,
   comment: ''
 })
+
+// Formulaire de création de projet
+const isSubmittingProject = ref(false)
+const projectFormData = ref({
+  description: '',
+  address: '',
+  city: '',
+  postalCode: '',
+  budget: '',
+  surfaceM2: '',
+  bedrooms: '',
+  houseType: '',
+  hasLand: false
+})
+const projectFormErrors = ref({})
 
 // Méthodes pour charger les données du dashboard
 async function loadDashboard() {
@@ -690,6 +930,91 @@ function submitReview() {
   showReviewModal.value = false
   // Retirer le projet de la liste des projets à évaluer
   projectsToReview.value = projectsToReview.value.filter(p => p.id !== selectedProject.value.id)
+}
+
+// Méthodes pour la création de projet
+function resetProjectForm() {
+  projectFormData.value = {
+    description: '',
+    address: '',
+    city: '',
+    postalCode: '',
+    budget: '',
+    surfaceM2: '',
+    bedrooms: '',
+    houseType: '',
+    hasLand: false
+  }
+  projectFormErrors.value = {}
+}
+
+function closeCreateProjectModal() {
+  showCreateProjectModal.value = false
+  resetProjectForm()
+}
+
+async function submitProject() {
+  if (isSubmittingProject.value) return
+  
+  isSubmittingProject.value = true
+  projectFormErrors.value = {}
+
+  try {
+    console.log('🚀 Création d\'un nouveau projet...', projectFormData.value)
+    
+    // Convertir les données pour l'API
+    const formattedData = {
+      description: projectFormData.value.description,
+      address: projectFormData.value.address,
+      city: projectFormData.value.city,
+      postalCode: projectFormData.value.postalCode,
+      ...(projectFormData.value.budget && { budget: parseInt(projectFormData.value.budget) }),
+      ...(projectFormData.value.surfaceM2 && { surfaceM2: parseInt(projectFormData.value.surfaceM2) }),
+      ...(projectFormData.value.bedrooms && { bedrooms: parseInt(projectFormData.value.bedrooms) }),
+      ...(projectFormData.value.houseType && { houseType: projectFormData.value.houseType }),
+      hasLand: projectFormData.value.hasLand
+    }
+
+    const result = await projetService.createProject(formattedData)
+    
+    console.log('✅ Projet créé avec succès:', result)
+    
+    // Fermer le modal
+    closeCreateProjectModal()
+    
+    // Recharger les données du dashboard
+    await loadDashboard()
+    
+    // Afficher un message de succès (vous pouvez utiliser une notification)
+    alert('Projet créé avec succès !')
+    
+  } catch (error) {
+    console.error('❌ Erreur lors de la création du projet:', error)
+    
+    if (error.errors && Array.isArray(error.errors)) {
+      // Erreurs de validation de l'API
+      const errorObj = {}
+      error.errors.forEach(err => {
+        if (typeof err === 'string') {
+          const field = err.toLowerCase()
+          if (field.includes('description')) errorObj.description = err
+          else if (field.includes('adresse')) errorObj.address = err
+          else if (field.includes('ville')) errorObj.city = err
+          else if (field.includes('code postal')) errorObj.postalCode = err
+          else if (field.includes('budget')) errorObj.budget = err
+          else if (field.includes('surface')) errorObj.surfaceM2 = err
+          else if (field.includes('chambre')) errorObj.bedrooms = err
+          else errorObj.general = err
+        }
+      })
+      projectFormErrors.value = errorObj
+    } else {
+      // Erreur générale
+      projectFormErrors.value = { general: error.message || 'Erreur lors de la création du projet' }
+    }
+  } finally {
+    isSubmittingProject.value = false
+  }
 }
 
 // Charger les données au montage du composant
