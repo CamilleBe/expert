@@ -220,38 +220,141 @@
 
         <!-- Mes projets -->
         <div v-if="activeTab === 'projects'" class="animate-fade-in">
-          <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Mes projets</h1>
+          <div class="flex justify-between items-start mb-8">
+            <div>
+              <h1 class="text-3xl font-bold text-gray-900 mb-2">Mes projets</h1>
+              <p class="text-gray-600">Retrouvez ici tous vos projets en cours</p>
+            </div>
             <button @click="showCreateProjectModal = true" class="py-3 px-6 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-300">
               Nouveau projet
             </button>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div v-for="project in allProjects" :key="project.id" class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-              <div class="h-48 bg-gray-200">
-                <img :src="project.image" :alt="project.title" class="w-full h-full object-cover" />
+          <!-- Liste des projets -->
+          <div v-if="allProjects.length === 0 && !isLoadingProjects" class="text-center py-12">
+            <div class="p-3 rounded-full bg-gray-100 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m4 0V9a1 1 0 011-1h4a1 1 0 011 1v12m-6 0h6" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun projet pour le moment</h3>
+            <p class="text-gray-600 mb-4">Créez votre premier projet pour commencer</p>
+            <button @click="showCreateProjectModal = true" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+              <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Créer un projet
+            </button>
+          </div>
+
+          <div v-else class="space-y-6">
+            <div v-for="project in allProjects" :key="project.id" class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow">
+              <!-- En-tête du projet avec statut -->
+              <div class="flex justify-between items-start mb-4">
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <h3 class="text-xl font-bold text-gray-900">{{ getProjectNumber(project) }}</h3>
+                    <span :class="getStatusClass(project.statut)" class="px-3 py-1 text-xs font-medium rounded-full">
+                      {{ getStatusLabel(project.statut) }}
+                    </span>
+                  </div>
+                  <p class="text-gray-600 text-sm">
+                    Créé le {{ new Date(project.createdAt).toLocaleDateString('fr-FR') }}
+                  </p>
+                </div>
+                
+                <!-- Actions -->
+                <div class="flex space-x-2">
+                  <button class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Voir les détails">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </button>
+
+                
+                </div>
               </div>
-              <div class="p-6">
-                <div class="flex justify-between items-start mb-3">
-                  <h3 class="text-lg font-bold text-gray-900">{{ project.title }}</h3>
-                  <span :class="project.status === 'En cours' ? 'bg-yellow-100 text-yellow-800' : project.status === 'Terminé' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'" class="px-2 py-1 text-xs font-medium rounded-full">
-                    {{ project.status }}
+
+              <!-- Description du projet -->
+              <div class="mb-4">
+                <p class="text-gray-700 leading-relaxed">
+                  {{ project.description ? project.description.substring(0, 150) + (project.description.length > 150 ? '...' : '') : 'Aucune description disponible' }}
+                </p>
+              </div>
+
+              <!-- Informations du projet en grille -->
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <!-- Localisation -->
+                <div class="bg-gray-50 rounded-lg p-3">
+                  <div class="flex items-center mb-1">
+                    <svg class="h-4 w-4 text-gray-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span class="text-xs font-medium text-gray-500 uppercase">Localisation</span>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-900">{{ project.city || 'Non définie' }}</p>
+                  <p class="text-xs text-gray-600">{{ project.postalCode || '' }}</p>
+                </div>
+
+                <!-- Budget -->
+                <div class="bg-green-50 rounded-lg p-3">
+                  <div class="flex items-center mb-1">
+                    <svg class="h-4 w-4 text-green-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    </svg>
+                    <span class="text-xs font-medium text-green-600 uppercase">Budget</span>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-900">
+                    {{ project.budget ? project.budget.toLocaleString('fr-FR') + ' €' : 'Non défini' }}
+                  </p>
+                </div>
+
+                <!-- Surface -->
+                <div class="bg-blue-50 rounded-lg p-3" v-if="project.surfaceM2">
+                  <div class="flex items-center mb-1">
+                    <svg class="h-4 w-4 text-blue-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m4 0V9a1 1 0 011-1h4a1 1 0 011 1v12m-6 0h6" />
+                    </svg>
+                    <span class="text-xs font-medium text-blue-600 uppercase">Surface</span>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-900">{{ project.surfaceM2 }} m²</p>
+                </div>
+
+                <!-- Type de logement -->
+                <div class="bg-purple-50 rounded-lg p-3" v-if="project.houseType">
+                  <div class="flex items-center mb-1">
+                    <svg class="h-4 w-4 text-purple-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 21l8-8-8-8" />
+                    </svg>
+                    <span class="text-xs font-medium text-purple-600 uppercase">Type</span>
+                  </div>
+                  <p class="text-sm font-semibold text-gray-900 capitalize">{{ project.houseType }}</p>
+                </div>
+              </div>
+
+              <!-- Informations additionnelles -->
+              <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                <div class="flex items-center space-x-4 text-sm text-gray-600">
+                  <span v-if="project.bedrooms !== null && project.bedrooms !== undefined">
+                    <svg class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m4 0V9a1 1 0 011-1h4a1 1 0 011 1v12m-6 0h6" />
+                    </svg>
+                    {{ project.bedrooms }} {{ project.bedrooms > 1 ? 'chambres' : 'chambre' }}
+                  </span>
+                  <span v-if="project.hasLand" class="inline-flex items-center">
+                    <svg class="h-4 w-4 text-green-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Terrain inclus
                   </span>
                 </div>
-                <p class="text-gray-600 mb-3">{{ project.description }}</p>
-                <div class="flex justify-between items-center mb-4">
-                  <span class="text-sm font-medium text-gray-600">{{ project.contractor }}</span>
-                  <span class="text-lg font-bold text-blue-600">{{ project.budget }}</span>
-                </div>
-                <div class="flex space-x-2">
-                  <button class="flex-1 py-2 px-4 bg-blue-50 text-blue-600 text-sm font-medium rounded-lg hover:bg-blue-100 transition-colors">
-                    Voir détails
-                  </button>
-                  <button v-if="project.status === 'Terminé'" class="py-2 px-4 bg-yellow-50 text-yellow-600 text-sm font-medium rounded-lg hover:bg-yellow-100 transition-colors">
-                    Noter
-                  </button>
-                </div>
+                
+                <button class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                  Voir les détails
+                </button>
               </div>
             </div>
           </div>
@@ -898,6 +1001,25 @@ function getStatusLabel(statut) {
     'clôturé': 'Clôturé'
   }
   return statusMap[statut] || statut || 'Inconnu'
+}
+
+// Calculer le numéro de projet chronologique pour le client
+function getProjectNumber(project) {
+  // Trier tous les projets par date de création (plus ancien en premier)
+  const sortedProjects = [...allProjects.value].sort((a, b) => 
+    new Date(a.createdAt) - new Date(b.createdAt)
+  )
+  
+  // Trouver l'index du projet actuel dans la liste triée
+  const projectIndex = sortedProjects.findIndex(p => p.id === project.id)
+  const projectNumber = projectIndex + 1 // +1 car on commence à 1, pas 0
+  
+  // Formatage du numéro avec les bonnes terminaisons françaises
+  if (projectNumber === 1) return "Mon 1er projet"
+  if (projectNumber === 2) return "Mon 2ème projet"
+  if (projectNumber === 3) return "Mon 3ème projet"
+  
+  return `Mon ${projectNumber}ème projet`
 }
 
 function getStatusClass(statut) {
