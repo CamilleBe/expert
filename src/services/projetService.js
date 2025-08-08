@@ -18,11 +18,30 @@ class ProjetService {
         headers: getAuthHeaders()
       }
       
-      // Faire la requête vers l'endpoint projets client
-      const response = await fetch(buildUrl('/projets'), config)
+      // Faire la requête vers l'endpoint dashboard client
+      const response = await fetch('/api/projets/my-projects', config)
       
-      // Parser la réponse JSON
-      const data = await response.json()
+      console.log(`🌐 Statut de réponse: ${response.status} ${response.statusText}`)
+      console.log(`📡 URL appelée: ${response.url}`)
+      
+      // Vérifier si la réponse a du contenu
+      const textResponse = await response.text()
+      console.log(`📄 Réponse brute: "${textResponse}"`)
+      
+      // Tenter de parser seulement si on a du contenu
+      let data
+      if (textResponse.trim() === '') {
+        console.warn('⚠️ Réponse vide du serveur')
+        throw new Error(`Le serveur a renvoyé une réponse vide (statut: ${response.status})`)
+      }
+      
+      try {
+        data = JSON.parse(textResponse)
+      } catch (parseError) {
+        console.error('❌ Erreur lors du parsing JSON:', parseError)
+        console.error('📄 Contenu reçu:', textResponse)
+        throw new Error(`Réponse invalide du serveur (statut: ${response.status}). Contenu: ${textResponse.substring(0, 100)}...`)
+      }
       
       console.log(`📥 Réponse dashboard client (${response.status}):`, data)
       
