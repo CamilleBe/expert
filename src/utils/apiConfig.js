@@ -22,10 +22,10 @@ export const API_CONFIG = {
       LOGIN: '/users/login',
       
       // Documents
-      DOCUMENTS: '/documents',
-      DOCUMENTS_UPLOAD: '/documents/upload',
-      DOCUMENTS_DOWNLOAD: '/documents/:id/download',
-      DOCUMENTS_DELETE: '/documents/:id',
+      DOCUMENTS: '/client-documents',
+      DOCUMENTS_UPLOAD: '/client-documents/upload',
+      DOCUMENTS_DOWNLOAD: '/client-documents/:id/download',
+      DOCUMENTS_DELETE: '/client-documents/:id',
       
       // Autres (pour plus tard)
       USERS: '/users',

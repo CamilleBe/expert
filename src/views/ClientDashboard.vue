@@ -865,20 +865,17 @@ async function loadDocuments() {
     
     if (response.success) {
       documents.value = response.data.documents || []
-      documentsStats.value = response.data.statistics || {
-        total: 0,
-        totalSize: 0,
-        byType: {}
+      
+      // Adapter la structure des statistiques selon la nouvelle API
+      const stats = response.data.statistics || {}
+      documentsStats.value = {
+        total: stats.total || 0,
+        totalSize: stats.totalSize || 0,
+        byType: stats.byType || {}
       }
       
-      // Ajouter des propriétés formatées pour l'affichage
-      documents.value = documents.value.map(doc => ({
-        ...doc,
-        formattedSize: documentService.formatFileSize(doc.size),
-        formattedUploadDate: documentService.formatUploadDate(doc.uploadDate),
-        readableFileType: documentService.getReadableFileType(doc.mimeType),
-        icon: documentService.getDocumentIcon(doc.mimeType)
-      }))
+      // Normaliser les documents pour l'affichage avec la nouvelle structure API
+      documents.value = documents.value.map(doc => documentService.normalizeDocument(doc))
       
       console.log('✅ Documents chargés:', documents.value)
     }

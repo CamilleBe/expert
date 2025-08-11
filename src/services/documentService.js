@@ -156,10 +156,27 @@ class DocumentService {
       
       console.log('✅ Upload terminé avec succès:', response)
       console.log('📊 Nombre de documents uploadés:', response.data?.length || 0)
+      console.log('📋 Documents uploadés détail:', response.data?.map(doc => ({
+        id: doc.id,
+        nom: doc.nom || doc.nomOriginal,
+        taille: doc.tailleFichier,
+        type: doc.mimeType
+      })))
       return response
       
     } catch (error) {
       console.error('❌ Erreur lors de l\'upload des documents:', error)
+      console.error('📊 Détails de l\'erreur:', {
+        message: error.message,
+        status: error.status,
+        data: error.data
+      })
+      
+      // Améliorer le message d'erreur pour l'utilisateur
+      if (error.message?.includes('base de données')) {
+        throw new Error('Erreur serveur lors de la sauvegarde. Veuillez réessayer ou contacter le support.')
+      }
+      
       throw error
     }
   }
@@ -361,6 +378,8 @@ class DocumentService {
    * @returns {string} - Date formatée en français
    */
   formatUploadDate(dateString) {
+    if (!dateString) return 'Date inconnue'
+    
     const date = new Date(dateString)
     const options = { 
       year: 'numeric', 
@@ -371,6 +390,30 @@ class DocumentService {
     }
     
     return date.toLocaleDateString('fr-FR', options)
+  }
+  
+  /**
+   * Normaliser un document pour l'affichage
+   * @param {object} doc - Document de l'API
+   * @returns {object} - Document normalisé
+   */
+  normalizeDocument(doc) {
+    return {
+      ...doc,
+      // Standardiser les noms de champs
+      originalName: doc.nomOriginal || doc.originalName || doc.nom,
+      size: doc.tailleFichier || doc.size,
+      uploadDate: doc.createdAt || doc.updatedAt || doc.uploadDate,
+      fileName: doc.nomFichier || doc.fileName,
+      filePath: doc.cheminFichier || doc.lienFichier || doc.filePath,
+      fileFormat: doc.formatFichier || doc.fileFormat,
+      type: doc.type || 'autre',
+      // Propriétés formatées
+      formattedSize: this.formatFileSize(doc.tailleFichier || doc.size),
+      formattedUploadDate: this.formatUploadDate(doc.createdAt || doc.updatedAt || doc.uploadDate),
+      readableFileType: this.getReadableFileType(doc.mimeType),
+      icon: this.getDocumentIcon(doc.mimeType)
+    }
   }
 }
 

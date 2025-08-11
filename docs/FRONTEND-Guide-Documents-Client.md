@@ -1,73 +1,300 @@
-# 🎨 Guide Frontend - Module Documents Dashboard Client
+# 📋 API Documents - Dashboard Client
 
-## 📋 Vue d'ensemble
+## 🎯 Vue d'ensemble
 
-Ce guide détaille l'implémentation frontend pour le **module Documents du dashboard client**, permettant aux clients d'uploader, gérer et télécharger leurs documents personnels.
-
----
-
-## 🎯 Fonctionnalités à implémenter
-
-### ✅ Ce que le client peut faire :
-- 📤 **Upload** de fichiers (PDF, DOC, DOCX, JPG, PNG)
-- 📋 **Visualiser** la liste de ses documents
-- 📥 **Télécharger** ses fichiers
-- 🗑️ **Supprimer** ses documents
-- 📊 **Voir les statistiques** (nombre total, taille, types)
-
-### 🚫 Restrictions de sécurité :
-- Seuls les **clients authentifiés** peuvent accéder
-- Un client ne voit que **ses propres documents**
-- Taille max : **10MB par fichier**
-- Types autorisés : **PDF, DOC, DOCX, JPG, PNG**
+API pour la gestion des documents dans le dashboard client. Permet aux clients d'uploader, consulter, télécharger et supprimer leurs documents personnels.
 
 ---
 
-## 🔌 API Endpoints Disponibles
+## 🔌 Endpoints disponibles
 
-| Méthode | Endpoint | Description | Payload |
-|---------|----------|-------------|---------|
-| `POST` | `/api/client-documents/upload` | Upload de fichiers | FormData avec champ `documents` |
-| `GET` | `/api/client-documents` | Liste des documents | Query params optionnels |
-| `GET` | `/api/client-documents/:id/download` | Télécharger un fichier | - |
-| `GET` | `/api/client-documents/:id` | Détails d'un document | - |
-| `DELETE` | `/api/client-documents/:id` | Supprimer un document | - |
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| `POST` | `/api/client-documents/upload` | Upload de fichiers |
+| `GET` | `/api/client-documents` | Liste des documents |
+| `GET` | `/api/client-documents/:id/download` | Téléchargement |
+| `GET` | `/api/client-documents/:id` | Détails d'un document |
+| `DELETE` | `/api/client-documents/:id` | Suppression |
 
-### 🔐 Headers requis pour toutes les requêtes :
+---
+
+## 🔐 Authentification
+
+**Toutes les requêtes nécessitent :**
 ```javascript
 {
-  "Authorization": "Bearer " + userToken,
-  "Content-Type": "application/json" // Sauf pour upload (FormData)
+  "Authorization": "Bearer votre_token_jwt"
+}
+```
+
+**Restriction :** Seuls les utilisateurs avec le rôle `client` peuvent accéder à ces endpoints.
+
+---
+
+## 📤 1. Upload de documents
+
+### **POST** `/api/client-documents/upload`
+
+**Content-Type :** `multipart/form-data`
+
+**Paramètres :**
+- `documents` : Fichier(s) à uploader (max 5 fichiers)
+
+**Contraintes :**
+- Types autorisés : PDF, DOC, DOCX, JPG, PNG
+- Taille max : 10MB par fichier
+- Nombre max : 5 fichiers par requête
+
+**Exemple JavaScript :**
+```javascript
+const formData = new FormData();
+formData.append('documents', file1);
+formData.append('documents', file2);
+
+const response = await fetch('/api/client-documents/upload', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${token}`
+  },
+  body: formData
+});
+
+const result = await response.json();
+```
+
+**Réponse (201) :**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 15,
+      "userId": 17,
+      "nom": "contrat.pdf",
+      "type": "autre",
+      "lienFichier": "uploads/client_17/document-1673890123456-123456789.pdf",
+      "tailleFichier": 107684,
+      "formatFichier": "pdf",
+      "nomOriginal": "contrat.pdf", 
+      "nomFichier": "document-1673890123456-123456789.pdf",
+      "mimeType": "application/pdf",
+      "cheminFichier": "uploads/client_17/document-1673890123456-123456789.pdf",
+      "isActive": true,
+      "createdAt": "2025-01-15T16:11:39.000Z",
+      "updatedAt": "2025-01-15T16:11:39.000Z"
+    }
+  ],
+  "message": "1 document(s) uploadé(s) avec succès"
 }
 ```
 
 ---
 
-## 📤 Implémentation Upload de Fichiers
+## 📋 2. Liste des documents
 
-### **Interface suggérée :**
+### **GET** `/api/client-documents`
+
+**Paramètres query (optionnels) :**
+- `page` : Numéro de page (défaut: 1)
+- `limit` : Nombre d'éléments par page (défaut: 20)
+- `mimeType` : Filtrer par type MIME
+
+**Exemples :**
 ```
-┌─────────────────────────────────────────────┐
-│  📁 Mes Documents                           │
-├─────────────────────────────────────────────┤
-│                                             │
-│  ┌─────────────────────────────────────┐   │
-│  │     📤 Glisser-déposer vos fichiers │   │
-│  │         ou cliquer pour choisir     │   │
-│  │                                     │   │
-│  │  Types acceptés: PDF, DOC, DOCX,   │   │
-│  │  JPG, PNG (max 10MB par fichier)   │   │
-│  └─────────────────────────────────────┘   │
-│                                             │
-│  [📎 Choisir fichiers] [🚀 Uploader]       │
-└─────────────────────────────────────────────┘
+GET /api/client-documents
+GET /api/client-documents?page=2&limit=10
+GET /api/client-documents?mimeType=application/pdf
 ```
 
-### **Code exemple (Vue.js) :**
+**Réponse (200) :**
+```json
+{
+  "success": true,
+  "data": {
+    "documents": [
+      {
+        "id": 15,
+        "userId": 17,
+        "nom": "contrat.pdf",
+        "type": "autre",
+        "lienFichier": "uploads/client_17/document-1673890123456-123456789.pdf",
+        "tailleFichier": 107684,
+        "formatFichier": "pdf",
+        "nomOriginal": "contrat.pdf",
+        "nomFichier": "document-1673890123456-123456789.pdf", 
+        "mimeType": "application/pdf",
+        "cheminFichier": "uploads/client_17/document-1673890123456-123456789.pdf",
+        "isActive": true,
+        "createdAt": "2025-01-15T16:11:39.000Z",
+        "updatedAt": "2025-01-15T16:11:39.000Z",
+        "user": {
+          "id": 17,
+          "firstName": "Jean",
+          "lastName": "Dupont",
+          "email": "jean@example.com"
+        }
+      }
+    ],
+    "statistics": {
+      "total": 5,
+      "totalSize": 2048576,
+      "byType": {
+        "PDF": 3,
+        "Image JPEG": 1,
+        "Document Word": 1
+      }
+    }
+  },
+  "pagination": {
+    "total": 5,
+    "page": 1,
+    "limit": 20,
+    "totalPages": 1
+  },
+  "message": "5 document(s) récupéré(s) avec succès"
+}
+```
+
+---
+
+## 📥 3. Téléchargement d'un document
+
+### **GET** `/api/client-documents/:id/download`
+
+**Paramètres :**
+- `id` : ID du document à télécharger
+
+**Sécurité :** Le client ne peut télécharger que ses propres documents.
+
+**Réponse (200) :**
+- Le fichier en téléchargement direct
+- Headers appropriés pour le téléchargement
+
+**Exemple JavaScript :**
+```javascript
+const response = await fetch(`/api/client-documents/${documentId}/download`, {
+  headers: {
+    'Authorization': `Bearer ${token}`
+  }
+});
+
+const blob = await response.blob();
+const url = window.URL.createObjectURL(blob);
+const link = document.createElement('a');
+link.href = url;
+link.download = originalFileName;
+link.click();
+```
+
+---
+
+## 🔍 4. Détails d'un document
+
+### **GET** `/api/client-documents/:id`
+
+**Réponse (200) :**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 15,
+    "userId": 17,
+    "nom": "contrat.pdf",
+    "type": "autre",
+    "lienFichier": "uploads/client_17/document-1673890123456-123456789.pdf",
+    "tailleFichier": 107684,
+    "formatFichier": "pdf",
+    "nomOriginal": "contrat.pdf",
+    "nomFichier": "document-1673890123456-123456789.pdf",
+    "mimeType": "application/pdf", 
+    "cheminFichier": "uploads/client_17/document-1673890123456-123456789.pdf",
+    "isActive": true,
+    "createdAt": "2025-01-15T16:11:39.000Z",
+    "updatedAt": "2025-01-15T16:11:39.000Z",
+    "user": {
+      "id": 17,
+      "firstName": "Jean",
+      "lastName": "Dupont",
+      "email": "jean@example.com"
+    }
+  },
+  "message": "Document récupéré avec succès"
+}
+```
+
+---
+
+## 🗑️ 5. Suppression d'un document
+
+### **DELETE** `/api/client-documents/:id`
+
+**Sécurité :** Le client ne peut supprimer que ses propres documents.
+
+**Note :** Suppression douce (soft delete), le fichier physique est conservé.
+
+**Réponse (200) :**
+```json
+{
+  "success": true,
+  "message": "Document supprimé avec succès"
+}
+```
+
+---
+
+## ⚠️ Gestion d'erreurs
+
+### **Erreurs courantes :**
+
+**403 - Accès refusé :**
+```json
+{
+  "success": false,
+  "message": "Accès refusé - Seuls les clients peuvent uploader des documents"
+}
+```
+
+**400 - Fichier trop volumineux :**
+```json
+{
+  "success": false,
+  "message": "Fichier trop volumineux (max 10MB)"
+}
+```
+
+**400 - Type non autorisé :**
+```json
+{
+  "success": false,
+  "message": "Type de fichier non autorisé. Types acceptés: PDF, DOC, DOCX, JPG, PNG"
+}
+```
+
+**404 - Document non trouvé :**
+```json
+{
+  "success": false,
+  "message": "Document non trouvé"
+}
+```
+
+**401 - Non authentifié :**
+```json
+{
+  "success": false,
+  "message": "Token manquant"
+}
+```
+
+---
+
+## 💡 Code exemple complet
+
+### **Composant Vue.js pour upload :**
+
 ```vue
 <template>
-  <div class="upload-zone">
-    <!-- Zone drag & drop -->
+  <div class="document-upload">
     <div 
       class="dropzone"
       @dragover.prevent
@@ -82,23 +309,18 @@ Ce guide détaille l'implémentation frontend pour le **module Documents du dash
         @change="handleFileSelect"
         style="display: none"
       />
-      
-      <div class="upload-content">
-        <i class="icon-upload"></i>
-        <p>Glisser-déposer vos fichiers ou cliquer pour choisir</p>
-        <small>Types acceptés: PDF, DOC, DOCX, JPG, PNG (max 10MB)</small>
-      </div>
+      <p>Glisser-déposer vos fichiers ou cliquer pour choisir</p>
+      <small>PDF, DOC, DOCX, JPG, PNG (max 10MB)</small>
     </div>
     
-    <!-- Fichiers sélectionnés -->
     <div v-if="selectedFiles.length" class="selected-files">
       <h4>Fichiers sélectionnés :</h4>
-      <div v-for="(file, index) in selectedFiles" :key="index" class="file-item">
-        <span>{{ file.name }} ({{ formatSize(file.size) }})</span>
-        <button @click="removeFile(index)">❌</button>
+      <div v-for="(file, index) in selectedFiles" :key="index">
+        {{ file.name }} ({{ formatSize(file.size) }})
+        <button @click="removeFile(index)">Supprimer</button>
       </div>
-      <button @click="uploadFiles" :disabled="uploading" class="upload-btn">
-        {{ uploading ? 'Upload en cours...' : '🚀 Uploader' }}
+      <button @click="uploadFiles" :disabled="uploading">
+        {{ uploading ? 'Upload...' : 'Uploader' }}
       </button>
     </div>
   </div>
@@ -125,26 +347,11 @@ export default {
     },
     
     addFiles(files) {
-      // Validation des fichiers
       const validFiles = files.filter(file => {
         if (file.size > 10 * 1024 * 1024) {
-          this.$toast.error(`${file.name} est trop volumineux (max 10MB)`);
+          alert(`${file.name} est trop volumineux (max 10MB)`);
           return false;
         }
-        
-        const allowedTypes = [
-          'application/pdf',
-          'application/msword',
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          'image/jpeg',
-          'image/png'
-        ];
-        
-        if (!allowedTypes.includes(file.type)) {
-          this.$toast.error(`${file.name} n'est pas un type de fichier autorisé`);
-          return false;
-        }
-        
         return true;
       });
       
@@ -173,13 +380,13 @@ export default {
         });
         
         if (response.data.success) {
-          this.$toast.success(`${response.data.data.length} document(s) uploadé(s) avec succès`);
+          alert(`${response.data.data.length} document(s) uploadé(s)`);
           this.selectedFiles = [];
-          this.$emit('upload-success'); // Actualiser la liste
+          this.$emit('upload-success');
         }
         
       } catch (error) {
-        this.$toast.error(error.response?.data?.message || 'Erreur lors de l\'upload');
+        alert(error.response?.data?.message || 'Erreur upload');
       } finally {
         this.uploading = false;
       }
@@ -196,549 +403,55 @@ export default {
 </script>
 ```
 
----
-
-## 📋 Affichage de la Liste des Documents
-
-### **Interface suggérée :**
-```
-┌─────────────────────────────────────────────┐
-│  📊 Statistiques                            │
-│  📄 5 documents • 📦 24.5 MB • 🎯 3 PDF    │
-├─────────────────────────────────────────────┤
-│  🔍 Rechercher... [🔽 Type] [🔽 Date]      │
-├─────────────────────────────────────────────┤
-│  📄 Contrat-renovation.pdf                  │
-│  📅 15 janv. 2025 • 📦 2.4 MB • 📥 ⭐ 🗑️  │
-│  ─────────────────────────────────────────  │
-│  🖼️ Photos-avant-travaux.jpg                │
-│  📅 12 janv. 2025 • 📦 5.1 MB • 📥 ⭐ 🗑️  │
-│  ─────────────────────────────────────────  │
-│  📝 Cahier-charges.docx                     │
-│  📅 10 janv. 2025 • 📦 1.2 MB • 📥 ⭐ 🗑️  │
-└─────────────────────────────────────────────┘
-```
-
-### **Code exemple (Vue.js) :**
-```vue
-<template>
-  <div class="documents-list">
-    <!-- Statistiques -->
-    <div class="stats-bar">
-      <div class="stat">
-        <i class="icon-document"></i>
-        <span>{{ statistics.total }} documents</span>
-      </div>
-      <div class="stat">
-        <i class="icon-storage"></i>
-        <span>{{ formatBytes(statistics.totalSize) }}</span>
-      </div>
-      <div class="stat">
-        <i class="icon-types"></i>
-        <span>{{ Object.keys(statistics.byType).length }} types</span>
-      </div>
-    </div>
-    
-    <!-- Filtres -->
-    <div class="filters">
-      <input 
-        v-model="searchTerm" 
-        placeholder="🔍 Rechercher un document..."
-        class="search-input"
-      />
-      <select v-model="selectedType" class="type-filter">
-        <option value="">Tous les types</option>
-        <option value="application/pdf">PDF</option>
-        <option value="image/jpeg">Images JPG</option>
-        <option value="image/png">Images PNG</option>
-        <option value="application/msword">Documents Word</option>
-      </select>
-    </div>
-    
-    <!-- Liste des documents -->
-    <div class="documents-grid">
-      <div 
-        v-for="doc in filteredDocuments" 
-        :key="doc.id"
-        class="document-card"
-      >
-        <div class="doc-icon">
-          {{ getDocumentIcon(doc.mimeType) }}
-        </div>
-        
-        <div class="doc-info">
-          <h4>{{ doc.originalName }}</h4>
-          <p class="doc-meta">
-            📅 {{ doc.formattedUploadDate }} • 
-            📦 {{ doc.formattedSize }} • 
-            🏷️ {{ doc.readableFileType }}
-          </p>
-        </div>
-        
-        <div class="doc-actions">
-          <button @click="downloadDocument(doc)" class="btn-download">
-            📥 Télécharger
-          </button>
-          <button @click="deleteDocument(doc)" class="btn-delete">
-            🗑️ Supprimer
-          </button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Pagination -->
-    <div v-if="totalPages > 1" class="pagination">
-      <button 
-        v-for="page in totalPages" 
-        :key="page"
-        @click="loadPage(page)"
-        :class="{ active: currentPage === page }"
-      >
-        {{ page }}
-      </button>
-    </div>
-  </div>
-</template>
-
-<script>
-export default {
-  data() {
-    return {
-      documents: [],
-      statistics: {
-        total: 0,
-        totalSize: 0,
-        byType: {}
-      },
-      searchTerm: '',
-      selectedType: '',
-      currentPage: 1,
-      totalPages: 1,
-      loading: false
-    }
-  },
-  
-  computed: {
-    filteredDocuments() {
-      let filtered = this.documents;
-      
-      // Filtrer par terme de recherche
-      if (this.searchTerm) {
-        filtered = filtered.filter(doc => 
-          doc.originalName.toLowerCase().includes(this.searchTerm.toLowerCase())
-        );
-      }
-      
-      // Filtrer par type
-      if (this.selectedType) {
-        filtered = filtered.filter(doc => doc.mimeType === this.selectedType);
-      }
-      
-      return filtered;
-    }
-  },
-  
-  mounted() {
-    this.loadDocuments();
-  },
-  
-  methods: {
-    async loadDocuments(page = 1) {
-      this.loading = true;
-      
-      try {
-        const params = new URLSearchParams({
-          page: page.toString(),
-          limit: '10'
-        });
-        
-        if (this.selectedType) {
-          params.append('mimeType', this.selectedType);
-        }
-        
-        const response = await this.$api.get(`/api/client-documents?${params}`);
-        
-        if (response.data.success) {
-          this.documents = response.data.data.documents;
-          this.statistics = response.data.data.statistics;
-          this.currentPage = response.data.pagination.page;
-          this.totalPages = response.data.pagination.totalPages;
-        }
-        
-      } catch (error) {
-        this.$toast.error('Erreur lors du chargement des documents');
-      } finally {
-        this.loading = false;
-      }
-    },
-    
-    async downloadDocument(doc) {
-      try {
-        const response = await this.$api.get(`/api/client-documents/${doc.id}/download`, {
-          responseType: 'blob'
-        });
-        
-        // Créer un lien de téléchargement
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = doc.originalName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-        
-        this.$toast.success(`${doc.originalName} téléchargé avec succès`);
-        
-      } catch (error) {
-        this.$toast.error('Erreur lors du téléchargement');
-      }
-    },
-    
-    async deleteDocument(doc) {
-      if (!confirm(`Êtes-vous sûr de vouloir supprimer "${doc.originalName}" ?`)) {
-        return;
-      }
-      
-      try {
-        const response = await this.$api.delete(`/api/client-documents/${doc.id}`);
-        
-        if (response.data.success) {
-          this.$toast.success('Document supprimé avec succès');
-          this.loadDocuments(this.currentPage); // Recharger la page actuelle
-        }
-        
-      } catch (error) {
-        this.$toast.error('Erreur lors de la suppression');
-      }
-    },
-    
-    getDocumentIcon(mimeType) {
-      const icons = {
-        'application/pdf': '📄',
-        'application/msword': '📝',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '📝',
-        'image/jpeg': '🖼️',
-        'image/png': '🖼️'
-      };
-      return icons[mimeType] || '📄';
-    },
-    
-    formatBytes(bytes) {
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-      if (bytes === 0) return '0 Bytes';
-      const i = Math.floor(Math.log(bytes) / Math.log(1024));
-      return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
-    },
-    
-    loadPage(page) {
-      this.loadDocuments(page);
-    }
-  },
-  
-  watch: {
-    selectedType() {
-      this.loadDocuments(1); // Retourner à la page 1 lors du filtrage
-    }
-  }
-}
-</script>
-```
-
----
-
-## 🎨 Styles CSS Suggérés
-
-```css
-/* Zone d'upload */
-.dropzone {
-  border: 2px dashed #007bff;
-  border-radius: 8px;
-  padding: 40px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: #f8f9fa;
-}
-
-.dropzone:hover {
-  border-color: #0056b3;
-  background: #e7f3ff;
-}
-
-.dropzone.dragover {
-  border-color: #28a745;
-  background: #d4edda;
-}
-
-/* Statistiques */
-.stats-bar {
-  display: flex;
-  gap: 20px;
-  padding: 15px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-
-.stat {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 500;
-}
-
-/* Cartes de documents */
-.documents-grid {
-  display: grid;
-  gap: 15px;
-}
-
-.document-card {
-  display: flex;
-  align-items: center;
-  padding: 15px;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  background: white;
-  transition: all 0.3s ease;
-}
-
-.document-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  transform: translateY(-2px);
-}
-
-.doc-icon {
-  font-size: 2rem;
-  margin-right: 15px;
-}
-
-.doc-info {
-  flex: 1;
-}
-
-.doc-info h4 {
-  margin: 0 0 5px 0;
-  font-size: 1.1rem;
-  color: #333;
-}
-
-.doc-meta {
-  margin: 0;
-  color: #666;
-  font-size: 0.9rem;
-}
-
-.doc-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.btn-download, .btn-delete {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-}
-
-.btn-download {
-  background: #007bff;
-  color: white;
-}
-
-.btn-download:hover {
-  background: #0056b3;
-}
-
-.btn-delete {
-  background: #dc3545;
-  color: white;
-}
-
-.btn-delete:hover {
-  background: #c82333;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .document-card {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .stats-bar {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .doc-actions {
-    width: 100%;
-    justify-content: space-around;
-    margin-top: 15px;
-  }
-}
-```
-
----
-
-## 🔧 Configuration API Client
-
-### **Axios interceptor pour l'authentification :**
-```javascript
-// api.js
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: 'http://localhost:3000',
-  timeout: 30000 // 30s pour les uploads
-});
-
-// Intercepteur pour ajouter le token automatiquement
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Intercepteur pour gérer les erreurs d'auth
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Token expiré, rediriger vers login
-      localStorage.removeItem('authToken');
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
-
-export default api;
-```
-
----
-
-## 📱 Interface Mobile-First
-
-### **Considérations UX mobile :**
-
-1. **Upload tactile :**
-   - Zone de drop plus grande
-   - Bouton "Choisir fichiers" bien visible
-   - Feedback visuel immédiat
-
-2. **Liste optimisée :**
-   - Cartes empilées verticalement
-   - Actions en bas de chaque carte
-   - Swipe pour supprimer (optionnel)
-
-3. **Performance :**
-   - Pagination pour éviter de charger trop de documents
-   - Lazy loading des images/previews
-   - Compression côté client si nécessaire
-
----
-
-## 🚨 Gestion d'Erreurs
-
-### **Messages d'erreur à prévoir :**
+### **Service API :**
 
 ```javascript
-const errorMessages = {
-  // Upload
-  'LIMIT_FILE_SIZE': 'Fichier trop volumineux (max 10MB)',
-  'LIMIT_FILE_COUNT': 'Trop de fichiers (max 5 à la fois)',
-  'INVALID_FILE_TYPE': 'Type de fichier non autorisé',
-  
-  // Authentification
-  'TOKEN_EXPIRED': 'Session expirée, veuillez vous reconnecter',
-  'ACCESS_DENIED': 'Accès refusé',
-  
-  // Réseau
-  'NETWORK_ERROR': 'Erreur de connexion, vérifiez votre internet',
-  'SERVER_ERROR': 'Erreur serveur, veuillez réessayer plus tard',
-  
-  // Documents
-  'DOCUMENT_NOT_FOUND': 'Document non trouvé',
-  'DOWNLOAD_FAILED': 'Échec du téléchargement'
+// documentService.js
+import api from './api';
+
+export const documentService = {
+  // Upload de documents
+  async upload(files) {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('documents', file);
+    });
+    
+    return api.post('/api/client-documents/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  },
+
+  // Liste des documents
+  async getAll(params = {}) {
+    return api.get('/api/client-documents', { params });
+  },
+
+  // Télécharger un document
+  async download(id) {
+    return api.get(`/api/client-documents/${id}/download`, {
+      responseType: 'blob'
+    });
+  },
+
+  // Détails d'un document
+  async getById(id) {
+    return api.get(`/api/client-documents/${id}`);
+  },
+
+  // Supprimer un document
+  async delete(id) {
+    return api.delete(`/api/client-documents/${id}`);
+  }
 };
 ```
 
 ---
 
-## ✅ Checklist d'Implémentation
+## 🚀 Statut
 
-### **Phase 1 - Base :**
-- [ ] Composant d'upload avec drag & drop
-- [ ] Liste des documents avec pagination
-- [ ] Téléchargement de fichiers
-- [ ] Suppression de documents
-- [ ] Gestion d'erreurs complète
-
-### **Phase 2 - UX :**
-- [ ] Statistiques en temps réel
-- [ ] Filtres et recherche
-- [ ] Indicateurs de progression upload
-- [ ] Notifications toast
-- [ ] Interface responsive
-
-### **Phase 3 - Avancé :**
-- [ ] Prévisualisation des images
-- [ ] Upload par chunks (gros fichiers)
-- [ ] Glisser-déposer depuis l'extérieur
-- [ ] Historique des actions
-- [ ] Compression automatique
-
----
-
-## 🎯 Intégration dans le Dashboard
-
-### **Structure suggérée :**
-```
-Dashboard Client
-├── 🏠 Accueil
-├── 📋 Mes Projets
-├── 📄 Mes Documents ← Nouvelle section
-│   ├── 📤 Upload
-│   ├── 📋 Liste
-│   └── 📊 Statistiques
-├── 💬 Messages
-└── ⚙️ Paramètres
-```
-
-### **Navigation :**
-- Ajouter "Mes Documents" dans le menu principal
-- Badge avec nombre de documents sur l'icône
-- Lien rapide "Ajouter document" depuis autres sections
-
----
-
-## 🚀 Points d'Attention
-
-### **Performance :**
-- Utilisez la pagination côté serveur
-- Implémentez un système de cache pour les métadonnées
-- Optimisez les images avant upload côté client
-
-### **Sécurité :**
-- Validez TOUJOURS les types de fichiers côté client ET serveur
-- Limitez la taille des uploads
-- Vérifiez l'authentification à chaque requête
-
-### **Accessibilité :**
-- Labels explicites pour les lecteurs d'écran
-- Navigation au clavier
-- Contrastes suffisants
-- Messages d'erreur clairs
-
----
-
-Le backend est prêt ! Il ne reste plus qu'à implémenter cette interface pour offrir une expérience complète à tes clients. 🎉
+✅ **Backend opérationnel** - Prêt pour intégration frontend  
+✅ **Table documents étendue** - Nouveaux champs ajoutés  
+✅ **Sécurité implémentée** - Isolation des données clients  
+✅ **Validation complète** - Types, tailles, permissions  
+✅ **Logs optimisés** - Messages clairs et concis
