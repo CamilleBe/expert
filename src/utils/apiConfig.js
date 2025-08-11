@@ -21,6 +21,12 @@ export const API_CONFIG = {
       // Authentification
       LOGIN: '/users/login',
       
+      // Documents
+      DOCUMENTS: '/documents',
+      DOCUMENTS_UPLOAD: '/documents/upload',
+      DOCUMENTS_DOWNLOAD: '/documents/:id/download',
+      DOCUMENTS_DELETE: '/documents/:id',
+      
       // Autres (pour plus tard)
       USERS: '/users',
       PROFILE: '/users'

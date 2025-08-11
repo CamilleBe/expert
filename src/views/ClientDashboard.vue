@@ -270,45 +270,167 @@
           <!-- Zone de dépôt de documents -->
           <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
             <h2 class="text-xl font-bold text-gray-900 mb-4">Dépôt rapide</h2>
-            <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+            
+            <!-- Zone de drag & drop améliorée -->
+            <div 
+              class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center transition-all duration-300 hover:border-blue-400 hover:bg-blue-50"
+              @dragover="handleDragOver"
+              @drop="handleFileDrop"
+              @click="$refs.fileInput.click()"
+            >
               <svg class="h-12 w-12 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
               <p class="text-lg font-medium text-gray-900 mb-2">Glissez vos fichiers ici ou cliquez pour sélectionner</p>
-              <p class="text-sm text-gray-500">PDF, DOC, JPG, PNG jusqu'à 10MB</p>
-              <input type="file" multiple class="hidden" ref="fileInput" @change="handleFileUpload" />
-              <button @click="$refs.fileInput.click()" class="mt-4 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors">
+              <p class="text-sm text-gray-500">PDF, DOC, DOCX, JPG, PNG jusqu'à 10MB par fichier</p>
+              <input 
+                type="file" 
+                multiple 
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                class="hidden" 
+                ref="fileInput" 
+                @change="handleFileUpload" 
+              />
+              <button 
+                @click.stop="$refs.fileInput.click()" 
+                class="mt-4 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors"
+              >
                 Sélectionner des fichiers
               </button>
+            </div>
+            
+            <!-- Fichiers sélectionnés -->
+            <div v-if="selectedFiles.length > 0" class="mt-6">
+              <h3 class="text-md font-semibold text-gray-900 mb-3">Fichiers sélectionnés :</h3>
+              <div class="space-y-2 mb-4">
+                <div 
+                  v-for="(file, index) in selectedFiles" 
+                  :key="index"
+                  class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                >
+                  <div class="flex items-center">
+                    <span class="text-lg mr-3">{{ documentService.getDocumentIcon(file.type) }}</span>
+                    <div>
+                      <p class="text-sm font-medium text-gray-900">{{ file.name }}</p>
+                      <p class="text-xs text-gray-500">{{ documentService.formatFileSize(file.size) }}</p>
+                    </div>
+                  </div>
+                  <button 
+                    @click="removeSelectedFile(index)"
+                    class="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                  >
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="flex space-x-3">
+                <button 
+                  @click="uploadSelectedFiles"
+                  :disabled="uploadingDocuments"
+                  :class="uploadingDocuments ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-500'"
+                  class="flex-1 py-2 px-4 text-white rounded-lg transition-colors"
+                >
+                  <span v-if="uploadingDocuments">
+                    <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Upload en cours...
+                  </span>
+                  <span v-else>🚀 Uploader {{ selectedFiles.length }} fichier(s)</span>
+                </button>
+                <button 
+                  @click="selectedFiles = []"
+                  class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  Annuler
+                </button>
+              </div>
             </div>
           </div>
 
           <!-- Liste des documents -->
           <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
             <div class="p-6 border-b border-gray-200">
-              <h2 class="text-xl font-bold text-gray-900">Documents uploadés</h2>
+              <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold text-gray-900">Documents uploadés</h2>
+                
+                <!-- Statistiques -->
+                <div v-if="documentsStats.total > 0" class="flex items-center space-x-4 text-sm text-gray-600">
+                  <span>📄 {{ documentsStats.total }} document(s)</span>
+                  <span>📦 {{ documentService.formatFileSize(documentsStats.totalSize) }}</span>
+                </div>
+              </div>
             </div>
+            
             <div class="p-6">
-              <div class="space-y-4">
-                <div v-for="document in documents" :key="document.id" class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <!-- Chargement -->
+              <div v-if="isLoadingDocuments" class="flex items-center justify-center py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span class="ml-3 text-gray-600">Chargement de vos documents...</span>
+              </div>
+              
+              <!-- Erreur -->
+              <div v-else-if="documentsError" class="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div class="flex items-center">
+                  <svg class="h-5 w-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                  </svg>
+                  <span class="text-red-700 font-medium">{{ documentsError }}</span>
+                </div>
+                <button @click="loadDocuments" class="mt-2 text-sm text-red-600 hover:text-red-500 underline">
+                  Réessayer
+                </button>
+              </div>
+              
+              <!-- Aucun document -->
+              <div v-else-if="documents.length === 0" class="text-center py-8">
+                <div class="p-3 rounded-full bg-gray-100 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun document uploadé</h3>
+                <p class="text-gray-600 mb-4">Uploadez votre premier document pour commencer</p>
+              </div>
+              
+              <!-- Liste des documents -->
+              <div v-else class="space-y-4">
+                <div 
+                  v-for="document in documents" 
+                  :key="document.id" 
+                  class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
                   <div class="flex items-center">
                     <div class="p-2 rounded-full bg-blue-100">
-                      <svg class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
+                      <span class="text-xl">{{ document.icon }}</span>
                     </div>
                     <div class="ml-3">
-                      <p class="text-sm font-medium text-gray-900">{{ document.name }}</p>
-                      <p class="text-sm text-gray-600">{{ document.type }} • {{ document.size }} • {{ document.date }}</p>
+                      <p class="text-sm font-medium text-gray-900">{{ document.originalName }}</p>
+                      <p class="text-sm text-gray-600">
+                        {{ document.readableFileType }} • 
+                        {{ document.formattedSize }} • 
+                        {{ document.formattedUploadDate }}
+                      </p>
                     </div>
                   </div>
                   <div class="flex space-x-2">
-                    <button class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                    <button 
+                      @click="downloadDocument(document)"
+                      class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      title="Télécharger"
+                    >
                       <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                     </button>
-                    <button class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                    <button 
+                      @click="deleteDocument(document)"
+                      class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Supprimer"
+                    >
                       <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
@@ -581,6 +703,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import projetService from '@/services/projetService'
+import documentService from '@/services/documentService'
 import ProjectCard from '@/components/ProjectCard.vue'
 import ProjectDetailsModal from '@/components/ProjectDetailsModal.vue'
 import CreateProjectModal from '@/components/CreateProjectModal.vue'
@@ -613,7 +736,17 @@ const dashboardStats = ref({
 const isLoadingProjects = ref(false)
 const projectsError = ref('')
 
+// Documents
 const documents = ref([])
+const documentsStats = ref({
+  total: 0,
+  totalSize: 0,
+  byType: {}
+})
+const isLoadingDocuments = ref(false)
+const documentsError = ref('')
+const uploadingDocuments = ref(false)
+const selectedFiles = ref([])
 
 const payments = ref([])
 
@@ -715,11 +848,159 @@ function getStatusClass(statut) {
   return classMap[statut] || 'bg-gray-100 text-gray-800'
 }
 
-// Méthodes
+// ================================================
+// MÉTHODES POUR LES DOCUMENTS
+// ================================================
+
+/**
+ * Charger la liste des documents
+ */
+async function loadDocuments() {
+  isLoadingDocuments.value = true
+  documentsError.value = ''
+  
+  try {
+    console.log('📋 Chargement des documents...')
+    const response = await documentService.getDocuments()
+    
+    if (response.success) {
+      documents.value = response.data.documents || []
+      documentsStats.value = response.data.statistics || {
+        total: 0,
+        totalSize: 0,
+        byType: {}
+      }
+      
+      // Ajouter des propriétés formatées pour l'affichage
+      documents.value = documents.value.map(doc => ({
+        ...doc,
+        formattedSize: documentService.formatFileSize(doc.size),
+        formattedUploadDate: documentService.formatUploadDate(doc.uploadDate),
+        readableFileType: documentService.getReadableFileType(doc.mimeType),
+        icon: documentService.getDocumentIcon(doc.mimeType)
+      }))
+      
+      console.log('✅ Documents chargés:', documents.value)
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des documents:', error)
+    documentsError.value = error.message || 'Erreur lors du chargement des documents'
+  } finally {
+    isLoadingDocuments.value = false
+  }
+}
+
+/**
+ * Gérer la sélection de fichiers (input file ou drag & drop)
+ */
 function handleFileUpload(event) {
   const files = event.target.files
-  // Logique de traitement des fichiers
-  console.log('Fichiers sélectionnés:', files)
+  if (files && files.length > 0) {
+    selectedFiles.value = Array.from(files)
+    console.log('📁 Fichiers sélectionnés:', selectedFiles.value.map(f => f.name))
+  }
+}
+
+/**
+ * Gérer le drag & drop
+ */
+function handleFileDrop(event) {
+  event.preventDefault()
+  const files = event.dataTransfer.files
+  if (files && files.length > 0) {
+    selectedFiles.value = Array.from(files)
+    console.log('📁 Fichiers déposés:', selectedFiles.value.map(f => f.name))
+  }
+}
+
+/**
+ * Prévenir le comportement par défaut du drag over
+ */
+function handleDragOver(event) {
+  event.preventDefault()
+}
+
+/**
+ * Upload des fichiers sélectionnés
+ */
+async function uploadSelectedFiles() {
+  if (!selectedFiles.value.length) return
+  
+  uploadingDocuments.value = true
+  
+  try {
+    console.log('📤 Upload en cours...')
+    const response = await documentService.uploadDocuments(selectedFiles.value)
+    
+    if (response.success) {
+      console.log('✅ Upload réussi:', response.data)
+      
+      // Effacer la sélection
+      selectedFiles.value = []
+      
+      // Recharger la liste des documents
+      await loadDocuments()
+      
+      // TODO: Afficher une notification de succès
+      console.log('🎉 Documents uploadés avec succès!')
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur lors de l\'upload:', error)
+    documentsError.value = error.message || 'Erreur lors de l\'upload'
+  } finally {
+    uploadingDocuments.value = false
+  }
+}
+
+/**
+ * Télécharger un document
+ */
+async function downloadDocument(document) {
+  try {
+    console.log('📥 Téléchargement de:', document.originalName)
+    await documentService.downloadDocument(document.id, document.originalName)
+    console.log('✅ Téléchargement réussi')
+  } catch (error) {
+    console.error('❌ Erreur lors du téléchargement:', error)
+    documentsError.value = error.message || 'Erreur lors du téléchargement'
+  }
+}
+
+/**
+ * Supprimer un document
+ */
+async function deleteDocument(document) {
+  if (!confirm(`Êtes-vous sûr de vouloir supprimer "${document.originalName}" ?`)) {
+    return
+  }
+  
+  try {
+    console.log('🗑️ Suppression de:', document.originalName)
+    const response = await documentService.deleteDocument(document.id)
+    
+    if (response.success) {
+      console.log('✅ Document supprimé')
+      
+      // Recharger la liste des documents
+      await loadDocuments()
+      
+      // TODO: Afficher une notification de succès
+      console.log('🎉 Document supprimé avec succès!')
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur lors de la suppression:', error)
+    documentsError.value = error.message || 'Erreur lors de la suppression'
+  }
+}
+
+/**
+ * Retirer un fichier de la sélection
+ */
+function removeSelectedFile(index) {
+  selectedFiles.value.splice(index, 1)
 }
 
 function openReviewModal(project) {
@@ -759,6 +1040,7 @@ function onProjectCreated(newProject) {
 onMounted(() => {
   console.log('🚀 Initialisation du tableau de bord client')
   loadDashboard()
+  loadDocuments() // Charger aussi les documents
 })
 </script>
 
