@@ -276,8 +276,8 @@
 
               <!-- Description du projet -->
               <div class="mb-4">
-                <p class="text-gray-700 leading-relaxed">
-                  {{ project.description ? project.description.substring(0, 150) + (project.description.length > 150 ? '...' : '') : 'Aucune description disponible' }}
+                <p class="text-gray-700 leading-relaxed text-sm">
+                  {{ project.description || 'Aucune description disponible' }}
                 </p>
               </div>
 
@@ -806,10 +806,6 @@
             <div class="bg-gray-50 rounded-lg p-4">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <p class="text-sm text-gray-600 mb-1">ID du projet</p>
-                  <p class="font-medium text-gray-900">#{{ selectedProjectForDetails.id }}</p>
-                </div>
-                <div>
                   <p class="text-sm text-gray-600 mb-1">Statut actuel</p>
                   <span :class="getStatusClass(selectedProjectForDetails.statut)" class="inline-block px-3 py-1 text-xs font-medium rounded-full">
                     {{ getStatusLabel(selectedProjectForDetails.statut) }}
@@ -854,11 +850,6 @@
               class="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors"
             >
               Fermer
-            </button>
-            <button 
-              class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-            >
-              Modifier le projet
             </button>
           </div>
         </div>
@@ -1224,6 +1215,8 @@ function getProjectNumber(project) {
   
   return `Mon ${projectNumber}ème projet`
 }
+
+
 
 function getStatusClass(statut) {
   const classMap = {
