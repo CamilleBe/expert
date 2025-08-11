@@ -27,11 +27,11 @@ Ce guide détaille l'implémentation frontend pour le **module Documents du dash
 
 | Méthode | Endpoint | Description | Payload |
 |---------|----------|-------------|---------|
-| `POST` | `/api/documents/upload` | Upload de fichiers | FormData avec champ `documents` |
-| `GET` | `/api/documents` | Liste des documents | Query params optionnels |
-| `GET` | `/api/documents/:id/download` | Télécharger un fichier | - |
-| `GET` | `/api/documents/:id` | Détails d'un document | - |
-| `DELETE` | `/api/documents/:id` | Supprimer un document | - |
+| `POST` | `/api/client-documents/upload` | Upload de fichiers | FormData avec champ `documents` |
+| `GET` | `/api/client-documents` | Liste des documents | Query params optionnels |
+| `GET` | `/api/client-documents/:id/download` | Télécharger un fichier | - |
+| `GET` | `/api/client-documents/:id` | Détails d'un document | - |
+| `DELETE` | `/api/client-documents/:id` | Supprimer un document | - |
 
 ### 🔐 Headers requis pour toutes les requêtes :
 ```javascript
@@ -166,7 +166,7 @@ export default {
           formData.append('documents', file);
         });
         
-        const response = await this.$api.post('/api/documents/upload', formData, {
+        const response = await this.$api.post('/api/client-documents/upload', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -356,7 +356,7 @@ export default {
           params.append('mimeType', this.selectedType);
         }
         
-        const response = await this.$api.get(`/api/documents?${params}`);
+        const response = await this.$api.get(`/api/client-documents?${params}`);
         
         if (response.data.success) {
           this.documents = response.data.data.documents;
@@ -374,7 +374,7 @@ export default {
     
     async downloadDocument(doc) {
       try {
-        const response = await this.$api.get(`/api/documents/${doc.id}/download`, {
+        const response = await this.$api.get(`/api/client-documents/${doc.id}/download`, {
           responseType: 'blob'
         });
         
@@ -401,7 +401,7 @@ export default {
       }
       
       try {
-        const response = await this.$api.delete(`/api/documents/${doc.id}`);
+        const response = await this.$api.delete(`/api/client-documents/${doc.id}`);
         
         if (response.data.success) {
           this.$toast.success('Document supprimé avec succès');

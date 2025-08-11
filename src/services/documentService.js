@@ -83,7 +83,12 @@ class DocumentService {
       const queryString = params.toString()
       const endpoint = queryString ? `${API_CONFIG.ENDPOINTS.DOCUMENTS}?${queryString}` : API_CONFIG.ENDPOINTS.DOCUMENTS
       
+      console.log('🔐 Headers utilisés pour GET documents:', getAuthHeaders())
+      console.log('🌍 URL complète:', buildUrl(endpoint))
+      
       const response = await this.makeRequest(endpoint)
+      
+      console.log('📊 Réponse GET documents complète:', response)
       
       return response
       
