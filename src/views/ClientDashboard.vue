@@ -80,9 +80,7 @@
               </button>
             </li>
             <li>
-              <button @click="activeTab = 'reviews'" :class="activeTab === 'reviews' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
-                Évaluations
-              </button>
+
             </li>
           </ul>
         </div>
@@ -599,89 +597,7 @@
             </div>
           </div>
         </div>
-
-        <!-- Évaluations -->
-        <div v-if="activeTab === 'reviews'" class="animate-fade-in">
-          <h1 class="text-3xl font-bold text-gray-900 mb-8">Évaluations des artisans</h1>
-
-          <!-- Projets à évaluer -->
-          <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">Projets à évaluer</h2>
-            <div class="space-y-4">
-              <div v-for="project in projectsToReview" :key="project.id" class="flex items-center justify-between p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                <div class="flex items-center">
-                  <img :src="project.contractorImage" :alt="project.contractor" class="h-12 w-12 rounded-full" />
-                  <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-900">{{ project.title }}</p>
-                    <p class="text-sm text-gray-600">{{ project.contractor }} • Terminé le {{ project.completedDate }}</p>
-                  </div>
-                </div>
-                <button @click="openReviewModal(project)" class="py-2 px-4 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-500 transition-colors">
-                  Évaluer maintenant
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Mes évaluations -->
-          <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
-            <div class="p-6 border-b border-gray-200">
-              <h2 class="text-xl font-bold text-gray-900">Mes évaluations</h2>
-            </div>
-            <div class="p-6">
-              <div class="space-y-6">
-                <div v-for="review in myReviews" :key="review.id" class="border-b border-gray-200 pb-6">
-                  <div class="flex items-start">
-                    <img :src="review.contractorImage" :alt="review.contractor" class="h-12 w-12 rounded-full" />
-                    <div class="ml-4 flex-1">
-                      <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-medium text-gray-900">{{ review.contractor }}</h3>
-                        <span class="text-sm text-gray-500">{{ review.date }}</span>
-                      </div>
-                      <p class="text-sm text-gray-600 mb-2">{{ review.project }}</p>
-                      <div class="flex mb-3">
-                        <svg v-for="i in 5" :key="i" :class="i <= review.rating ? 'text-yellow-500' : 'text-gray-300'" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118l-3.388-2.46a1 1 0 00-1.175 0l-3.388 2.46c-.784.57-1.838-.197-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.049 9.394c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.967z"></path>
-                        </svg>
-                      </div>
-                      <p class="text-gray-700">{{ review.comment }}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </main>
-    </div>
-
-    <!-- Modal d'évaluation -->
-    <div v-if="showReviewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
-        <h3 class="text-2xl font-bold text-gray-900 mb-6">Évaluer {{ selectedProject?.contractor }}</h3>
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Note générale</label>
-          <div class="flex space-x-1">
-            <button v-for="i in 5" :key="i" @click="newReview.rating = i" :class="i <= newReview.rating ? 'text-yellow-500' : 'text-gray-300'" class="w-8 h-8 hover:text-yellow-400 transition-colors">
-              <svg class="w-full h-full" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118l-3.388-2.46a1 1 0 00-1.175 0l-3.388 2.46c-.784.57-1.838-.197-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.049 9.394c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.967z"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Votre commentaire</label>
-          <textarea v-model="newReview.comment" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Décrivez votre expérience avec cet artisan..."></textarea>
-        </div>
-        <div class="flex space-x-4">
-          <button @click="submitReview" class="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors">
-            Publier l'évaluation
-          </button>
-          <button @click="showReviewModal = false" class="flex-1 py-3 px-6 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-colors">
-            Annuler
-          </button>
-        </div>
-      </div>
     </div>
 
     <!-- Modals -->
