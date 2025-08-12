@@ -932,13 +932,7 @@ function closeProjectDetailsModal() {
   selectedProjectForDetails.value = null
 }
 
-function submitReview() {
-  // Logique de soumission de l'évaluation
-  console.log('Nouvelle évaluation:', newReview.value)
-  showReviewModal.value = false
-  // Retirer le projet de la liste des projets à évaluer
-  projectsToReview.value = projectsToReview.value.filter(p => p.id !== selectedProject.value.id)
-}
+
 
 function closeCreateProjectModal() {
   showCreateProjectModal.value = false
