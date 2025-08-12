@@ -265,174 +265,269 @@
             </button>
           </div>
 
-          <!-- Zone de dépôt de documents -->
-          <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">Dépôt rapide</h2>
+          <!-- Layout en deux colonnes -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
-            <!-- Zone de drag & drop améliorée -->
-            <div 
-              class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center transition-all duration-300 hover:border-blue-400 hover:bg-blue-50"
-              @dragover="handleDragOver"
-              @drop="handleFileDrop"
-              @click="$refs.fileInput.click()"
-            >
-              <svg class="h-12 w-12 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-              </svg>
-              <p class="text-lg font-medium text-gray-900 mb-2">Glissez vos fichiers ici ou cliquez pour sélectionner</p>
-              <p class="text-sm text-gray-500">PDF, DOC, DOCX, JPG, PNG jusqu'à 10MB par fichier</p>
-              <input 
-                type="file" 
-                multiple 
-                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                class="hidden" 
-                ref="fileInput" 
-                @change="handleFileUpload" 
-              />
-              <button 
-                @click.stop="$refs.fileInput.click()" 
-                class="mt-4 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors"
-              >
-                Sélectionner des fichiers
-              </button>
-            </div>
-            
-            <!-- Fichiers sélectionnés -->
-            <div v-if="selectedFiles.length > 0" class="mt-6">
-              <h3 class="text-md font-semibold text-gray-900 mb-3">Fichiers sélectionnés :</h3>
-              <div class="space-y-2 mb-4">
+            <!-- Colonne 1: Documents uploadés par le client -->
+            <div class="space-y-6">
+              <!-- Zone de dépôt de documents -->
+              <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">📤 Mes documents uploadés</h2>
+                
+                <!-- Zone de drag & drop améliorée -->
                 <div 
-                  v-for="(file, index) in selectedFiles" 
-                  :key="index"
-                  class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center transition-all duration-300 hover:border-blue-400 hover:bg-blue-50"
+                  @dragover="handleDragOver"
+                  @drop="handleFileDrop"
+                  @click="$refs.fileInput.click()"
                 >
-                  <div class="flex items-center">
-                    <span class="text-lg mr-3">{{ documentService.getDocumentIcon(file.type) }}</span>
-                    <div>
-                      <p class="text-sm font-medium text-gray-900">{{ file.name }}</p>
-                      <p class="text-xs text-gray-500">{{ documentService.formatFileSize(file.size) }}</p>
-                    </div>
-                  </div>
+                  <svg class="h-12 w-12 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  <p class="text-lg font-medium text-gray-900 mb-2">Glissez vos fichiers ici ou cliquez pour sélectionner</p>
+                  <p class="text-sm text-gray-500">PDF, DOC, DOCX, JPG, PNG jusqu'à 10MB par fichier</p>
+                  <input 
+                    type="file" 
+                    multiple 
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    class="hidden" 
+                    ref="fileInput" 
+                    @change="handleFileUpload" 
+                  />
                   <button 
-                    @click="removeSelectedFile(index)"
-                    class="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                    @click.stop="$refs.fileInput.click()" 
+                    class="mt-4 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors"
                   >
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    Sélectionner des fichiers
                   </button>
                 </div>
-              </div>
-              <div class="flex space-x-3">
-                <button 
-                  @click="uploadSelectedFiles"
-                  :disabled="uploadingDocuments"
-                  :class="uploadingDocuments ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-500'"
-                  class="flex-1 py-2 px-4 text-white rounded-lg transition-colors"
-                >
-                  <span v-if="uploadingDocuments">
-                    <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Upload en cours...
-                  </span>
-                  <span v-else>🚀 Uploader {{ selectedFiles.length }} fichier(s)</span>
-                </button>
-                <button 
-                  @click="selectedFiles = []"
-                  class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-                >
-                  Annuler
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Liste des documents -->
-          <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
-            <div class="p-6 border-b border-gray-200">
-              <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold text-gray-900">Documents uploadés</h2>
                 
-                <!-- Statistiques -->
-                <div v-if="documentsStats.total > 0" class="flex items-center space-x-4 text-sm text-gray-600">
-                  <span>📄 {{ documentsStats.total }} document(s)</span>
-                  <span>📦 {{ documentService.formatFileSize(documentsStats.totalSize) }}</span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="p-6">
-              <!-- Chargement -->
-              <div v-if="isLoadingDocuments" class="flex items-center justify-center py-8">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <span class="ml-3 text-gray-600">Chargement de vos documents...</span>
-              </div>
-              
-              <!-- Erreur -->
-              <div v-else-if="documentsError" class="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <div class="flex items-center">
-                  <svg class="h-5 w-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                  </svg>
-                  <span class="text-red-700 font-medium">{{ documentsError }}</span>
-                </div>
-                <button @click="loadDocuments" class="mt-2 text-sm text-red-600 hover:text-red-500 underline">
-                  Réessayer
-                </button>
-              </div>
-              
-              <!-- Aucun document -->
-              <div v-else-if="documents.length === 0" class="text-center py-8">
-                <div class="p-3 rounded-full bg-gray-100 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun document uploadé</h3>
-                <p class="text-gray-600 mb-4">Uploadez votre premier document pour commencer</p>
-              </div>
-              
-              <!-- Liste des documents -->
-              <div v-else class="space-y-4">
-                <div 
-                  v-for="document in documents" 
-                  :key="document.id" 
-                  class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <div class="flex items-center">
-                    <div class="p-2 rounded-full bg-blue-100">
-                      <span class="text-xl">{{ document.icon }}</span>
-                    </div>
-                    <div class="ml-3">
-                      <p class="text-sm font-medium text-gray-900">{{ document.originalName }}</p>
-                      <p class="text-sm text-gray-600">
-                        {{ document.readableFileType }} • 
-                        {{ document.formattedSize }} • 
-                        {{ document.formattedUploadDate }}
-                      </p>
+                <!-- Fichiers sélectionnés -->
+                <div v-if="selectedFiles.length > 0" class="mt-6">
+                  <h3 class="text-md font-semibold text-gray-900 mb-3">Fichiers sélectionnés :</h3>
+                  <div class="space-y-2 mb-4">
+                    <div 
+                      v-for="(file, index) in selectedFiles" 
+                      :key="index"
+                      class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                    >
+                      <div class="flex items-center">
+                        <span class="text-lg mr-3">{{ documentService.getDocumentIcon(file.type) }}</span>
+                        <div>
+                          <p class="text-sm font-medium text-gray-900">{{ file.name }}</p>
+                          <p class="text-xs text-gray-500">{{ documentService.formatFileSize(file.size) }}</p>
+                        </div>
+                      </div>
+                      <button 
+                        @click="removeSelectedFile(index)"
+                        class="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                      >
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
                     </div>
                   </div>
-                  <div class="flex space-x-2">
+                  <div class="flex space-x-3">
                     <button 
-                      @click="downloadDocument(document)"
-                      class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      title="Télécharger"
+                      @click="uploadSelectedFiles"
+                      :disabled="uploadingDocuments"
+                      :class="uploadingDocuments ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-500'"
+                      class="flex-1 py-2 px-4 text-white rounded-lg transition-colors"
                     >
-                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
+                      <span v-if="uploadingDocuments">
+                        <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Upload en cours...
+                      </span>
+                      <span v-else>🚀 Uploader {{ selectedFiles.length }} fichier(s)</span>
                     </button>
                     <button 
-                      @click="deleteDocument(document)"
-                      class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Supprimer"
+                      @click="selectedFiles = []"
+                      class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
                     >
-                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
+                      Annuler
                     </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Liste des documents -->
+              <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
+                <div class="p-6 border-b border-gray-200">
+                  <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900">Documents uploadés</h3>
+                    
+                    <!-- Statistiques -->
+                    <div v-if="documentsStats.total > 0" class="flex items-center space-x-4 text-sm text-gray-600">
+                      <span>📄 {{ documentsStats.total }} document(s)</span>
+                      <span>📦 {{ documentService.formatFileSize(documentsStats.totalSize) }}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="p-6">
+                  <!-- Chargement -->
+                  <div v-if="isLoadingDocuments" class="flex items-center justify-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span class="ml-3 text-gray-600">Chargement de vos documents...</span>
+                  </div>
+                  
+                  <!-- Erreur -->
+                  <div v-else-if="documentsError" class="p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div class="flex items-center">
+                      <svg class="h-5 w-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                      </svg>
+                      <span class="text-red-700 font-medium">{{ documentsError }}</span>
+                    </div>
+                    <button @click="loadDocuments" class="mt-2 text-sm text-red-600 hover:text-red-500 underline">
+                      Réessayer
+                    </button>
+                  </div>
+                  
+                  <!-- Aucun document -->
+                  <div v-else-if="documents.length === 0" class="text-center py-8">
+                    <div class="p-3 rounded-full bg-gray-100 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                      <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <h4 class="text-lg font-medium text-gray-900 mb-2">Aucun document uploadé</h4>
+                    <p class="text-gray-600 mb-4">Uploadez votre premier document pour commencer</p>
+                  </div>
+                  
+                  <!-- Liste des documents -->
+                  <div v-else class="space-y-4">
+                    <div 
+                      v-for="document in documents" 
+                      :key="document.id" 
+                      class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <div class="flex items-center">
+                        <div class="p-2 rounded-full bg-blue-100">
+                          <span class="text-xl">{{ document.icon }}</span>
+                        </div>
+                        <div class="ml-3">
+                          <p class="text-sm font-medium text-gray-900">{{ document.originalName }}</p>
+                          <p class="text-sm text-gray-600">
+                            {{ document.readableFileType }} • 
+                            {{ document.formattedSize }} • 
+                            {{ document.formattedUploadDate }}
+                          </p>
+                        </div>
+                      </div>
+                      <div class="flex space-x-2">
+                        <button 
+                          @click="downloadDocument(document)"
+                          class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Télécharger"
+                        >
+                          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </button>
+                        <button 
+                          @click="deleteDocument(document)"
+                          class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Supprimer"
+                        >
+                          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Colonne 2: Documents envoyés par l'AMO -->
+            <div class="space-y-6">
+              <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
+                <div class="p-6 border-b border-gray-200">
+                  <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-gray-900">📥 Documents envoyés par l'AMO</h2>
+                    
+                    <!-- Statistiques -->
+                    <div v-if="amoDocumentsStats.total > 0" class="flex items-center space-x-4 text-sm text-gray-600">
+                      <span>📄 {{ amoDocumentsStats.total }} document(s)</span>
+                      <span>📦 {{ documentService.formatFileSize(amoDocumentsStats.totalSize) }}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="p-6">
+                  <!-- Chargement -->
+                  <div v-if="isLoadingAmoDocuments" class="flex items-center justify-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                    <span class="ml-3 text-gray-600">Chargement des documents AMO...</span>
+                  </div>
+                  
+                  <!-- Erreur -->
+                  <div v-else-if="amoDocumentsError" class="p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div class="flex items-center">
+                      <svg class="h-5 w-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                      </svg>
+                      <span class="text-red-700 font-medium">{{ amoDocumentsError }}</span>
+                    </div>
+                    <button @click="loadAmoDocuments" class="mt-2 text-sm text-red-600 hover:text-red-500 underline">
+                      Réessayer
+                    </button>
+                  </div>
+                  
+                  <!-- Aucun document AMO -->
+                  <div v-else-if="amoDocuments.length === 0" class="text-center py-8">
+                    <div class="p-3 rounded-full bg-green-100 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                      <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <h4 class="text-lg font-medium text-gray-900 mb-2">Aucun document reçu</h4>
+                    <p class="text-gray-600">Votre AMO n'a pas encore envoyé de documents</p>
+                  </div>
+                  
+                  <!-- Liste des documents AMO -->
+                  <div v-else class="space-y-4">
+                    <div 
+                      v-for="document in amoDocuments" 
+                      :key="document.id" 
+                      class="flex items-center justify-between p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+                    >
+                      <div class="flex items-center">
+                        <div class="p-2 rounded-full bg-green-100">
+                          <span class="text-xl">{{ document.icon }}</span>
+                        </div>
+                        <div class="ml-3">
+                          <p class="text-sm font-medium text-gray-900">{{ document.originalName }}</p>
+                          <p class="text-sm text-gray-600">
+                            {{ document.readableFileType }} • 
+                            {{ document.formattedSize }} • 
+                            {{ document.formattedUploadDate }}
+                          </p>
+                          <div v-if="document.amoName" class="mt-1">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              🏗️ {{ document.amoName }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flex space-x-2">
+                        <button 
+                          @click="downloadDocument(document)"
+                          class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          title="Télécharger"
+                        >
+                          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -663,6 +758,16 @@ const isLoadingDocuments = ref(false)
 const documentsError = ref('')
 const uploadingDocuments = ref(false)
 const selectedFiles = ref([])
+
+// Documents AMO
+const amoDocuments = ref([])
+const amoDocumentsStats = ref({
+  total: 0,
+  totalSize: 0,
+  byType: {}
+})
+const isLoadingAmoDocuments = ref(false)
+const amoDocumentsError = ref('')
 
 const payments = ref([])
 
@@ -916,6 +1021,46 @@ function removeSelectedFile(index) {
   selectedFiles.value.splice(index, 1)
 }
 
+// ================================================
+// MÉTHODES POUR LES DOCUMENTS AMO
+// ================================================
+
+/**
+ * Charger la liste des documents envoyés par l'AMO
+ */
+async function loadAmoDocuments() {
+  isLoadingAmoDocuments.value = true
+  amoDocumentsError.value = ''
+  
+  try {
+    console.log('📋 Chargement des documents AMO...')
+    const response = await documentService.getAmoDocuments()
+    
+    if (response.success) {
+      amoDocuments.value = response.data.documents || []
+      
+      // Adapter la structure des statistiques selon la nouvelle API
+      const stats = response.data.statistics || {}
+      amoDocumentsStats.value = {
+        total: stats.total || 0,
+        totalSize: stats.totalSize || 0,
+        byType: stats.byType || {}
+      }
+      
+      // Normaliser les documents pour l'affichage avec la nouvelle structure API
+      amoDocuments.value = amoDocuments.value.map(doc => documentService.normalizeDocument(doc))
+      
+      console.log('✅ Documents AMO chargés:', amoDocuments.value)
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des documents AMO:', error)
+    amoDocumentsError.value = error.message || 'Erreur lors du chargement des documents AMO'
+  } finally {
+    isLoadingAmoDocuments.value = false
+  }
+}
+
 function openReviewModal(project) {
   selectedProject.value = project
   showReviewModal.value = true
@@ -948,6 +1093,7 @@ onMounted(() => {
   console.log('🚀 Initialisation du tableau de bord client')
   loadDashboard()
   loadDocuments() // Charger aussi les documents
+  loadAmoDocuments() // Charger les documents AMO
 })
 </script>
 

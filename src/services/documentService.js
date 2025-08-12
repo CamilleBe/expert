@@ -267,6 +267,42 @@ class DocumentService {
     }
   }
   
+  /**
+   * Récupérer la liste des documents envoyés par l'AMO au client connecté
+   * @param {object} filters - Filtres optionnels (page, limit, mimeType, search)
+   * @returns {Promise} - Promesse avec la liste des documents AMO et statistiques
+   */
+  async getAmoDocuments(filters = {}) {
+    try {
+      console.log('📋 Récupération des documents AMO...', filters)
+      
+      // Construire les paramètres de requête
+      const params = new URLSearchParams()
+      
+      if (filters.page) params.append('page', filters.page.toString())
+      if (filters.limit) params.append('limit', filters.limit.toString())
+      if (filters.mimeType) params.append('mimeType', filters.mimeType)
+      if (filters.search) params.append('search', filters.search)
+      if (filters.projectId) params.append('projectId', filters.projectId)
+      
+      const queryString = params.toString()
+      const endpoint = queryString ? `${API_CONFIG.ENDPOINTS.DOCUMENTS_AMO}?${queryString}` : API_CONFIG.ENDPOINTS.DOCUMENTS_AMO
+      
+      console.log('🔐 Headers utilisés pour GET documents AMO:', getAuthHeaders())
+      console.log('🌍 URL complète documents AMO:', buildUrl(endpoint))
+      
+      const response = await this.makeRequest(endpoint)
+      
+      console.log('📊 Réponse GET documents AMO complète:', response)
+      
+      return response
+      
+    } catch (error) {
+      console.error('❌ Erreur lors de la récupération des documents AMO:', error)
+      throw error
+    }
+  }
+  
   // ================================================
   // MÉTHODES UTILITAIRES
   // ================================================

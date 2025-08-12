@@ -27,6 +27,9 @@ export const API_CONFIG = {
       DOCUMENTS_DOWNLOAD: '/client-documents/:id/download',
       DOCUMENTS_DELETE: '/client-documents/:id',
       
+      // Documents AMO (envoyés par l'AMO aux clients)
+      DOCUMENTS_AMO: '/client-documents/amo',
+      
       // Autres (pour plus tard)
       USERS: '/users',
       PROFILE: '/users'
