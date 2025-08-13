@@ -43,6 +43,13 @@ export const useUserStore = defineStore('user', () => {
         // La sauvegarde est déjà faite par authService.login()
         // Mais on peut double-vérifier
         console.log('✅ Utilisateur connecté:', userData)
+        console.log('🔍 Debug rôles détaillé:', {
+          'userData.role': userData.role,
+          'userData.type': userData.type, 
+          'userType.value': userType.value,
+          'isAuthenticated': isAuthenticated.value,
+          'Champs disponibles': Object.keys(userData)
+        })
         
         // Démarrer la vérification automatique du token après connexion réussie
         startTokenCheck()
@@ -155,7 +162,13 @@ export const useUserStore = defineStore('user', () => {
       userType.value = userData.role || userData.type || 'client'
       isAuthenticated.value = true
       
-      console.log('✅ Utilisateur chargé:', userData)
+      console.log('✅ Utilisateur chargé depuis storage:', userData)
+      console.log('🔍 Debug loadUserFromStorage rôles:', {
+        'userData.role': userData.role,
+        'userData.type': userData.type, 
+        'userType.value': userType.value,
+        'isAuthenticated': isAuthenticated.value
+      })
     } else {
       console.log('ℹ️ Aucun utilisateur connecté trouvé')
     }

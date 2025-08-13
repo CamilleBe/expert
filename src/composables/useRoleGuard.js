@@ -4,6 +4,37 @@ import { useUserStore } from '@/stores/user.js'
 import { useRouter } from 'vue-router'
 
 /**
+ * Normaliser les rôles pour gérer les variations possibles
+ * @param {string} role - Rôle brut venant de l'API
+ * @returns {string} - Rôle normalisé
+ */
+function normalizeRole(role) {
+  if (!role) return 'client'
+  
+  const normalized = role.toLowerCase().trim()
+  
+  // Mapper les variations possibles
+  const roleMapping = {
+    'amo': 'amo',
+    'assistant': 'amo',
+    'maître d\'ouvrage': 'amo',
+    'maitre d\'ouvrage': 'amo',
+    'assistant_maitre_ouvrage': 'amo',
+    
+    'artisan': 'artisan',
+    'craftsman': 'artisan',
+    'entrepreneur': 'artisan',
+    'partner': 'artisan',
+    
+    'client': 'client',
+    'customer': 'client',
+    'user': 'client'
+  }
+  
+  return roleMapping[normalized] || 'client'
+}
+
+/**
  * Composable pour gérer la protection des routes basée sur les rôles
  * Redirige vers une page 404 si l'accès n'est pas autorisé (pour brouiller les pistes)
  */
@@ -22,11 +53,24 @@ export function useRoleGuard() {
       return false
     }
 
+    // Normaliser le rôle de l'utilisateur
+    const normalizedUserRole = normalizeRole(userStore.userType)
+
     // Convertir en array si c'est un string
     const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles]
     
+    // Normaliser les rôles autorisés
+    const normalizedAllowedRoles = roles.map(role => normalizeRole(role))
+    
+    console.log('🔧 Normalisation des rôles:', {
+      originalUserRole: userStore.userType,
+      normalizedUserRole: normalizedUserRole,
+      originalAllowedRoles: roles,
+      normalizedAllowedRoles: normalizedAllowedRoles
+    })
+    
     // Vérifier si le rôle de l'utilisateur est dans la liste des rôles autorisés
-    return roles.includes(userStore.userType)
+    return normalizedAllowedRoles.includes(normalizedUserRole)
   }
 
   /**
@@ -39,10 +83,25 @@ export function useRoleGuard() {
     console.log('🛡️ Vérification des permissions de route...')
     console.log('👤 Utilisateur connecté:', userStore.isAuthenticated)
     console.log('🎭 Rôle utilisateur:', userStore.userType)
+    console.log('📄 Données utilisateur complètes:', userStore.currentUser)
     console.log('✅ Rôles autorisés:', allowedRoles)
+
+    // Debug supplémentaire
+    if (userStore.currentUser) {
+      console.log('🔍 Champs role/type dans currentUser:', {
+        role: userStore.currentUser.role,
+        type: userStore.currentUser.type,
+        userType: userStore.userType
+      })
+    }
 
     if (!hasPermission(allowedRoles)) {
       console.log('❌ Accès refusé - Redirection vers 404')
+      console.log('🚨 Détails de l\'échec:', {
+        isAuthenticated: userStore.isAuthenticated,
+        userType: userStore.userType,
+        allowedRoles: allowedRoles
+      })
       
       // Petite temporisation pour éviter les redirections trop rapides
       setTimeout(() => {
@@ -132,29 +191,64 @@ export function useRoleGuard() {
 
 // Fonction utilitaire pour les navigation guards du router
 export function createRoleGuard(allowedRoles) {
-  return (to, from, next) => {
+  return async (to, from, next) => {
     const userStore = useUserStore()
     
     console.log(`🛡️ Navigation guard - Route: ${to.path}`)
-    console.log(`👤 Utilisateur: ${userStore.isAuthenticated ? userStore.userType : 'non connecté'}`)
+    console.log(`👤 Utilisateur initial: ${userStore.isAuthenticated ? userStore.userType : 'non connecté'}`)
     console.log(`✅ Rôles autorisés:`, allowedRoles)
 
-    // Vérifier l'authentification
-    if (!userStore.isAuthenticated) {
-      console.log('❌ Non authentifié - Redirection vers 404')
-      next('/404')
-      return
+    // Fonction pour vérifier l'accès
+    const checkAccess = () => {
+      console.log(`📄 Store state final:`, {
+        isAuthenticated: userStore.isAuthenticated,
+        userType: userStore.userType,
+        currentUser: userStore.currentUser
+      })
+
+      // Vérifier l'authentification
+      if (!userStore.isAuthenticated) {
+        console.log('❌ Non authentifié - Redirection vers 404')
+        next('/404')
+        return
+      }
+
+      // Debug supplémentaire pour voir le rôle exact
+      if (userStore.currentUser) {
+        console.log('🔍 Champs disponibles dans currentUser:', Object.keys(userStore.currentUser))
+        console.log('🔍 Valeurs role/type:', {
+          role: userStore.currentUser.role,
+          type: userStore.currentUser.type,
+          userType: userStore.userType
+        })
+      }
+
+      // Vérifier les permissions
+      const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles]
+      if (!roles.includes(userStore.userType)) {
+        console.log('❌ Rôle non autorisé - Redirection vers 404')
+        console.log('🚨 Comparaison échouée:', {
+          userRole: userStore.userType,
+          allowedRoles: roles,
+          match: roles.includes(userStore.userType)
+        })
+        next('/404')
+        return
+      }
+
+      console.log('✅ Accès autorisé')
+      next()
     }
 
-    // Vérifier les permissions
-    const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles]
-    if (!roles.includes(userStore.userType)) {
-      console.log('❌ Rôle non autorisé - Redirection vers 404')
-      next('/404')
-      return
+    // Si le store semble initialisé, vérifier directement
+    if (userStore.isAuthenticated !== null && userStore.currentUser !== null) {
+      checkAccess()
+    } else {
+      // Attendre un peu que le store se charge depuis localStorage
+      console.log('⏳ Attente du chargement du store...')
+      setTimeout(() => {
+        checkAccess()
+      }, 100)
     }
-
-    console.log('✅ Accès autorisé')
-    next()
   }
 }

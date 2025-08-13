@@ -68,6 +68,11 @@ const routes = [
     name: 'Contact',
     component: () => import('../views/HomeView.vue') // Redirection temporaire vers HomeView
   },
+  {
+    path: '/debug-auth',
+    name: 'DebugAuth',
+    component: () => import('../views/DebugAuth.vue')
+  },
   // Route 404 explicite
   {
     path: '/404',
