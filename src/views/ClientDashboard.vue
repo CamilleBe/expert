@@ -576,6 +576,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user.js'
+import { useRoleGuard } from '@/composables/useRoleGuard.js'
 import projetService from '@/services/projetService'
 import documentService from '@/services/documentService'
 import ProjectCard from '@/components/ProjectCard.vue'
@@ -584,6 +585,9 @@ import CreateProjectModal from '@/components/CreateProjectModal.vue'
 
 // Store utilisateur
 const userStore = useUserStore()
+
+// Protection de la route
+const { protectRoute } = useRoleGuard()
 
 // État réactif
 const activeTab = ref('overview')
@@ -1009,6 +1013,12 @@ function deleteNotification(notificationId) {
 // Charger les données au montage du composant
 onMounted(() => {
   console.log('🚀 Initialisation du tableau de bord client')
+  
+  // Protection de la route - vérifier que seuls les clients peuvent accéder
+  if (!protectRoute('client')) {
+    return // La redirection sera gérée par protectRoute
+  }
+  
   loadDashboard()
   loadDocuments() // Charger aussi les documents
   loadAmoDocuments() // Charger les documents AMO

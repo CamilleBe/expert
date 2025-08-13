@@ -7,6 +7,8 @@ import ArtisanProfile from '../views/ArtisanProfile.vue'
 import ClientDashboard from '../views/ClientDashboard.vue'
 import ArtisanDashboard from '../views/ArtisanDashboard.vue'
 import AMODashboard from '../views/AMODashboard.vue'
+import NotFoundView from '../views/NotFoundView.vue'
+import { createRoleGuard } from '../composables/useRoleGuard.js'
 
 const routes = [
   {
@@ -36,17 +38,20 @@ const routes = [
   {
     path: '/dashboard',
     name: 'ClientDashboard',
-    component: ClientDashboard
+    component: ClientDashboard,
+    beforeEnter: createRoleGuard('client')
   },
   {
     path: '/artisan-dashboard',
     name: 'ArtisanDashboard',
-    component: ArtisanDashboard
+    component: ArtisanDashboard,
+    beforeEnter: createRoleGuard('artisan')
   },
   {
     path: '/amo-dashboard',
     name: 'AMODashboard',
-    component: AMODashboard
+    component: AMODashboard,
+    beforeEnter: createRoleGuard('amo')
   },
   {
     path: '/services',
@@ -63,11 +68,16 @@ const routes = [
     name: 'Contact',
     component: () => import('../views/HomeView.vue') // Redirection temporaire vers HomeView
   },
+  // Route 404 explicite
+  {
+    path: '/404',
+    name: 'NotFound',
+    component: NotFoundView
+  },
   // Route 404 - doit être en dernier
   {
     path: '/:pathMatch(.*)*',
-    name: 'NotFound',
-    component: () => import('../views/HomeView.vue') // Redirection vers HomeView pour les pages non trouvées
+    redirect: '/404'
   }
 ]
 

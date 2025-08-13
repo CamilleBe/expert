@@ -474,11 +474,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user.js'
+import { useRoleGuard } from '@/composables/useRoleGuard.js'
 
 // Store utilisateur
 const userStore = useUserStore()
+
+// Protection de la route
+const { protectRoute } = useRoleGuard()
 
 // État réactif
 const activeTab = ref('overview')
@@ -729,6 +733,18 @@ function deleteNotification(notificationId) {
     artisanNotifications.value.splice(index, 1)
   }
 }
+
+// Protection de la route au montage du composant
+onMounted(() => {
+  console.log('🚀 Initialisation du tableau de bord artisan')
+  
+  // Protection de la route - vérifier que seuls les artisans peuvent accéder
+  if (!protectRoute('artisan')) {
+    return // La redirection sera gérée par protectRoute
+  }
+  
+  console.log('✅ Accès autorisé au dashboard artisan')
+})
 </script>
 
 <style scoped>

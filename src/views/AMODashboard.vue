@@ -554,11 +554,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user.js'
+import { useRoleGuard } from '@/composables/useRoleGuard.js'
 
 // Store utilisateur
 const userStore = useUserStore()
+
+// Protection de la route
+const { protectRoute } = useRoleGuard()
 
 // État réactif
 const activeTab = ref('overview')
@@ -877,6 +881,18 @@ function formatFileSize(bytes) {
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
+
+// Protection de la route au montage du composant
+onMounted(() => {
+  console.log('🚀 Initialisation du tableau de bord AMO')
+  
+  // Protection de la route - vérifier que seuls les AMO peuvent accéder
+  if (!protectRoute('amo')) {
+    return // La redirection sera gérée par protectRoute
+  }
+  
+  console.log('✅ Accès autorisé au dashboard AMO')
+})
 </script>
 
 <style scoped>
