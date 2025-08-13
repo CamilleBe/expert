@@ -232,13 +232,13 @@
         <div v-if="activeTab === 'documents'" class="animate-fade-in">
           <h1 class="text-3xl font-bold text-gray-900 mb-8">Documents</h1>
           
-          <!-- Filtre client -->
+          <!-- Filtre projet -->
           <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">Filtrer par client</h2>
-            <select v-model="selectedClient" @change="filterDocuments" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              <option value="">Tous les clients</option>
-              <option v-for="client in clients" :key="client.id" :value="client.id">
-                {{ client.name }}
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Filtrer par projet</h2>
+            <select v-model="selectedProject" @change="filterDocuments" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="">Tous les projets</option>
+              <option v-for="project in projects" :key="project.id" :value="project.id">
+                {{ project.name }}
               </option>
             </select>
           </div>
@@ -360,28 +360,28 @@
           </button>
         </div>
         
-        <div v-if="selectedProject" class="space-y-4">
+        <div v-if="selectedProjectDetails" class="space-y-4">
           <div>
-            <h3 class="font-semibold text-gray-900">{{ selectedProject.title }}</h3>
-            <p class="text-gray-600">{{ selectedProject.description }}</p>
+            <h3 class="font-semibold text-gray-900">{{ selectedProjectDetails.title }}</h3>
+            <p class="text-gray-600">{{ selectedProjectDetails.description }}</p>
           </div>
           
           <div class="grid grid-cols-2 gap-4">
             <div>
               <p class="text-sm font-medium text-gray-500">Localisation</p>
-              <p class="text-gray-900">{{ selectedProject.location }}</p>
+              <p class="text-gray-900">{{ selectedProjectDetails.location }}</p>
             </div>
             <div>
               <p class="text-sm font-medium text-gray-500">Budget</p>
-              <p class="text-gray-900">{{ selectedProject.budget }}</p>
+              <p class="text-gray-900">{{ selectedProjectDetails.budget }}</p>
             </div>
             <div>
               <p class="text-sm font-medium text-gray-500">Client</p>
-              <p class="text-gray-900">{{ selectedProject.clientName }}</p>
+              <p class="text-gray-900">{{ selectedProjectDetails.clientName }}</p>
             </div>
             <div>
               <p class="text-sm font-medium text-gray-500">Contact</p>
-              <p class="text-gray-900">{{ selectedProject.clientEmail }}</p>
+              <p class="text-gray-900">{{ selectedProjectDetails.clientEmail }}</p>
             </div>
           </div>
 
@@ -396,13 +396,13 @@
               Artisan 🔍
             </button>
             <button 
-              @click="acceptProject(selectedProject)"
+              @click="acceptProject(selectedProjectDetails)"
               class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             >
               Accepter
             </button>
             <button 
-              @click="declineProject(selectedProject)"
+              @click="declineProject(selectedProjectDetails)"
               class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
               Décliner
@@ -470,8 +470,8 @@ const userStore = useUserStore()
 const activeTab = ref('overview')
 const showProjectModal = ref(false)
 const showArtisanModal = ref(false)
-const selectedProject = ref(null)
-const selectedClient = ref('')
+const selectedProjectDetails = ref(null)
+const selectedProject = ref('')
 const artisanSearch = ref('')
 
 // Données fictives du dashboard
@@ -569,23 +569,23 @@ const managedProjects = ref([
   }
 ])
 
-const clients = ref([
-  { id: 1, name: 'Jean Dupont' },
-  { id: 2, name: 'Marie Martin' },
-  { id: 3, name: 'Pierre Bernard' },
-  { id: 4, name: 'Sophie Moreau' },
-  { id: 5, name: 'Antoine Roux' }
+const projects = ref([
+  { id: 1, name: 'Rénovation cuisine - Jean Dupont' },
+  { id: 2, name: 'Installation électrique - Marie Martin' },
+  { id: 3, name: 'Isolation combles - Pierre Bernard' },
+  { id: 4, name: 'Rénovation salle de bain - Sophie Moreau' },
+  { id: 5, name: 'Extension maison - Antoine Roux' }
 ])
 
 const clientDocuments = ref([
-  { id: 1, name: 'Plan cuisine.pdf', clientName: 'Jean Dupont', clientId: 1, date: '12 août 2024' },
-  { id: 2, name: 'Devis électricité.pdf', clientName: 'Marie Martin', clientId: 2, date: '11 août 2024' },
-  { id: 3, name: 'Photos avant travaux.jpg', clientName: 'Pierre Bernard', clientId: 3, date: '10 août 2024' }
+  { id: 1, name: 'Plan cuisine.pdf', clientName: 'Jean Dupont', projectId: 1, date: '12 août 2024' },
+  { id: 2, name: 'Devis électricité.pdf', clientName: 'Marie Martin', projectId: 2, date: '11 août 2024' },
+  { id: 3, name: 'Photos avant travaux.jpg', clientName: 'Pierre Bernard', projectId: 3, date: '10 août 2024' }
 ])
 
 const artisanDocuments = ref([
-  { id: 1, name: 'Facture plomberie.pdf', artisanName: 'Plomberie Durand', clientId: 1, date: '12 août 2024' },
-  { id: 2, name: 'Certificat électrique.pdf', artisanName: 'Électricité Pro', clientId: 2, date: '11 août 2024' }
+  { id: 1, name: 'Facture plomberie.pdf', artisanName: 'Plomberie Durand', projectId: 1, date: '12 août 2024' },
+  { id: 2, name: 'Certificat électrique.pdf', artisanName: 'Électricité Pro', projectId: 2, date: '11 août 2024' }
 ])
 
 const artisans = ref([
@@ -614,13 +614,13 @@ const amoNotifications = ref([
 
 // Computed properties
 const filteredClientDocuments = computed(() => {
-  if (!selectedClient.value) return clientDocuments.value
-  return clientDocuments.value.filter(doc => doc.clientId === parseInt(selectedClient.value))
+  if (!selectedProject.value) return clientDocuments.value
+  return clientDocuments.value.filter(doc => doc.projectId === parseInt(selectedProject.value))
 })
 
 const filteredArtisanDocuments = computed(() => {
-  if (!selectedClient.value) return artisanDocuments.value
-  return artisanDocuments.value.filter(doc => doc.clientId === parseInt(selectedClient.value))
+  if (!selectedProject.value) return artisanDocuments.value
+  return artisanDocuments.value.filter(doc => doc.projectId === parseInt(selectedProject.value))
 })
 
 const filteredArtisans = computed(() => {
@@ -633,13 +633,13 @@ const filteredArtisans = computed(() => {
 
 // Méthodes
 function viewProjectDetails(project) {
-  selectedProject.value = project
+  selectedProjectDetails.value = project
   showProjectModal.value = true
 }
 
 function closeProjectModal() {
   showProjectModal.value = false
-  selectedProject.value = null
+  selectedProjectDetails.value = null
 }
 
 function acceptProject(project) {
