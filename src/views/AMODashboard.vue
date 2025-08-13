@@ -557,12 +557,18 @@
 import { ref, computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user.js'
 import { useRoleGuard } from '@/composables/useRoleGuard.js'
+import { useErrorHandler } from '@/composables/useErrorHandler.js'
+import dashboardService from '@/services/dashboardService.js'
+import documentService from '@/services/documentService.js'
 
 // Store utilisateur
 const userStore = useUserStore()
 
 // Protection de la route
 const { protectRoute } = useRoleGuard()
+
+// Gestion d'erreurs
+const { safeApiCall, processError } = useErrorHandler()
 
 // État réactif
 const activeTab = ref('overview')
@@ -827,39 +833,9 @@ function removeSelectedFile(index) {
   selectedFiles.value.splice(index, 1)
 }
 
-function uploadSelectedFiles() {
-  if (!selectedFiles.value.length) return
-  
-  console.log('📤 Upload des fichiers:', selectedFiles.value.map(f => f.name))
-  
-  // Simuler l'upload et ajouter les fichiers à la liste des documents AMO
-  selectedFiles.value.forEach((file, index) => {
-    const newDoc = {
-      id: amoOwnDocuments.value.length + index + 1,
-      name: file.name,
-      projectName: selectedProject.value ? projects.value.find(p => p.id === parseInt(selectedProject.value))?.name || 'Tous les projets' : 'Tous les projets',
-      projectId: selectedProject.value ? parseInt(selectedProject.value) : 1,
-      date: new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
-    }
-    amoOwnDocuments.value.push(newDoc)
-  })
-  
-  // Vider la sélection
-  selectedFiles.value = []
-  console.log('✅ Documents uploadés avec succès!')
-}
+// Cette fonction est déjà définie plus haut avec la vraie API
 
-function downloadDocument(document) {
-  console.log('📥 Téléchargement de:', document.name)
-  // Ici vous pourriez implémenter le téléchargement réel
-  // Pour l'instant, on simule juste
-  const link = window.document.createElement('a')
-  link.download = document.name
-  // En production, vous utiliseriez l'URL réelle du document
-  link.href = '#'
-  link.click()
-  console.log('✅ Téléchargement initié')
-}
+// Cette fonction est déjà définie plus haut avec la vraie API
 
 function deleteDocument(document) {
   if (!confirm(`Êtes-vous sûr de vouloir supprimer "${document.name}" ?`)) {
@@ -882,8 +858,117 @@ function formatFileSize(bytes) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
+// Charger les données du dashboard
+async function loadDashboardData() {
+  try {
+    console.log('🔄 Chargement des données dashboard AMO...')
+    
+    // Charger les données du dashboard en parallèle avec gestion d'erreurs
+    const [dashboardData, projetsData, missionsData] = await Promise.all([
+      safeApiCall(
+        () => dashboardService.getAmoDashboard(),
+        'amo-dashboard'
+      ),
+      safeApiCall(
+        () => dashboardService.getAmoProjets(),
+        'amo-projets'
+      ),
+      safeApiCall(
+        () => dashboardService.getAmoMissions(),
+        'amo-missions'
+      )
+    ])
+    
+    if (dashboardData?.data) {
+      console.log('✅ Données dashboard chargées:', dashboardData.data)
+      // Mettre à jour les stats avec les vraies données
+      Object.assign(dashboardStats.value, dashboardData.data)
+    }
+    
+    if (projetsData?.data) {
+      console.log('✅ Projets chargés:', projetsData.data)
+      // Mettre à jour les projets avec les vraies données
+      newProjects.value = projetsData.data.nouveaux || []
+      managedProjects.value = projetsData.data.geres || []
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des données:', error)
+  }
+}
+
+// Charger les documents réels
+async function loadDocuments() {
+  try {
+    console.log('📁 Chargement des documents...')
+    
+    // Charger les documents clients pour AMO
+    const clientDocsResult = await safeApiCall(
+      () => dashboardService.getAmoClientDocuments(),
+      'amo-documents-clients'
+    )
+    
+    if (clientDocsResult?.data) {
+      console.log('✅ Documents clients chargés:', clientDocsResult.data)
+      clientDocuments.value = clientDocsResult.data
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des documents:', error)
+  }
+}
+
+// Upload de fichiers réel
+async function uploadSelectedFiles() {
+  if (!selectedFiles.value.length) return
+  
+  try {
+    console.log('📤 Upload des fichiers AMO...', selectedFiles.value.map(f => f.name))
+    
+    const result = await dashboardService.uploadAmoDocuments(
+      selectedFiles.value,
+      selectedProject.value ? parseInt(selectedProject.value) : null
+    )
+    
+    if (result.success) {
+      console.log('✅ Documents uploadés avec succès!')
+      
+      // Recharger les documents
+      await loadDocuments()
+      
+      // Vider la sélection
+      selectedFiles.value = []
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur upload:', error)
+    alert('Erreur lors de l\'upload: ' + error.message)
+  }
+}
+
+// Téléchargement de document réel
+async function downloadDocument(document) {
+  try {
+    console.log('📥 Téléchargement de:', document.name)
+    
+    if (document.type === 'client') {
+      await dashboardService.downloadAmoClientDocument(document.id, document.name)
+    } else if (document.type === 'partenaire') {
+      await dashboardService.downloadAmoPartenaireDocument(document.id, document.name)
+    } else {
+      // Documents propres AMO - utiliser documentService
+      await documentService.downloadDocument(document.id, document.name)
+    }
+    
+    console.log('✅ Téléchargement initié')
+  } catch (error) {
+    console.error('❌ Erreur téléchargement:', error)
+    alert('Erreur lors du téléchargement: ' + error.message)
+  }
+}
+
 // Protection de la route au montage du composant
-onMounted(() => {
+onMounted(async () => {
   console.log('🚀 Initialisation du tableau de bord AMO')
   
   // Protection de la route - vérifier que seuls les AMO peuvent accéder
@@ -892,6 +977,10 @@ onMounted(() => {
   }
   
   console.log('✅ Accès autorisé au dashboard AMO')
+  
+  // Charger les données réelles
+  await loadDashboardData()
+  await loadDocuments()
 })
 </script>
 

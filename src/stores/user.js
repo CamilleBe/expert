@@ -17,7 +17,10 @@ export const useUserStore = defineStore('user', () => {
   })
 
   const isClient = computed(() => userType.value === 'client')
-  const isArtisan = computed(() => userType.value === 'artisan')
+  const isAMO = computed(() => userType.value === 'AMO' || userType.value === 'amo')
+  const isPartenaire = computed(() => userType.value === 'partenaire')
+  // Backward compatibility
+  const isArtisan = computed(() => userType.value === 'artisan' || userType.value === 'partenaire')
 
   // Actions
   const login = async (credentials) => {
@@ -303,6 +306,8 @@ export const useUserStore = defineStore('user', () => {
     // Getters
     userName,
     isClient,
+    isAMO,
+    isPartenaire,
     isArtisan,
     
     // Actions

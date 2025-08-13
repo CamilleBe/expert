@@ -16,19 +16,22 @@ function normalizeRole(role) {
   // Mapper les variations possibles
   const roleMapping = {
     'amo': 'amo',
+    'AMO': 'amo',
     'assistant': 'amo',
     'maître d\'ouvrage': 'amo',
     'maitre d\'ouvrage': 'amo',
     'assistant_maitre_ouvrage': 'amo',
     
-    'artisan': 'artisan',
-    'craftsman': 'artisan',
-    'entrepreneur': 'artisan',
-    'partner': 'artisan',
+    'partenaire': 'partenaire',
+    'partner': 'partenaire',
+    'artisan': 'partenaire', // Backward compatibility
+    'craftsman': 'partenaire',
+    'entrepreneur': 'partenaire',
     
     'client': 'client',
     'customer': 'client',
-    'user': 'client'
+    'user': 'client',
+    'admin': 'admin'
   }
   
   return roleMapping[normalized] || 'client'
@@ -117,13 +120,14 @@ export function useRoleGuard() {
 
   /**
    * Vérifier si l'utilisateur peut accéder à un dashboard spécifique
-   * @param {string} dashboardType - Type de dashboard ('client', 'artisan', 'amo')
+   * @param {string} dashboardType - Type de dashboard ('client', 'partenaire', 'amo')
    * @returns {boolean}
    */
   const canAccessDashboard = (dashboardType) => {
     const roleMapping = {
       'client': 'client',
-      'artisan': 'artisan', 
+      'partenaire': 'partenaire',
+      'artisan': 'partenaire', // Backward compatibility
       'amo': 'amo'
     }
 
@@ -142,7 +146,8 @@ export function useRoleGuard() {
 
     const dashboardRoutes = {
       'client': '/dashboard',
-      'artisan': '/artisan-dashboard',
+      'partenaire': '/partenaire-dashboard',
+      'artisan': '/partenaire-dashboard', // Backward compatibility
       'amo': '/amo-dashboard'
     }
 

@@ -1,0 +1,673 @@
+<template>
+  <div class="min-h-screen bg-gray-50">
+    <div class="flex">
+      <!-- Sidebar -->
+      <nav class="w-64 bg-white shadow-sm h-screen sticky top-0">
+        <div class="p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-6">Dashboard Partenaire</h2>
+          <ul class="space-y-2">
+            <li>
+              <button @click="activeTab = 'overview'" :class="activeTab === 'overview' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
+                Vue d'ensemble
+              </button>
+            </li>
+            <li>
+              <button @click="activeTab = 'missions-disponibles'" :class="activeTab === 'missions-disponibles' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
+                Missions disponibles
+              </button>
+            </li>
+            <li>
+              <button @click="activeTab = 'mes-missions'" :class="activeTab === 'mes-missions' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
+                Mes missions
+              </button>
+            </li>
+            <li>
+              <button @click="activeTab = 'documents'" :class="activeTab === 'documents' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
+                Documents
+              </button>
+            </li>
+            <li>
+              <button @click="activeTab = 'profil'" :class="activeTab === 'profil' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
+                Mon profil
+              </button>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="flex-1 p-8">
+        <!-- Vue d'ensemble -->
+        <div v-if="activeTab === 'overview'" class="animate-fade-in">
+          <h1 class="text-3xl font-bold text-gray-900 mb-8">Bienvenue, {{ userStore.userName || 'Partenaire' }} !</h1>
+          
+          <!-- Statistiques rapides -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-orange-100">
+                  <svg class="h-8 w-8 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-gray-600">Missions en attente</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ dashboardStats.enAttente }}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100">
+                  <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m4 0V9a1 1 0 011-1h4a1 1 0 011 1v12m-6 0h6" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-gray-600">Missions en cours</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ dashboardStats.enCours }}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100">
+                  <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-gray-600">Missions terminées</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ dashboardStats.termines }}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+              <div class="flex items-center">
+                <div class="p-3 rounded-full bg-purple-100">
+                  <svg class="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-medium text-gray-600">Chiffre d'affaires</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ dashboardStats.chiffreAffaires.toLocaleString('fr-FR') }}€</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activité récente -->
+          <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Activité récente</h2>
+            <div class="space-y-4">
+              <div v-for="activity in recentActivity" :key="activity.id" class="flex items-center p-4 bg-gray-50 rounded-lg">
+                <div class="p-2 rounded-full" :class="activity.iconClass">
+                  <svg class="h-5 w-5" :class="activity.iconColor" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="activity.iconPath" />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm font-medium text-gray-900">{{ activity.title }}</p>
+                  <p class="text-sm text-gray-600">{{ activity.description }}</p>
+                  <p class="text-xs text-gray-500">{{ activity.time }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Missions disponibles -->
+        <div v-if="activeTab === 'missions-disponibles'" class="animate-fade-in">
+          <h1 class="text-3xl font-bold text-gray-900 mb-8">Missions disponibles</h1>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div v-for="mission in missionsDisponibles" :key="mission.id" class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+              <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-lg font-semibold text-gray-900">{{ mission.title }}</h3>
+                  <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                    Disponible
+                  </span>
+                </div>
+                
+                <div class="space-y-3 mb-6">
+                  <div class="flex items-center text-sm text-gray-600">
+                    <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    {{ mission.location }}
+                  </div>
+                  <div class="flex items-center text-sm text-gray-600">
+                    <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                    {{ mission.tags.join(', ') }}
+                  </div>
+                  <div class="flex items-center text-sm text-gray-600">
+                    <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-3.5L17 21V5z" />
+                    </svg>
+                    AMO: {{ mission.amoName }}
+                  </div>
+                </div>
+                
+                <div class="flex space-x-2">
+                  <button 
+                    @click="viewMissionDetails(mission)"
+                    class="flex-1 py-2 px-3 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    Voir plus
+                  </button>
+                  <button 
+                    @click="postulerMission(mission)"
+                    class="flex-1 py-2 px-3 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-500 transition-colors"
+                  >
+                    Postuler
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mes missions -->
+        <div v-if="activeTab === 'mes-missions'" class="animate-fade-in">
+          <h1 class="text-3xl font-bold text-gray-900 mb-8">Mes missions</h1>
+          
+          <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
+            <div class="p-6 border-b border-gray-200">
+              <h2 class="text-xl font-bold text-gray-900">Missions en cours</h2>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mission</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">AMO</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr v-for="mission in mesMissions" :key="mission.id">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm font-medium text-gray-900">{{ mission.title }}</div>
+                      <div class="text-sm text-gray-500">{{ mission.location }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm text-gray-900">{{ mission.amoName }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span :class="getStatusClass(mission.status)" class="px-2 py-1 text-xs font-medium rounded-full">
+                        {{ mission.status }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <button class="text-blue-600 hover:text-blue-900 mr-3">Gérer</button>
+                      <button class="text-green-600 hover:text-green-900">Voir détails</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Documents -->
+        <div v-if="activeTab === 'documents'" class="animate-fade-in">
+          <h1 class="text-3xl font-bold text-gray-900 mb-8">Documents</h1>
+          
+          <!-- Zone de dépôt -->
+          <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">📤 Déposer un document</h2>
+            
+            <div 
+              class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center transition-all duration-300 hover:border-blue-400 hover:bg-blue-50"
+              @dragover="handleDragOver"
+              @drop="handleFileDrop"
+              @click="$refs.fileInput.click()"
+            >
+              <svg class="h-10 w-10 text-gray-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <p class="text-sm font-medium text-gray-900 mb-1">Glissez vos fichiers ici</p>
+              <p class="text-xs text-gray-500">PDF, DOC, DOCX, JPG, PNG</p>
+              <input 
+                type="file" 
+                multiple 
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                class="hidden" 
+                ref="fileInput" 
+                @change="handleFileUpload" 
+              />
+              <button class="mt-3 py-2 px-4 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-500 transition-colors">
+                Sélectionner
+              </button>
+            </div>
+
+            <!-- Fichiers sélectionnés -->
+            <div v-if="selectedFiles.length > 0" class="mt-4">
+              <div class="space-y-2 mb-4">
+                <div v-for="(file, index) in selectedFiles" :key="index" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div class="flex items-center">
+                    <span class="text-lg mr-3">📄</span>
+                    <div>
+                      <p class="text-sm font-medium text-gray-900">{{ file.name }}</p>
+                      <p class="text-xs text-gray-500">{{ formatFileSize(file.size) }}</p>
+                    </div>
+                  </div>
+                  <button @click="removeSelectedFile(index)" class="p-1 text-red-600 hover:bg-red-50 rounded">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="flex space-x-3">
+                <button @click="uploadSelectedFiles" class="flex-1 py-2 px-4 bg-green-600 text-white text-sm rounded-lg hover:bg-green-500">
+                  Uploader {{ selectedFiles.length }} fichier(s)
+                </button>
+                <button @click="selectedFiles = []" class="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-300">
+                  Annuler
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Documents en deux colonnes -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Mes documents -->
+            <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
+              <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">📄 Mes documents</h3>
+              </div>
+              <div class="p-6">
+                <div v-if="mesDocuments.length === 0" class="text-center py-8">
+                  <p class="text-gray-500">Aucun document uploadé</p>
+                </div>
+                <div v-else class="space-y-4">
+                  <div v-for="doc in mesDocuments" :key="doc.id" class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                    <div class="flex items-center">
+                      <div class="p-2 rounded-full bg-green-100">
+                        <span class="text-xl">📄</span>
+                      </div>
+                      <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-900">{{ doc.name }}</p>
+                        <p class="text-sm text-gray-600">{{ doc.missionName }} • {{ doc.date }}</p>
+                      </div>
+                    </div>
+                    <div class="flex space-x-2">
+                      <button class="p-2 text-green-600 hover:bg-green-100 rounded-lg">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </button>
+                      <button class="p-2 text-red-600 hover:bg-red-50 rounded-lg">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Documents AMO -->
+            <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
+              <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">📥 Documents AMO</h3>
+              </div>
+              <div class="p-6">
+                <div v-if="documentsAMO.length === 0" class="text-center py-8">
+                  <p class="text-gray-500">Aucun document AMO disponible</p>
+                </div>
+                <div v-else class="space-y-4">
+                  <div v-for="doc in documentsAMO" :key="doc.id" class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+                    <div class="flex items-center">
+                      <div class="p-2 rounded-full bg-blue-100">
+                        <span class="text-xl">📄</span>
+                      </div>
+                      <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-900">{{ doc.name }}</p>
+                        <p class="text-sm text-gray-600">{{ doc.amoName }} • {{ doc.date }}</p>
+                      </div>
+                    </div>
+                    <button class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg">
+                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profil -->
+        <div v-if="activeTab === 'profil'" class="animate-fade-in">
+          <h1 class="text-3xl font-bold text-gray-900 mb-8">Mon profil</h1>
+          
+          <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Informations personnelles</h3>
+                <div class="space-y-4">
+                  <div>
+                    <label class="text-sm font-medium text-gray-500">Nom complet</label>
+                    <p class="text-gray-900">{{ userStore.userName || 'Non défini' }}</p>
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-gray-500">Email</label>
+                    <p class="text-gray-900">{{ userStore.currentUser?.email || 'Non défini' }}</p>
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-gray-500">Rôle</label>
+                    <p class="text-gray-900">Partenaire</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Spécialités et zones d'intervention</h3>
+                <div class="space-y-4">
+                  <div>
+                    <label class="text-sm font-medium text-gray-500">Spécialités</label>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                      <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Électricité</span>
+                      <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Plomberie</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-gray-500">Zones d'intervention</label>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                      <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Lyon</span>
+                      <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Villeurbanne</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useUserStore } from '@/stores/user.js'
+import { useRoleGuard } from '@/composables/useRoleGuard.js'
+import { useErrorHandler } from '@/composables/useErrorHandler.js'
+import dashboardService from '@/services/dashboardService.js'
+
+// Store utilisateur
+const userStore = useUserStore()
+
+// Protection de la route
+const { protectRoute } = useRoleGuard()
+
+// Gestion d'erreurs
+const { safeApiCall } = useErrorHandler()
+
+// État réactif
+const activeTab = ref('overview')
+const selectedFiles = ref([])
+
+// Données fictives du dashboard
+const dashboardStats = ref({
+  enAttente: 4,
+  enCours: 6,
+  termines: 12,
+  chiffreAffaires: 24580
+})
+
+const recentActivity = ref([
+  {
+    id: 1,
+    title: 'Nouvelle mission reçue',
+    description: 'Installation électrique - Maison Lyon',
+    time: 'Il y a 1 heure',
+    iconClass: 'bg-green-100',
+    iconColor: 'text-green-600',
+    iconPath: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m4 0V9a1 1 0 011-1h4a1 1 0 011 1v12m-6 0h6'
+  },
+  {
+    id: 2,
+    title: 'Document reçu',
+    description: 'Cahier des charges - Marie Dupont (AMO)',
+    time: 'Il y a 3 heures',
+    iconClass: 'bg-blue-100',
+    iconColor: 'text-blue-600',
+    iconPath: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+  }
+])
+
+const missionsDisponibles = ref([
+  {
+    id: 1,
+    title: 'Installation électrique complète',
+    description: 'Mise aux normes électriques d\'une maison de 120m²',
+    location: 'Lyon, 69000',
+    tags: ['Électricité', 'Mise aux normes'],
+    amoName: 'Marie Dupont'
+  },
+  {
+    id: 2,
+    title: 'Rénovation plomberie',
+    description: 'Réfection complète de la plomberie d\'un appartement',
+    location: 'Marseille, 13000',
+    tags: ['Plomberie', 'Rénovation'],
+    amoName: 'Pierre Martin'
+  }
+])
+
+const mesMissions = ref([
+  {
+    id: 1,
+    title: 'Rénovation salle de bain',
+    location: 'Nice, 06000',
+    amoName: 'Marie Dupont',
+    status: 'En cours'
+  },
+  {
+    id: 2,
+    title: 'Installation cuisine',
+    location: 'Bordeaux, 33000',
+    amoName: 'Pierre Martin',
+    status: 'Planification'
+  }
+])
+
+const mesDocuments = ref([
+  { id: 1, name: 'Devis électricité.pdf', missionName: 'Mission 1', date: '12 août 2024' },
+  { id: 2, name: 'Facture matériaux.pdf', missionName: 'Mission 2', date: '11 août 2024' }
+])
+
+const documentsAMO = ref([
+  { id: 1, name: 'Plans techniques.pdf', amoName: 'Marie Dupont', date: '12 août 2024' },
+  { id: 2, name: 'Cahier des charges.pdf', amoName: 'Pierre Martin', date: '11 août 2024' }
+])
+
+// Méthodes
+function viewMissionDetails(mission) {
+  console.log('Voir détails mission:', mission.title)
+}
+
+function postulerMission(mission) {
+  console.log('Postuler à la mission:', mission.title)
+}
+
+function getStatusClass(status) {
+  const statusClasses = {
+    'En cours': 'bg-blue-100 text-blue-800',
+    'Planification': 'bg-yellow-100 text-yellow-800',
+    'En attente': 'bg-orange-100 text-orange-800',
+    'Terminé': 'bg-green-100 text-green-800'
+  }
+  return statusClasses[status] || 'bg-gray-100 text-gray-800'
+}
+
+function handleFileUpload(event) {
+  const files = event.target.files
+  if (files && files.length > 0) {
+    selectedFiles.value = Array.from(files)
+  }
+}
+
+function handleFileDrop(event) {
+  event.preventDefault()
+  const files = event.dataTransfer.files
+  if (files && files.length > 0) {
+    selectedFiles.value = Array.from(files)
+  }
+}
+
+function handleDragOver(event) {
+  event.preventDefault()
+}
+
+function removeSelectedFile(index) {
+  selectedFiles.value.splice(index, 1)
+}
+
+async function uploadSelectedFiles() {
+  if (!selectedFiles.value.length) return
+  
+  try {
+    console.log('📤 Upload des fichiers partenaire...', selectedFiles.value.map(f => f.name))
+    
+    const result = await dashboardService.uploadPartenaireDocuments(
+      selectedFiles.value,
+      null // missionId - à déterminer selon le contexte
+    )
+    
+    if (result.success) {
+      console.log('✅ Documents uploadés avec succès!')
+      
+      // Recharger les documents
+      await loadDocuments()
+      
+      // Vider la sélection
+      selectedFiles.value = []
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur upload:', error)
+    alert('Erreur lors de l\'upload: ' + error.message)
+  }
+}
+
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+// Charger les données du dashboard partenaire
+async function loadDashboardData() {
+  try {
+    console.log('🔄 Chargement des données dashboard partenaire...')
+    
+    const [dashboardData, missionsData] = await Promise.all([
+      safeApiCall(
+        () => dashboardService.getPartenaireDashboard(),
+        'partenaire-dashboard'
+      ),
+      safeApiCall(
+        () => dashboardService.getPartenaireMissionsDisponibles(),
+        'partenaire-missions'
+      )
+    ])
+    
+    if (dashboardData?.data) {
+      console.log('✅ Données dashboard chargées')
+      Object.assign(dashboardStats.value, dashboardData.data)
+    }
+    
+    if (missionsData?.data) {
+      console.log('✅ Missions chargées')
+      missionsDisponibles.value = missionsData.data
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des données:', error)
+  }
+}
+
+// Charger les documents
+async function loadDocuments() {
+  try {
+    console.log('📁 Chargement des documents partenaire...')
+    
+    const amoDocsResult = await safeApiCall(
+      () => dashboardService.getPartenaireAmoDocuments(),
+      'partenaire-documents-amo'
+    )
+    
+    if (amoDocsResult?.data) {
+      console.log('✅ Documents AMO chargés')
+      documentsAMO.value = amoDocsResult.data
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des documents:', error)
+  }
+}
+
+// Télécharger un document AMO
+async function downloadAmoDocument(document) {
+  try {
+    console.log('📥 Téléchargement document AMO:', document.name)
+    
+    await dashboardService.downloadPartenaireAmoDocument(document.id, document.name)
+    
+    console.log('✅ Téléchargement initié')
+  } catch (error) {
+    console.error('❌ Erreur téléchargement:', error)
+    alert('Erreur lors du téléchargement: ' + error.message)
+  }
+}
+
+// Protection de la route au montage du composant
+onMounted(async () => {
+  console.log('🚀 Initialisation du tableau de bord partenaire')
+  
+  // Protection de la route - vérifier que seuls les partenaires peuvent accéder
+  if (!protectRoute('partenaire')) {
+    return // La redirection sera gérée par protectRoute
+  }
+  
+  console.log('✅ Accès autorisé au dashboard partenaire')
+  
+  // Charger les données réelles
+  await loadDashboardData()
+  await loadDocuments()
+})
+</script>
+
+<style scoped>
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>

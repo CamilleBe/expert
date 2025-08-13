@@ -303,6 +303,68 @@ class DocumentService {
     }
   }
   
+  /**
+   * Récupérer les détails d'un document AMO spécifique
+   * @param {string} documentId - ID du document AMO
+   * @returns {Promise} - Promesse avec les détails du document
+   */
+  async getAmoDocumentDetails(documentId) {
+    try {
+      console.log(`📋 Récupération des détails du document AMO ${documentId}...`)
+      
+      const endpoint = API_CONFIG.ENDPOINTS.DOCUMENTS_AMO_DETAILS.replace(':id', documentId)
+      
+      const response = await this.makeRequest(endpoint)
+      
+      return response
+      
+    } catch (error) {
+      console.error('❌ Erreur lors de la récupération des détails du document AMO:', error)
+      throw error
+    }
+  }
+  
+  /**
+   * Télécharger un document AMO
+   * @param {string} documentId - ID du document AMO
+   * @param {string} originalName - Nom original du fichier
+   * @returns {Promise} - Promesse avec le fichier
+   */
+  async downloadAmoDocument(documentId, originalName) {
+    try {
+      console.log(`📥 Téléchargement du document AMO ${documentId}...`)
+      
+      const endpoint = API_CONFIG.ENDPOINTS.DOCUMENTS_AMO_DOWNLOAD.replace(':id', documentId)
+      
+      const response = await this.makeRequest(endpoint, {
+        method: 'GET',
+        responseType: 'blob'
+      })
+      
+      // Créer un lien de téléchargement
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = originalName || `document-amo-${documentId}`
+      
+      // Trigger le téléchargement
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      
+      // Nettoyer l'URL
+      window.URL.revokeObjectURL(url)
+      
+      console.log(`✅ Téléchargement de ${originalName} terminé`)
+      return { success: true, message: 'Téléchargement réussi' }
+      
+    } catch (error) {
+      console.error('❌ Erreur lors du téléchargement du document AMO:', error)
+      throw error
+    }
+  }
+  
   // ================================================
   // MÉTHODES UTILITAIRES
   // ================================================

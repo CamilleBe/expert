@@ -6,6 +6,7 @@ import ArtisanSearchView from '../views/ArtisanSearchView.vue'
 import ArtisanProfile from '../views/ArtisanProfile.vue'
 import ClientDashboard from '../views/ClientDashboard.vue'
 import ArtisanDashboard from '../views/ArtisanDashboard.vue'
+import PartenairedDashboard from '../views/PartenaireDashboard.vue'
 import AMODashboard from '../views/AMODashboard.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 import { createRoleGuard } from '../composables/useRoleGuard.js'
@@ -45,7 +46,13 @@ const routes = [
     path: '/artisan-dashboard',
     name: 'ArtisanDashboard',
     component: ArtisanDashboard,
-    beforeEnter: createRoleGuard('artisan')
+    beforeEnter: createRoleGuard(['artisan', 'partenaire'])
+  },
+  {
+    path: '/partenaire-dashboard',
+    name: 'PartenaireDashboard',
+    component: PartenairedDashboard,
+    beforeEnter: createRoleGuard('partenaire')
   },
   {
     path: '/amo-dashboard',
