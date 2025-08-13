@@ -243,8 +243,102 @@
             </select>
           </div>
 
-          <!-- Documents -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Zone de dépôt -->
+          <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">📤 Déposer un document</h2>
+            
+            <div 
+              class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center transition-all duration-300 hover:border-blue-400 hover:bg-blue-50"
+              @dragover="handleDragOver"
+              @drop="handleFileDrop"
+              @click="$refs.fileInput.click()"
+            >
+              <svg class="h-10 w-10 text-gray-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <p class="text-sm font-medium text-gray-900 mb-1">Glissez vos fichiers ici</p>
+              <p class="text-xs text-gray-500">PDF, DOC, DOCX, JPG, PNG</p>
+              <input 
+                type="file" 
+                multiple 
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                class="hidden" 
+                ref="fileInput" 
+                @change="handleFileUpload" 
+              />
+              <button class="mt-3 py-2 px-4 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-500 transition-colors">
+                Sélectionner
+              </button>
+            </div>
+
+            <!-- Fichiers sélectionnés -->
+            <div v-if="selectedFiles.length > 0" class="mt-4">
+              <div class="space-y-2 mb-4">
+                <div v-for="(file, index) in selectedFiles" :key="index" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div class="flex items-center">
+                    <span class="text-lg mr-3">📄</span>
+                    <div>
+                      <p class="text-sm font-medium text-gray-900">{{ file.name }}</p>
+                      <p class="text-xs text-gray-500">{{ formatFileSize(file.size) }}</p>
+                    </div>
+                  </div>
+                  <button @click="removeSelectedFile(index)" class="p-1 text-red-600 hover:bg-red-50 rounded">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="flex space-x-3">
+                <button @click="uploadSelectedFiles" class="flex-1 py-2 px-4 bg-green-600 text-white text-sm rounded-lg hover:bg-green-500">
+                  Uploader {{ selectedFiles.length }} fichier(s)
+                </button>
+                <button @click="selectedFiles = []" class="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-300">
+                  Annuler
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Documents en trois colonnes -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Mes documents AMO -->
+            <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
+              <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">🏗️ Mes documents</h3>
+              </div>
+              <div class="p-6">
+                <div v-if="filteredAmoOwnDocuments.length === 0" class="text-center py-8">
+                  <p class="text-gray-500">Aucun document uploadé</p>
+                </div>
+                <div v-else class="space-y-4">
+                  <div v-for="doc in filteredAmoOwnDocuments" :key="doc.id" class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                    <div class="flex items-center">
+                      <div class="p-2 rounded-full bg-green-100">
+                        <span class="text-xl">🏗️</span>
+                      </div>
+                      <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-900">{{ doc.name }}</p>
+                        <p class="text-sm text-gray-600">{{ doc.projectName }} • {{ doc.date }}</p>
+                      </div>
+                    </div>
+                    <div class="flex space-x-2">
+                      <button @click="downloadDocument(doc)" class="p-2 text-green-600 hover:bg-green-100 rounded-lg" title="Télécharger">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </button>
+                      <button @click="deleteDocument(doc)" class="p-2 text-red-600 hover:bg-red-50 rounded-lg" title="Supprimer">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Documents clients -->
             <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
               <div class="p-6 border-b border-gray-200">
@@ -265,7 +359,7 @@
                         <p class="text-sm text-gray-600">{{ doc.clientName }} • {{ doc.date }}</p>
                       </div>
                     </div>
-                    <button class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg">
+                    <button @click="downloadDocument(doc)" class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg" title="Télécharger">
                       <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
@@ -295,7 +389,7 @@
                         <p class="text-sm text-gray-600">{{ doc.artisanName }} • {{ doc.date }}</p>
                       </div>
                     </div>
-                    <button class="p-2 text-orange-600 hover:bg-orange-100 rounded-lg">
+                    <button @click="downloadDocument(doc)" class="p-2 text-orange-600 hover:bg-orange-100 rounded-lg" title="Télécharger">
                       <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
@@ -472,6 +566,7 @@ const showProjectModal = ref(false)
 const showArtisanModal = ref(false)
 const selectedProjectDetails = ref(null)
 const selectedProject = ref('')
+const selectedFiles = ref([])
 const artisanSearch = ref('')
 
 // Données fictives du dashboard
@@ -588,6 +683,12 @@ const artisanDocuments = ref([
   { id: 2, name: 'Certificat électrique.pdf', artisanName: 'Électricité Pro', projectId: 2, date: '11 août 2024' }
 ])
 
+const amoOwnDocuments = ref([
+  { id: 1, name: 'Cahier des charges.pdf', projectName: 'Rénovation cuisine - Jean Dupont', projectId: 1, date: '10 août 2024' },
+  { id: 2, name: 'Plans techniques.pdf', projectName: 'Installation électrique - Marie Martin', projectId: 2, date: '9 août 2024' },
+  { id: 3, name: 'Spécifications.docx', projectName: 'Isolation combles - Pierre Bernard', projectId: 3, date: '8 août 2024' }
+])
+
 const artisans = ref([
   { id: 1, name: 'Électricité Pro', specialty: 'Électricité', location: 'Lyon', rating: 4.8, reviews: 124 },
   { id: 2, name: 'Plomberie Expert', specialty: 'Plomberie', location: 'Lyon', rating: 4.6, reviews: 89 },
@@ -621,6 +722,11 @@ const filteredClientDocuments = computed(() => {
 const filteredArtisanDocuments = computed(() => {
   if (!selectedProject.value) return artisanDocuments.value
   return artisanDocuments.value.filter(doc => doc.projectId === parseInt(selectedProject.value))
+})
+
+const filteredAmoOwnDocuments = computed(() => {
+  if (!selectedProject.value) return amoOwnDocuments.value
+  return amoOwnDocuments.value.filter(doc => doc.projectId === parseInt(selectedProject.value))
 })
 
 const filteredArtisans = computed(() => {
@@ -686,6 +792,90 @@ function getStatusClass(status) {
     'Terminé': 'bg-green-100 text-green-800'
   }
   return statusClasses[status] || 'bg-gray-100 text-gray-800'
+}
+
+// ================================================
+// GESTION DES FICHIERS
+// ================================================
+
+function handleFileUpload(event) {
+  const files = event.target.files
+  if (files && files.length > 0) {
+    selectedFiles.value = Array.from(files)
+    console.log('📁 Fichiers sélectionnés:', selectedFiles.value.map(f => f.name))
+  }
+}
+
+function handleFileDrop(event) {
+  event.preventDefault()
+  const files = event.dataTransfer.files
+  if (files && files.length > 0) {
+    selectedFiles.value = Array.from(files)
+    console.log('📁 Fichiers déposés:', selectedFiles.value.map(f => f.name))
+  }
+}
+
+function handleDragOver(event) {
+  event.preventDefault()
+}
+
+function removeSelectedFile(index) {
+  selectedFiles.value.splice(index, 1)
+}
+
+function uploadSelectedFiles() {
+  if (!selectedFiles.value.length) return
+  
+  console.log('📤 Upload des fichiers:', selectedFiles.value.map(f => f.name))
+  
+  // Simuler l'upload et ajouter les fichiers à la liste des documents AMO
+  selectedFiles.value.forEach((file, index) => {
+    const newDoc = {
+      id: amoOwnDocuments.value.length + index + 1,
+      name: file.name,
+      projectName: selectedProject.value ? projects.value.find(p => p.id === parseInt(selectedProject.value))?.name || 'Tous les projets' : 'Tous les projets',
+      projectId: selectedProject.value ? parseInt(selectedProject.value) : 1,
+      date: new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+    }
+    amoOwnDocuments.value.push(newDoc)
+  })
+  
+  // Vider la sélection
+  selectedFiles.value = []
+  console.log('✅ Documents uploadés avec succès!')
+}
+
+function downloadDocument(document) {
+  console.log('📥 Téléchargement de:', document.name)
+  // Ici vous pourriez implémenter le téléchargement réel
+  // Pour l'instant, on simule juste
+  const link = window.document.createElement('a')
+  link.download = document.name
+  // En production, vous utiliseriez l'URL réelle du document
+  link.href = '#'
+  link.click()
+  console.log('✅ Téléchargement initié')
+}
+
+function deleteDocument(document) {
+  if (!confirm(`Êtes-vous sûr de vouloir supprimer "${document.name}" ?`)) {
+    return
+  }
+  
+  console.log('🗑️ Suppression de:', document.name)
+  const index = amoOwnDocuments.value.findIndex(doc => doc.id === document.id)
+  if (index !== -1) {
+    amoOwnDocuments.value.splice(index, 1)
+    console.log('✅ Document supprimé avec succès!')
+  }
+}
+
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 </script>
 
