@@ -39,7 +39,7 @@
       <main class="flex-1 p-8">
         <!-- Vue d'ensemble -->
         <div v-if="activeTab === 'overview'" class="animate-fade-in">
-          <h1 class="text-3xl font-bold text-gray-900 mb-8">Bienvenue, Martin Leclerc !</h1>
+          <h1 class="text-3xl font-bold text-gray-900 mb-8">Bienvenue, {{ userStore.userName || 'Utilisateur' }} !</h1>
           
           <!-- Statistiques rapides -->
           <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -478,6 +478,10 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useUserStore } from '@/stores/user.js'
+
+// Store utilisateur
+const userStore = useUserStore()
 
 // État réactif
 const activeTab = ref('overview')

@@ -39,7 +39,7 @@
       <main class="flex-1 p-8">
         <!-- Vue d'ensemble -->
         <div v-if="activeTab === 'overview'" class="animate-fade-in">
-          <h1 class="text-3xl font-bold text-gray-900 mb-8">Bienvenue, Jean !</h1>
+          <h1 class="text-3xl font-bold text-gray-900 mb-8">Bienvenue, {{ userStore.userName || 'Utilisateur' }} !</h1>
           
           <!-- Statistiques rapides -->
           <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -575,11 +575,15 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useUserStore } from '@/stores/user.js'
 import projetService from '@/services/projetService'
 import documentService from '@/services/documentService'
 import ProjectCard from '@/components/ProjectCard.vue'
 import ProjectDetailsModal from '@/components/ProjectDetailsModal.vue'
 import CreateProjectModal from '@/components/CreateProjectModal.vue'
+
+// Store utilisateur
+const userStore = useUserStore()
 
 // État réactif
 const activeTab = ref('overview')
