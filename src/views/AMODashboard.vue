@@ -4,7 +4,7 @@
       <!-- Sidebar -->
       <nav class="w-64 bg-white shadow-sm h-screen sticky top-0">
         <div class="p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-6">Dashboard Artisan</h2>
+          <h2 class="text-lg font-semibold text-gray-900 mb-6">Dashboard AMO</h2>
           <ul class="space-y-2">
             <li>
               <button @click="activeTab = 'overview'" :class="activeTab === 'overview' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
@@ -39,7 +39,7 @@
       <main class="flex-1 p-8">
         <!-- Vue d'ensemble -->
         <div v-if="activeTab === 'overview'" class="animate-fade-in">
-          <h1 class="text-3xl font-bold text-gray-900 mb-8">Bienvenue, Martin Leclerc (Artisan) !</h1>
+          <h1 class="text-3xl font-bold text-gray-900 mb-8">Bienvenue, Marie Dupont (AMO) !</h1>
           
           <!-- Statistiques rapides -->
           <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -65,8 +65,8 @@
                   </svg>
                 </div>
                 <div class="ml-4">
-                  <p class="text-sm font-medium text-gray-600">Projets en cours</p>
-                  <p class="text-2xl font-bold text-gray-900">{{ dashboardStats.enCours }}</p>
+                  <p class="text-sm font-medium text-gray-600">Projets gérés</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ dashboardStats.geres }}</p>
                 </div>
               </div>
             </div>
@@ -89,12 +89,12 @@
               <div class="flex items-center">
                 <div class="p-3 rounded-full bg-purple-100">
                   <svg class="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                 </div>
                 <div class="ml-4">
-                  <p class="text-sm font-medium text-gray-600">Chiffre d'affaires</p>
-                  <p class="text-2xl font-bold text-gray-900">{{ dashboardStats.chiffreAffaires.toLocaleString('fr-FR') }}€</p>
+                  <p class="text-sm font-medium text-gray-600">Clients actifs</p>
+                  <p class="text-2xl font-bold text-gray-900">{{ dashboardStats.clients }}</p>
                 </div>
               </div>
             </div>
@@ -150,9 +150,9 @@
                   </div>
                   <div class="flex items-center text-sm text-gray-600">
                     <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-3.5L17 21V5z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                    AMO: {{ project.amoName }}
+                    {{ project.clientName }}
                   </div>
                 </div>
                 
@@ -161,7 +161,7 @@
                     @click="viewProjectDetails(project)"
                     class="flex-1 py-2 px-3 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
                   >
-                    Voir plus
+                    Voir détails
                   </button>
                   <button 
                     @click="acceptProject(project)"
@@ -194,8 +194,8 @@
                 <thead class="bg-gray-50">
                   <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom du projet</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">AMO</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email AMO</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
@@ -207,10 +207,10 @@
                       <div class="text-sm text-gray-500">{{ project.location }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm text-gray-900">{{ project.amoName }}</div>
+                      <div class="text-sm text-gray-900">{{ project.clientName }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm text-gray-900">{{ project.amoEmail }}</div>
+                      <div class="text-sm text-gray-900">{{ project.clientEmail }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <span :class="getStatusClass(project.status)" class="px-2 py-1 text-xs font-medium rounded-full">
@@ -232,37 +232,37 @@
         <div v-if="activeTab === 'documents'" class="animate-fade-in">
           <h1 class="text-3xl font-bold text-gray-900 mb-8">Documents</h1>
           
-          <!-- Filtre projet -->
+          <!-- Filtre client -->
           <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">Filtrer par projet</h2>
-            <select v-model="selectedProject" @change="filterDocuments" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              <option value="">Tous les projets</option>
-              <option v-for="project in projects" :key="project.id" :value="project.id">
-                {{ project.name }}
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Filtrer par client</h2>
+            <select v-model="selectedClient" @change="filterDocuments" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="">Tous les clients</option>
+              <option v-for="client in clients" :key="client.id" :value="client.id">
+                {{ client.name }}
               </option>
             </select>
           </div>
 
-          <!-- Documents et dépôt -->
+          <!-- Documents -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Documents AMO -->
+            <!-- Documents clients -->
             <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
               <div class="p-6 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-900">📥 Documents AMO</h3>
+                <h3 class="text-lg font-semibold text-gray-900">📄 Documents clients</h3>
               </div>
               <div class="p-6">
-                <div v-if="filteredAmoDocuments.length === 0" class="text-center py-8">
-                  <p class="text-gray-500">Aucun document AMO pour ce projet</p>
+                <div v-if="filteredClientDocuments.length === 0" class="text-center py-8">
+                  <p class="text-gray-500">Aucun document client</p>
                 </div>
                 <div v-else class="space-y-4">
-                  <div v-for="doc in filteredAmoDocuments" :key="doc.id" class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+                  <div v-for="doc in filteredClientDocuments" :key="doc.id" class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
                     <div class="flex items-center">
                       <div class="p-2 rounded-full bg-blue-100">
                         <span class="text-xl">📄</span>
                       </div>
                       <div class="ml-3">
                         <p class="text-sm font-medium text-gray-900">{{ doc.name }}</p>
-                        <p class="text-sm text-gray-600">{{ doc.amoName }} • {{ doc.date }}</p>
+                        <p class="text-sm text-gray-600">{{ doc.clientName }} • {{ doc.date }}</p>
                       </div>
                     </div>
                     <button class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg">
@@ -275,98 +275,31 @@
               </div>
             </div>
 
-            <!-- Mes documents + dépôt -->
-            <div>
-              <!-- Zone de dépôt -->
-              <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">📤 Déposer un document</h3>
-                
-                <div 
-                  class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center transition-all duration-300 hover:border-blue-400 hover:bg-blue-50"
-                  @dragover="handleDragOver"
-                  @drop="handleFileDrop"
-                  @click="$refs.fileInput.click()"
-                >
-                  <svg class="h-10 w-10 text-gray-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                  </svg>
-                  <p class="text-sm font-medium text-gray-900 mb-1">Glissez vos fichiers ici</p>
-                  <p class="text-xs text-gray-500">PDF, DOC, DOCX, JPG, PNG</p>
-                  <input 
-                    type="file" 
-                    multiple 
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                    class="hidden" 
-                    ref="fileInput" 
-                    @change="handleFileUpload" 
-                  />
-                  <button class="mt-3 py-2 px-4 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-500 transition-colors">
-                    Sélectionner
-                  </button>
-                </div>
-
-                <!-- Fichiers sélectionnés -->
-                <div v-if="selectedFiles.length > 0" class="mt-4">
-                  <div class="space-y-2 mb-4">
-                    <div v-for="(file, index) in selectedFiles" :key="index" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div class="flex items-center">
-                        <span class="text-lg mr-3">📄</span>
-                        <div>
-                          <p class="text-sm font-medium text-gray-900">{{ file.name }}</p>
-                          <p class="text-xs text-gray-500">{{ formatFileSize(file.size) }}</p>
-                        </div>
-                      </div>
-                      <button @click="removeSelectedFile(index)" class="p-1 text-red-600 hover:bg-red-50 rounded">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                  <div class="flex space-x-3">
-                    <button @click="uploadSelectedFiles" class="flex-1 py-2 px-4 bg-green-600 text-white text-sm rounded-lg hover:bg-green-500">
-                      Uploader {{ selectedFiles.length }} fichier(s)
-                    </button>
-                    <button @click="selectedFiles = []" class="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-300">
-                      Annuler
-                    </button>
-                  </div>
-                </div>
+            <!-- Documents artisans -->
+            <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
+              <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">🔨 Documents artisans</h3>
               </div>
-
-              <!-- Mes documents -->
-              <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
-                <div class="p-6 border-b border-gray-200">
-                  <h3 class="text-lg font-semibold text-gray-900">📄 Mes documents</h3>
+              <div class="p-6">
+                <div v-if="filteredArtisanDocuments.length === 0" class="text-center py-8">
+                  <p class="text-gray-500">Aucun document artisan</p>
                 </div>
-                <div class="p-6">
-                  <div v-if="filteredMyDocuments.length === 0" class="text-center py-8">
-                    <p class="text-gray-500">Aucun document uploadé</p>
-                  </div>
-                  <div v-else class="space-y-4">
-                    <div v-for="doc in filteredMyDocuments" :key="doc.id" class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-                      <div class="flex items-center">
-                        <div class="p-2 rounded-full bg-green-100">
-                          <span class="text-xl">📄</span>
-                        </div>
-                        <div class="ml-3">
-                          <p class="text-sm font-medium text-gray-900">{{ doc.name }}</p>
-                          <p class="text-sm text-gray-600">{{ doc.projectName }} • {{ doc.date }}</p>
-                        </div>
+                <div v-else class="space-y-4">
+                  <div v-for="doc in filteredArtisanDocuments" :key="doc.id" class="flex items-center justify-between p-4 bg-orange-50 rounded-lg">
+                    <div class="flex items-center">
+                      <div class="p-2 rounded-full bg-orange-100">
+                        <span class="text-xl">🔨</span>
                       </div>
-                      <div class="flex space-x-2">
-                        <button class="p-2 text-green-600 hover:bg-green-100 rounded-lg">
-                          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                          </svg>
-                        </button>
-                        <button class="p-2 text-red-600 hover:bg-red-50 rounded-lg">
-                          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
+                      <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-900">{{ doc.name }}</p>
+                        <p class="text-sm text-gray-600">{{ doc.artisanName }} • {{ doc.date }}</p>
                       </div>
                     </div>
+                    <button class="p-2 text-orange-600 hover:bg-orange-100 rounded-lg">
+                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -381,7 +314,7 @@
           <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
             <h2 class="text-xl font-bold text-gray-900 mb-4">Notifications récentes</h2>
             
-            <div v-if="artisanNotifications.length === 0" class="text-center py-8">
+            <div v-if="amoNotifications.length === 0" class="text-center py-8">
               <div class="p-3 rounded-full bg-gray-100 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM11 7H6l5-5v5z" />
@@ -392,9 +325,9 @@
             </div>
 
             <div v-else class="space-y-4">
-              <div v-for="notification in artisanNotifications" :key="notification.id" :class="notification.read ? 'bg-gray-50' : 'bg-blue-50 border-blue-200'" class="flex items-center justify-between p-4 rounded-lg border transition-colors">
+              <div v-for="notification in amoNotifications" :key="notification.id" class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div class="flex items-center">
-                  <div :class="notification.read ? 'bg-gray-100' : 'bg-blue-100'" class="p-3 rounded-full">
+                  <div class="p-3 rounded-full bg-blue-100">
                     <svg v-if="notification.type === 'document'" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
@@ -407,16 +340,6 @@
                     <p class="text-sm text-gray-600">{{ notification.message }}</p>
                     <p class="text-xs text-gray-500 mt-1">{{ notification.time }}</p>
                   </div>
-                </div>
-                <div class="flex space-x-2">
-                  <button v-if="!notification.read" @click="markAsRead(notification.id)" class="py-2 px-4 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-500 transition-colors">
-                    Marquer comme lu
-                  </button>
-                  <button @click="deleteNotification(notification.id)" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
                 </div>
               </div>
             </div>
@@ -437,38 +360,98 @@
           </button>
         </div>
         
-        <div v-if="selectedProjectDetails" class="space-y-4">
+        <div v-if="selectedProject" class="space-y-4">
           <div>
-            <h3 class="font-semibold text-gray-900">{{ selectedProjectDetails.title }}</h3>
-            <p class="text-gray-600">{{ selectedProjectDetails.description }}</p>
+            <h3 class="font-semibold text-gray-900">{{ selectedProject.title }}</h3>
+            <p class="text-gray-600">{{ selectedProject.description }}</p>
           </div>
           
           <div class="grid grid-cols-2 gap-4">
             <div>
               <p class="text-sm font-medium text-gray-500">Localisation</p>
-              <p class="text-gray-900">{{ selectedProjectDetails.location }}</p>
+              <p class="text-gray-900">{{ selectedProject.location }}</p>
             </div>
             <div>
               <p class="text-sm font-medium text-gray-500">Budget</p>
-              <p class="text-gray-900">{{ selectedProjectDetails.budget }}</p>
+              <p class="text-gray-900">{{ selectedProject.budget }}</p>
             </div>
             <div>
-              <p class="text-sm font-medium text-gray-500">AMO</p>
-              <p class="text-gray-900">{{ selectedProjectDetails.amoName }}</p>
+              <p class="text-sm font-medium text-gray-500">Client</p>
+              <p class="text-gray-900">{{ selectedProject.clientName }}</p>
             </div>
             <div>
-              <p class="text-sm font-medium text-gray-500">Contact AMO</p>
-              <p class="text-gray-900">{{ selectedProjectDetails.amoEmail }}</p>
+              <p class="text-sm font-medium text-gray-500">Contact</p>
+              <p class="text-gray-900">{{ selectedProject.clientEmail }}</p>
             </div>
           </div>
 
           <div class="flex space-x-4 pt-6">
-            <button @click="acceptProject(selectedProjectDetails)" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+            <button 
+              @click="findArtisans"
+              class="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              Artisan 🔍
+            </button>
+            <button 
+              @click="acceptProject(selectedProject)"
+              class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
               Accepter
             </button>
-            <button @click="declineProject(selectedProjectDetails)" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+            <button 
+              @click="declineProject(selectedProject)"
+              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
               Décliner
             </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal recherche artisans -->
+    <div v-if="showArtisanModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl p-8 max-w-4xl w-full mx-4 max-h-96 overflow-y-auto">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Recherche d'artisans</h2>
+          <button @click="closeArtisanModal" class="text-gray-400 hover:text-gray-600">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div class="mb-6">
+          <input 
+            v-model="artisanSearch" 
+            type="text" 
+            placeholder="Rechercher par compétence (ex: électricité, plomberie...)"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div v-for="artisan in filteredArtisans" :key="artisan.id" class="p-4 border border-gray-200 rounded-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="font-semibold text-gray-900">{{ artisan.name }}</h3>
+                <p class="text-sm text-gray-600">{{ artisan.specialty }}</p>
+                <p class="text-sm text-gray-500">{{ artisan.location }}</p>
+                <div class="flex items-center mt-1">
+                  <span class="text-yellow-400">★</span>
+                  <span class="text-sm text-gray-600 ml-1">{{ artisan.rating }} ({{ artisan.reviews }} avis)</span>
+                </div>
+              </div>
+              <button 
+                @click="addArtisanToProject(artisan)"
+                class="px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Ajouter
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -482,24 +465,25 @@ import { ref, computed } from 'vue'
 // État réactif
 const activeTab = ref('overview')
 const showProjectModal = ref(false)
-const selectedProjectDetails = ref(null)
-const selectedProject = ref('')
-const selectedFiles = ref([])
+const showArtisanModal = ref(false)
+const selectedProject = ref(null)
+const selectedClient = ref('')
+const artisanSearch = ref('')
 
 // Données fictives du dashboard
 const dashboardStats = ref({
-  enAttente: 4,
-  enCours: 6,
-  termines: 12,
-  chiffreAffaires: 24580
+  enAttente: 3,
+  geres: 12,
+  termines: 8,
+  clients: 15
 })
 
 const recentActivity = ref([
   {
     id: 1,
     title: 'Nouveau projet reçu',
-    description: 'Installation électrique - Maison Lyon',
-    time: 'Il y a 1 heure',
+    description: 'Rénovation cuisine - Jean Dupont',
+    time: 'Il y a 2 heures',
     iconClass: 'bg-green-100',
     iconColor: 'text-green-600',
     iconPath: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m4 0V9a1 1 0 011-1h4a1 1 0 011 1v12m-6 0h6'
@@ -507,8 +491,8 @@ const recentActivity = ref([
   {
     id: 2,
     title: 'Document reçu',
-    description: 'Plans électriques - Marie Dupont (AMO)',
-    time: 'Il y a 3 heures',
+    description: 'Devis électricité - Marie Martin',
+    time: 'Il y a 4 heures',
     iconClass: 'bg-blue-100',
     iconColor: 'text-blue-600',
     iconPath: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
@@ -516,7 +500,7 @@ const recentActivity = ref([
   {
     id: 3,
     title: 'Projet terminé',
-    description: 'Rénovation salle de bain - Appartement Marseille',
+    description: 'Isolation combles - Pierre Bernard',
     time: 'Il y a 1 jour',
     iconClass: 'bg-purple-100',
     iconColor: 'text-purple-600',
@@ -527,30 +511,30 @@ const recentActivity = ref([
 const newProjects = ref([
   {
     id: 1,
-    title: 'Installation électrique complète',
-    description: 'Mise aux normes électriques d\'une maison de 120m² avec tableau électrique neuf',
+    title: 'Rénovation cuisine complète',
+    description: 'Rénovation complète d\'une cuisine de 15m² avec remplacement des équipements',
     location: 'Lyon, 69000',
-    budget: '8 000 - 12 000€',
-    amoName: 'Marie Dupont',
-    amoEmail: 'marie.dupont@amo.com'
+    budget: '15 000 - 20 000€',
+    clientName: 'Jean Dupont',
+    clientEmail: 'jean.dupont@email.com'
   },
   {
     id: 2,
-    title: 'Rénovation plomberie',
-    description: 'Réfection complète de la plomberie d\'un appartement 3 pièces',
+    title: 'Installation système électrique',
+    description: 'Mise aux normes électriques d\'un appartement de 60m²',
     location: 'Marseille, 13000',
-    budget: '6 000 - 9 000€',
-    amoName: 'Pierre Martin',
-    amoEmail: 'pierre.martin@amo.com'
+    budget: '8 000 - 12 000€',
+    clientName: 'Marie Martin',
+    clientEmail: 'marie.martin@email.com'
   },
   {
     id: 3,
-    title: 'Pose carrelage',
-    description: 'Pose de carrelage dans une cuisine de 20m² et une salle de bain de 8m²',
+    title: 'Isolation des combles',
+    description: 'Isolation thermique des combles perdus sur 80m²',
     location: 'Toulouse, 31000',
-    budget: '4 000 - 6 000€',
-    amoName: 'Sophie Bernard',
-    amoEmail: 'sophie.bernard@amo.com'
+    budget: '3 000 - 5 000€',
+    clientName: 'Pierre Bernard',
+    clientEmail: 'pierre.bernard@email.com'
   }
 ])
 
@@ -559,92 +543,99 @@ const managedProjects = ref([
     id: 1,
     title: 'Rénovation salle de bain',
     location: 'Nice, 06000',
-    amoName: 'Marie Dupont',
-    amoEmail: 'marie.dupont@amo.com',
+    clientName: 'Sophie Moreau',
+    clientEmail: 'sophie.moreau@email.com',
     status: 'En cours'
   },
   {
     id: 2,
-    title: 'Installation cuisine',
+    title: 'Extension maison',
     location: 'Bordeaux, 33000',
-    amoName: 'Pierre Martin',
-    amoEmail: 'pierre.martin@amo.com',
+    clientName: 'Antoine Roux',
+    clientEmail: 'antoine.roux@email.com',
     status: 'Planification'
   },
   {
     id: 3,
-    title: 'Électricité maison',
+    title: 'Réfection toiture',
     location: 'Nantes, 44000',
-    amoName: 'Sophie Bernard',
-    amoEmail: 'sophie.bernard@amo.com',
+    clientName: 'Claire Dubois',
+    clientEmail: 'claire.dubois@email.com',
     status: 'En attente'
   }
 ])
 
-const projects = ref([
-  { id: 1, name: 'Projet 1 - Rénovation salle de bain' },
-  { id: 2, name: 'Projet 2 - Installation cuisine' },
-  { id: 3, name: 'Projet 3 - Électricité maison' }
+const clients = ref([
+  { id: 1, name: 'Jean Dupont' },
+  { id: 2, name: 'Marie Martin' },
+  { id: 3, name: 'Pierre Bernard' },
+  { id: 4, name: 'Sophie Moreau' },
+  { id: 5, name: 'Antoine Roux' }
 ])
 
-const amoDocuments = ref([
-  { id: 1, name: 'Plans électriques.pdf', amoName: 'Marie Dupont', projectId: 1, date: '12 août 2024' },
-  { id: 2, name: 'Cahier des charges.pdf', amoName: 'Pierre Martin', projectId: 2, date: '11 août 2024' },
-  { id: 3, name: 'Normes sécurité.pdf', amoName: 'Sophie Bernard', projectId: 3, date: '10 août 2024' }
+const clientDocuments = ref([
+  { id: 1, name: 'Plan cuisine.pdf', clientName: 'Jean Dupont', clientId: 1, date: '12 août 2024' },
+  { id: 2, name: 'Devis électricité.pdf', clientName: 'Marie Martin', clientId: 2, date: '11 août 2024' },
+  { id: 3, name: 'Photos avant travaux.jpg', clientName: 'Pierre Bernard', clientId: 3, date: '10 août 2024' }
 ])
 
-const myDocuments = ref([
-  { id: 1, name: 'Devis électricité.pdf', projectName: 'Projet 1', projectId: 1, date: '12 août 2024' },
-  { id: 2, name: 'Facture matériaux.pdf', projectName: 'Projet 2', projectId: 2, date: '11 août 2024' }
+const artisanDocuments = ref([
+  { id: 1, name: 'Facture plomberie.pdf', artisanName: 'Plomberie Durand', clientId: 1, date: '12 août 2024' },
+  { id: 2, name: 'Certificat électrique.pdf', artisanName: 'Électricité Pro', clientId: 2, date: '11 août 2024' }
 ])
 
-const artisanNotifications = ref([
+const artisans = ref([
+  { id: 1, name: 'Électricité Pro', specialty: 'Électricité', location: 'Lyon', rating: 4.8, reviews: 124 },
+  { id: 2, name: 'Plomberie Expert', specialty: 'Plomberie', location: 'Lyon', rating: 4.6, reviews: 89 },
+  { id: 3, name: 'Carrelage Plus', specialty: 'Carrelage', location: 'Lyon', rating: 4.9, reviews: 156 },
+  { id: 4, name: 'Peinture Service', specialty: 'Peinture', location: 'Marseille', rating: 4.5, reviews: 98 }
+])
+
+const amoNotifications = ref([
   {
     id: 1,
     type: 'document',
     title: 'Nouveau document reçu',
-    message: 'Marie Dupont (AMO) a envoyé les plans électriques',
-    time: 'Il y a 1 heure',
-    read: false
+    message: 'Jean Dupont a envoyé un nouveau document',
+    time: 'Il y a 1 heure'
   },
   {
     id: 2,
     type: 'project',
     title: 'Nouveau projet',
-    message: 'Nouvelle proposition de projet d\'installation électrique',
-    time: 'Il y a 3 heures',
-    read: false
-  },
-  {
-    id: 3,
-    type: 'document',
-    title: 'Document validé',
-    message: 'Votre devis a été approuvé par l\'AMO',
-    time: 'Il y a 1 jour',
-    read: true
+    message: 'Nouveau projet de rénovation soumis',
+    time: 'Il y a 3 heures'
   }
 ])
 
 // Computed properties
-const filteredAmoDocuments = computed(() => {
-  if (!selectedProject.value) return amoDocuments.value
-  return amoDocuments.value.filter(doc => doc.projectId === parseInt(selectedProject.value))
+const filteredClientDocuments = computed(() => {
+  if (!selectedClient.value) return clientDocuments.value
+  return clientDocuments.value.filter(doc => doc.clientId === parseInt(selectedClient.value))
 })
 
-const filteredMyDocuments = computed(() => {
-  if (!selectedProject.value) return myDocuments.value
-  return myDocuments.value.filter(doc => doc.projectId === parseInt(selectedProject.value))
+const filteredArtisanDocuments = computed(() => {
+  if (!selectedClient.value) return artisanDocuments.value
+  return artisanDocuments.value.filter(doc => doc.clientId === parseInt(selectedClient.value))
+})
+
+const filteredArtisans = computed(() => {
+  if (!artisanSearch.value) return artisans.value
+  return artisans.value.filter(artisan => 
+    artisan.specialty.toLowerCase().includes(artisanSearch.value.toLowerCase()) ||
+    artisan.name.toLowerCase().includes(artisanSearch.value.toLowerCase())
+  )
 })
 
 // Méthodes
 function viewProjectDetails(project) {
-  selectedProjectDetails.value = project
+  selectedProject.value = project
   showProjectModal.value = true
 }
 
 function closeProjectModal() {
   showProjectModal.value = false
-  selectedProjectDetails.value = null
+  selectedProject.value = null
 }
 
 function acceptProject(project) {
@@ -665,6 +656,20 @@ function declineProject(project) {
   closeProjectModal()
 }
 
+function findArtisans() {
+  showArtisanModal.value = true
+}
+
+function closeArtisanModal() {
+  showArtisanModal.value = false
+  artisanSearch.value = ''
+}
+
+function addArtisanToProject(artisan) {
+  console.log('Artisan ajouté au projet:', artisan.name)
+  closeArtisanModal()
+}
+
 function filterDocuments() {
   // La filtration se fait automatiquement via les computed properties
 }
@@ -677,56 +682,6 @@ function getStatusClass(status) {
     'Terminé': 'bg-green-100 text-green-800'
   }
   return statusClasses[status] || 'bg-gray-100 text-gray-800'
-}
-
-function handleFileUpload(event) {
-  const files = event.target.files
-  if (files && files.length > 0) {
-    selectedFiles.value = Array.from(files)
-  }
-}
-
-function handleFileDrop(event) {
-  event.preventDefault()
-  const files = event.dataTransfer.files
-  if (files && files.length > 0) {
-    selectedFiles.value = Array.from(files)
-  }
-}
-
-function handleDragOver(event) {
-  event.preventDefault()
-}
-
-function removeSelectedFile(index) {
-  selectedFiles.value.splice(index, 1)
-}
-
-function uploadSelectedFiles() {
-  console.log('Upload des fichiers:', selectedFiles.value.map(f => f.name))
-  selectedFiles.value = []
-}
-
-function formatFileSize(bytes) {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
-
-function markAsRead(notificationId) {
-  const notification = artisanNotifications.value.find(n => n.id === notificationId)
-  if (notification) {
-    notification.read = true
-  }
-}
-
-function deleteNotification(notificationId) {
-  const index = artisanNotifications.value.findIndex(n => n.id === notificationId)
-  if (index !== -1) {
-    artisanNotifications.value.splice(index, 1)
-  }
 }
 </script>
 

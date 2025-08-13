@@ -6,6 +6,7 @@ import ArtisanSearchView from '../views/ArtisanSearchView.vue'
 import ArtisanProfile from '../views/ArtisanProfile.vue'
 import ClientDashboard from '../views/ClientDashboard.vue'
 import ArtisanDashboard from '../views/ArtisanDashboard.vue'
+import AMODashboard from '../views/AMODashboard.vue'
 
 const routes = [
   {
@@ -41,6 +42,11 @@ const routes = [
     path: '/artisan-dashboard',
     name: 'ArtisanDashboard',
     component: ArtisanDashboard
+  },
+  {
+    path: '/amo-dashboard',
+    name: 'AMODashboard',
+    component: AMODashboard
   },
   {
     path: '/services',

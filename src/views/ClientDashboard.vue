@@ -1,5 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
+    
 
     <div class="flex">
       <!-- Sidebar -->
@@ -23,8 +24,8 @@
               </button>
             </li>
             <li>
-              <button @click="activeTab = 'meetings'" :class="activeTab === 'meetings' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
-                Visioconférences
+              <button @click="activeTab = 'notifications'" :class="activeTab === 'notifications' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
+                Notifications
               </button>
             </li>
             <li>
@@ -482,70 +483,72 @@
           </div>
         </div>
 
-        <!-- Visioconférences -->
-        <div v-if="activeTab === 'meetings'" class="animate-fade-in">
+        <!-- Notifications -->
+        <div v-if="activeTab === 'notifications'" class="animate-fade-in">
           <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Visioconférences</h1>
-            <button class="py-3 px-6 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-300">
-              Planifier une réunion
+            <h1 class="text-3xl font-bold text-gray-900">Notifications</h1>
+            <button @click="markAllAsRead" class="py-3 px-6 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-300">
+              Marquer tout comme lu
             </button>
           </div>
 
-          <!-- Réunions à venir -->
+          <!-- Notifications récentes -->
           <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 mb-8">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">Réunions à venir</h2>
-            <div class="space-y-4">
-              <div v-for="meeting in upcomingMeetings" :key="meeting.id" class="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Notifications récentes</h2>
+            
+            <!-- Aucune notification -->
+            <div v-if="clientNotifications.length === 0" class="text-center py-8">
+              <div class="p-3 rounded-full bg-gray-100 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <svg class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM11 7H6l5-5v5z" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune notification</h3>
+              <p class="text-gray-600">Vous n'avez pas de nouvelles notifications pour le moment</p>
+            </div>
+
+            <!-- Liste des notifications -->
+            <div v-else class="space-y-4">
+              <div 
+                v-for="notification in clientNotifications" 
+                :key="notification.id" 
+                :class="notification.read ? 'bg-gray-50' : 'bg-blue-50 border-blue-200'"
+                class="flex items-center justify-between p-4 rounded-lg border transition-colors"
+              >
                 <div class="flex items-center">
-                  <div class="p-3 rounded-full bg-blue-100">
-                    <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  <div :class="notification.read ? 'bg-gray-100' : 'bg-blue-100'" class="p-3 rounded-full">
+                    <svg v-if="notification.type === 'document'" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <svg v-else-if="notification.type === 'project'" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m4 0V9a1 1 0 011-1h4a1 1 0 011 1v12m-6 0h6" />
+                    </svg>
+                    <svg v-else class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                   <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-900">{{ meeting.title }}</p>
-                    <p class="text-sm text-gray-600">{{ meeting.contractor }} • {{ meeting.date }} à {{ meeting.time }}</p>
+                    <p class="text-sm font-medium text-gray-900">{{ notification.title }}</p>
+                    <p class="text-sm text-gray-600">{{ notification.message }}</p>
+                    <p class="text-xs text-gray-500 mt-1">{{ notification.formattedDate }}</p>
                   </div>
                 </div>
                 <div class="flex space-x-2">
-                  <button class="py-2 px-4 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-500 transition-colors">
-                    Rejoindre
+                  <button 
+                    v-if="!notification.read"
+                    @click="markAsRead(notification.id)"
+                    class="py-2 px-4 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-500 transition-colors"
+                  >
+                    Marquer comme lu
                   </button>
-                  <button class="py-2 px-4 bg-gray-100 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
-                    Modifier
+                  <button 
+                    @click="deleteNotification(notification.id)"
+                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
                   </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Historique des réunions -->
-          <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
-            <div class="p-6 border-b border-gray-200">
-              <h2 class="text-xl font-bold text-gray-900">Historique des réunions</h2>
-            </div>
-            <div class="p-6">
-              <div class="space-y-4">
-                <div v-for="meeting in pastMeetings" :key="meeting.id" class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div class="flex items-center">
-                    <div class="p-2 rounded-full bg-gray-100">
-                      <svg class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <div class="ml-3">
-                      <p class="text-sm font-medium text-gray-900">{{ meeting.title }}</p>
-                      <p class="text-sm text-gray-600">{{ meeting.contractor }} • {{ meeting.date }}</p>
-                    </div>
-                  </div>
-                  <div class="flex space-x-2">
-                    <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Terminée</span>
-                    <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
@@ -627,6 +630,34 @@ const amoDocumentsStats = ref({
 })
 const isLoadingAmoDocuments = ref(false)
 const amoDocumentsError = ref('')
+
+// Notifications client
+const clientNotifications = ref([
+  {
+    id: 1,
+    type: 'document',
+    title: 'Nouveau document reçu',
+    message: 'Votre AMO a envoyé un nouveau document pour votre projet de rénovation',
+    formattedDate: 'Il y a 2 heures',
+    read: false
+  },
+  {
+    id: 2,
+    type: 'project',
+    title: 'Projet pris en compte',
+    message: 'Votre projet de rénovation de cuisine a été pris en compte par un AMO',
+    formattedDate: 'Il y a 1 jour',
+    read: false
+  },
+  {
+    id: 3,
+    type: 'document',
+    title: 'Document validé',
+    message: 'Votre devis a été validé et traité',
+    formattedDate: 'Il y a 3 jours',
+    read: true
+  }
+])
 
 const payments = ref([])
 
@@ -945,6 +976,30 @@ function closeCreateProjectModal() {
 function onProjectCreated(newProject) {
   // Recharger les données du dashboard
   loadDashboard()
+}
+
+// ================================================
+// MÉTHODES POUR LES NOTIFICATIONS CLIENT
+// ================================================
+
+function markAsRead(notificationId) {
+  const notification = clientNotifications.value.find(n => n.id === notificationId)
+  if (notification) {
+    notification.read = true
+  }
+}
+
+function markAllAsRead() {
+  clientNotifications.value.forEach(notification => {
+    notification.read = true
+  })
+}
+
+function deleteNotification(notificationId) {
+  const index = clientNotifications.value.findIndex(n => n.id === notificationId)
+  if (index !== -1) {
+    clientNotifications.value.splice(index, 1)
+  }
 }
 
 // Charger les données au montage du composant
