@@ -12,8 +12,15 @@
               </button>
             </li>
             <li>
-              <button @click="activeTab = 'new-projects'" :class="activeTab === 'new-projects' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
+              <button @click="activeTab = 'new-projects'" :class="activeTab === 'new-projects' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors relative">
                 Nouveaux projets
+                <!-- Pastille pour nouveaux projets -->
+                <span 
+                  v-if="newProjectsCount > 0" 
+                  class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"
+                >
+                  {{ newProjectsCount }}
+                </span>
               </button>
             </li>
             <li>
@@ -122,59 +129,122 @@
 
         <!-- Nouveaux projets -->
         <div v-if="activeTab === 'new-projects'" class="animate-fade-in">
-          <h1 class="text-3xl font-bold text-gray-900 mb-8">Nouveaux projets</h1>
+          <div class="flex justify-between items-center mb-8">
+            <div>
+              <h1 class="text-3xl font-bold text-gray-900">Nouveaux projets</h1>
+              <p class="text-gray-600 mt-1">{{ newProjectsCount }} projet{{ newProjectsCount > 1 ? 's' : '' }} disponible{{ newProjectsCount > 1 ? 's' : '' }} dans votre zone</p>
+            </div>
+            <div class="flex space-x-2">
+              <button 
+                @click="loadAvailableProjects()"
+                :disabled="isLoading"
+                class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+              >
+                <svg v-if="isLoading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <svg v-else class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Actualiser
+              </button>
+            </div>
+          </div>
           
-          <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            <div v-for="project in newProjects" :key="project.id" class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <!-- Aucun projet -->
+          <div v-if="newProjects.length === 0" class="text-center py-16">
+            <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
+              <svg class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m4 0V9a1 1 0 011-1h4a1 1 0 011 1v12m-6 0h6" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Aucun nouveau projet</h3>
+            <p class="text-gray-600 max-w-md mx-auto">
+              Aucun nouveau projet n'est disponible dans votre zone d'intervention pour le moment. Nous vous notifierons dès qu'il y en aura !
+            </p>
+          </div>
+          
+          <!-- Liste des projets -->
+          <div v-else class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div 
+              v-for="project in newProjects" 
+              :key="project.id" 
+              class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+              :class="{ 'ring-2 ring-blue-500 ring-opacity-50': amoProjectService.isRecentProject(project) }"
+            >
               <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
-                  <h3 class="text-lg font-semibold text-gray-900">{{ project.title }}</h3>
-                  <span class="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full">
-                    Nouveau
-                  </span>
+                  <h3 class="text-lg font-semibold text-gray-900 leading-tight">{{ project.title }}</h3>
+                  <div class="flex space-x-1">
+                    <span v-if="amoProjectService.isRecentProject(project)" class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full animate-pulse">
+                      🆕 Nouveau
+                    </span>
+                    <span class="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full">
+                      Disponible
+                    </span>
+                  </div>
                 </div>
                 
                 <div class="space-y-3 mb-6">
                   <div class="flex items-center text-sm text-gray-600">
-                    <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 616 0z" />
                     </svg>
-                    {{ project.location }}
+                    <span class="font-medium">{{ project.location }}</span>
                   </div>
                   <div class="flex items-center text-sm text-gray-600">
-                    <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="h-4 w-4 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                     </svg>
-                    {{ project.budget }}
+                    <span class="font-semibold text-green-700">{{ project.budget }}</span>
                   </div>
                   <div class="flex items-center text-sm text-gray-600">
-                    <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="h-4 w-4 mr-2 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                    {{ project.clientName }}
+                    <span class="font-medium">{{ project.clientName }}</span>
+                  </div>
+                  <div v-if="project.surfaceM2" class="flex items-center text-sm text-gray-600">
+                    <svg class="h-4 w-4 mr-2 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m4 0V9a1 1 0 011-1h4a1 1 0 011 1v12m-6 0h6" />
+                    </svg>
+                    <span>{{ project.surfaceM2 }}m²</span>
+                    <span v-if="project.bedrooms" class="ml-2">• {{ project.bedrooms }} chambres</span>
+                    <span v-if="project.houseType" class="ml-2 capitalize">• {{ project.houseType }}</span>
+                  </div>
+                  <div v-if="project.createdAt" class="flex items-center text-xs text-gray-500">
+                    <svg class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Créé {{ amoProjectService.formatDate(project.createdAt) }}
                   </div>
                 </div>
                 
-                <div class="flex space-x-2">
+                <div class="space-y-2">
                   <button 
                     @click="viewProjectDetails(project)"
-                    class="flex-1 py-2 px-3 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                    class="w-full py-2 px-3 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
                   >
-                    Voir détails
+                    👁️ Voir détails complets
                   </button>
-                  <button 
-                    @click="acceptProject(project)"
-                    class="flex-1 py-2 px-3 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-500 transition-colors"
-                  >
-                    Accepter
-                  </button>
-                  <button 
-                    @click="declineProject(project)"
-                    class="flex-1 py-2 px-3 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-500 transition-colors"
-                  >
-                    Décliner
-                  </button>
+                  <div class="flex space-x-2">
+                    <button 
+                      @click="acceptProject(project)"
+                      :disabled="isLoading"
+                      class="flex-1 py-2 px-3 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      ✅ Accepter
+                    </button>
+                    <button 
+                      @click="declineProject(project)"
+                      :disabled="isLoading"
+                      class="flex-1 py-2 px-3 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      ❌ Ignorer
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -183,43 +253,121 @@
 
         <!-- Gestion de projets -->
         <div v-if="activeTab === 'project-management'" class="animate-fade-in">
-          <h1 class="text-3xl font-bold text-gray-900 mb-8">Gestion de projets</h1>
+          <div class="flex justify-between items-center mb-8">
+            <div>
+              <h1 class="text-3xl font-bold text-gray-900">Gestion de projets</h1>
+              <p class="text-gray-600 mt-1">{{ managedProjects.length }} projet{{ managedProjects.length > 1 ? 's' : '' }} en cours de gestion</p>
+            </div>
+            <div class="flex space-x-2">
+              <button 
+                @click="loadManagedProjects()"
+                :disabled="isLoading"
+                class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+              >
+                <svg v-if="isLoading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <svg v-else class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Actualiser
+              </button>
+            </div>
+          </div>
           
-          <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
+          <!-- Aucun projet géré -->
+          <div v-if="managedProjects.length === 0" class="text-center py-16">
+            <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center">
+              <svg class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Aucun projet en cours</h3>
+            <p class="text-gray-600 max-w-md mx-auto">
+              Vous n'avez pas encore accepté de projets. Consultez l'onglet "Nouveaux projets" pour voir les projets disponibles.
+            </p>
+          </div>
+          
+          <!-- Liste des projets gérés -->
+          <div v-else class="bg-white rounded-2xl shadow-xl border border-gray-100">
             <div class="p-6 border-b border-gray-200">
-              <h2 class="text-xl font-bold text-gray-900">Projets en cours</h2>
+              <h2 class="text-xl font-bold text-gray-900">Mes projets acceptés</h2>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full">
                 <thead class="bg-gray-50">
                   <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom du projet</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Projet</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Budget</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Créé</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="project in managedProjects" :key="project.id">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm font-medium text-gray-900">{{ project.title }}</div>
-                      <div class="text-sm text-gray-500">{{ project.location }}</div>
+                  <tr v-for="project in managedProjects" :key="project.id" class="hover:bg-gray-50">
+                    <td class="px-6 py-4">
+                      <div class="flex items-center">
+                        <div class="flex-shrink-0 h-10 w-10">
+                          <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                            <svg class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m4 0V9a1 1 0 011-1h4a1 1 0 011 1v12m-6 0h6" />
+                            </svg>
+                          </div>
+                        </div>
+                        <div class="ml-4">
+                          <div class="text-sm font-medium text-gray-900">
+                            {{ project.description ? project.description.substring(0, 60) + '...' : 'Projet sans titre' }}
+                          </div>
+                          <div class="text-sm text-gray-500">
+                            📍 {{ project.city }}, {{ project.postalCode }}
+                            <span v-if="project.surfaceM2"> • {{ project.surfaceM2 }}m²</span>
+                          </div>
+                        </div>
+                      </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm text-gray-900">{{ project.clientName }}</div>
+                      <div class="text-sm text-gray-900">{{ project.client.firstName }} {{ project.client.lastName }}</div>
+                      <div class="text-sm text-gray-500">{{ project.client.email }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm text-gray-900">{{ project.clientEmail }}</div>
+                      <div class="text-sm font-semibold text-green-700">
+                        {{ amoProjectService.formatBudget(project.budget) }}
+                      </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <span :class="getStatusClass(project.status)" class="px-2 py-1 text-xs font-medium rounded-full">
-                        {{ project.status }}
+                      <span :class="getStatusClassFromApi(project.statut)" class="px-2 py-1 text-xs font-medium rounded-full">
+                        {{ getStatusLabelFromApi(project.statut) }}
                       </span>
                     </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {{ amoProjectService.formatDate(project.createdAt) }}
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button class="text-blue-600 hover:text-blue-900 mr-3">Gérer</button>
-                      <button class="text-green-600 hover:text-green-900">Voir détails</button>
+                      <div class="flex space-x-2">
+                        <button 
+                          @click="viewProjectDetails(project)"
+                          class="text-blue-600 hover:text-blue-900 hover:bg-blue-50 px-2 py-1 rounded transition-colors"
+                        >
+                          👁️ Voir
+                        </button>
+                        <button 
+                          v-if="project.statut === 'accepte'"
+                          @click="startProject(project)"
+                          class="text-green-600 hover:text-green-900 hover:bg-green-50 px-2 py-1 rounded transition-colors"
+                        >
+                          🚀 Démarrer
+                        </button>
+                        <button 
+                          v-if="project.statut === 'en_cours'"
+                          @click="completeProject(project)"
+                          class="text-purple-600 hover:text-purple-900 hover:bg-purple-50 px-2 py-1 rounded transition-colors"
+                        >
+                          ✅ Terminer
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
@@ -554,15 +702,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useUserStore } from '@/stores/user.js'
+import { useNotificationsStore } from '@/stores/notifications.js'
 import { useRoleGuard } from '@/composables/useRoleGuard.js'
 import { useErrorHandler } from '@/composables/useErrorHandler.js'
 import dashboardService from '@/services/dashboardService.js'
 import documentService from '@/services/documentService.js'
+import amoProjectService from '@/services/amoProjectService.js'
 
-// Store utilisateur
+// Store utilisateur et notifications
 const userStore = useUserStore()
+const notificationsStore = useNotificationsStore()
 
 // Protection de la route
 const { protectRoute } = useRoleGuard()
@@ -578,6 +729,12 @@ const selectedProjectDetails = ref(null)
 const selectedProject = ref('')
 const selectedFiles = ref([])
 const artisanSearch = ref('')
+
+// Notifications et projets temps réel
+const newProjectsCount = ref(0)
+const isLoading = ref(false)
+const pollInterval = ref(null)
+const lastProjectCount = ref(0)
 
 // Données fictives du dashboard
 const dashboardStats = ref({
@@ -758,22 +915,89 @@ function closeProjectModal() {
   selectedProjectDetails.value = null
 }
 
-function acceptProject(project) {
-  console.log('Projet accepté:', project.title)
-  const index = newProjects.value.findIndex(p => p.id === project.id)
-  if (index !== -1) {
-    newProjects.value.splice(index, 1)
+async function acceptProject(project) {
+  if (isLoading.value) return
+  
+  try {
+    isLoading.value = true
+    console.log('✅ Acceptation du projet:', project.title || project.id)
+    
+    const response = await amoProjectService.acceptProject(project.id)
+    
+    if (response.success) {
+      console.log('✅ Projet accepté avec succès!')
+      
+      // Afficher notification de succès
+      notificationsStore.showSuccess(response.message || 'Projet accepté avec succès', {
+        title: 'Acceptation réussie',
+        autoRemove: true,
+        duration: 4000
+      })
+      
+      // Retirer le projet de la liste des nouveaux projets
+      const index = newProjects.value.findIndex(p => p.id === project.id)
+      if (index !== -1) {
+        newProjects.value.splice(index, 1)
+        newProjectsCount.value = Math.max(0, newProjectsCount.value - 1)
+      }
+      
+      // Recharger les données pour mettre à jour les statistiques
+      await loadAvailableProjects()
+      await loadDashboardData()
+      
+      closeProjectModal()
+      
+    } else {
+      throw new Error(response.message || 'Erreur lors de l\'acceptation')
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur acceptation projet:', error)
+    
+    let errorMessage = 'Erreur lors de l\'acceptation du projet'
+    if (error.message.includes('déjà été accepté')) {
+      errorMessage = 'Ce projet a déjà été accepté par un autre AMO'
+    } else if (error.message.includes('plus disponible')) {
+      errorMessage = 'Ce projet n\'est plus disponible'
+    } else {
+      errorMessage = error.message || errorMessage
+    }
+    
+    notificationsStore.showError(errorMessage, {
+      title: 'Erreur d\'acceptation',
+      autoRemove: true,
+      duration: 6000
+    })
+    
+  } finally {
+    isLoading.value = false
   }
-  closeProjectModal()
 }
 
-function declineProject(project) {
-  console.log('Projet décliné:', project.title)
-  const index = newProjects.value.findIndex(p => p.id === project.id)
-  if (index !== -1) {
-    newProjects.value.splice(index, 1)
+async function declineProject(project) {
+  if (isLoading.value) return
+  
+  try {
+    console.log('❌ Déclin du projet:', project.title || project.id)
+    
+    // Pour le moment, juste retirer de la liste (pas d'API de déclin)
+    const index = newProjects.value.findIndex(p => p.id === project.id)
+    if (index !== -1) {
+      newProjects.value.splice(index, 1)
+      newProjectsCount.value = Math.max(0, newProjectsCount.value - 1)
+    }
+    
+    notificationsStore.showInfo('Projet ignoré', {
+      title: 'Projet retiré',
+      autoRemove: true,
+      duration: 3000
+    })
+    
+    closeProjectModal()
+    
+  } catch (error) {
+    console.error('❌ Erreur déclin projet:', error)
   }
-  closeProjectModal()
 }
 
 function findArtisans() {
@@ -794,6 +1018,95 @@ function filterDocuments() {
   // La filtration se fait automatiquement via les computed properties
 }
 
+// Fonctions pour les statuts de l'API
+function getStatusClassFromApi(statut) {
+  const statusClasses = {
+    'brouillon': 'bg-gray-100 text-gray-800',
+    'accepte': 'bg-blue-100 text-blue-800', 
+    'en_cours': 'bg-orange-100 text-orange-800',
+    'termine': 'bg-green-100 text-green-800',
+    'clôturé': 'bg-purple-100 text-purple-800'
+  }
+  return statusClasses[statut] || 'bg-gray-100 text-gray-800'
+}
+
+function getStatusLabelFromApi(statut) {
+  const statusLabels = {
+    'brouillon': 'Brouillon',
+    'accepte': '📋 Accepté',
+    'en_cours': '🔄 En cours',
+    'termine': '✅ Terminé', 
+    'clôturé': '🏁 Clôturé'
+  }
+  return statusLabels[statut] || statut
+}
+
+// Actions sur les projets
+async function startProject(project) {
+  if (isLoading.value) return
+  
+  try {
+    isLoading.value = true
+    console.log('🚀 Démarrage du projet:', project.id)
+    
+    // Ici on devrait appeler une API pour changer le statut vers "en_cours"
+    // Pour l'instant, on simule en mettant à jour localement
+    const projectIndex = managedProjects.value.findIndex(p => p.id === project.id)
+    if (projectIndex !== -1) {
+      managedProjects.value[projectIndex].statut = 'en_cours'
+    }
+    
+    notificationsStore.showSuccess('Projet démarré avec succès!', {
+      title: 'Projet démarré',
+      autoRemove: true,
+      duration: 3000
+    })
+    
+  } catch (error) {
+    console.error('❌ Erreur démarrage projet:', error)
+    notificationsStore.showError(`Erreur: ${error.message}`, {
+      title: 'Erreur démarrage',
+      autoRemove: true,
+      duration: 4000
+    })
+  } finally {
+    isLoading.value = false
+  }
+}
+
+async function completeProject(project) {
+  if (isLoading.value) return
+  
+  try {
+    isLoading.value = true
+    console.log('✅ Finalisation du projet:', project.id)
+    
+    // Ici on devrait appeler une API pour changer le statut vers "termine" 
+    // Pour l'instant, on simule en mettant à jour localement
+    const projectIndex = managedProjects.value.findIndex(p => p.id === project.id)
+    if (projectIndex !== -1) {
+      managedProjects.value[projectIndex].statut = 'termine'
+    }
+    
+    notificationsStore.showSuccess('Projet terminé avec succès!', {
+      title: 'Projet terminé',
+      autoRemove: true,
+      duration: 3000
+    })
+    
+  } catch (error) {
+    console.error('❌ Erreur finalisation projet:', error)
+    notificationsStore.showError(`Erreur: ${error.message}`, {
+      title: 'Erreur finalisation',
+      autoRemove: true,
+      duration: 4000
+    })
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Fonction de statut pour compatibilité (anciennes données fictives)
 function getStatusClass(status) {
   const statusClasses = {
     'En cours': 'bg-blue-100 text-blue-800',
@@ -858,20 +1171,190 @@ function formatFileSize(bytes) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
+// Charger les nouveaux projets disponibles
+async function loadAvailableProjects() {
+  try {
+    console.log('🔔 Chargement des nouveaux projets disponibles...')
+    
+    const response = await amoProjectService.getAvailableProjects()
+    console.log('📥 Réponse brute getAvailableProjects:', response)
+    
+    // Analyser la structure de la réponse
+    if (response && response.data) {
+      console.log('📋 Données projets brouillon reçues:', response.data)
+      console.log('📊 Type de données:', typeof response.data, 'Est array:', Array.isArray(response.data))
+      
+      let projects = []
+      
+      // Adapter selon la structure retournée par l'API
+      if (Array.isArray(response.data)) {
+        projects = response.data
+      } else if (response.data && Array.isArray(response.data.data)) {
+        projects = response.data.data
+      } else if (response.data && response.data.projets && Array.isArray(response.data.projets)) {
+        projects = response.data.projets
+      } else {
+        console.warn('⚠️ Structure de données inconnue:', response.data)
+        projects = []
+      }
+      
+      console.log(`📈 ${projects.length} projet(s) brouillon trouvé(s)`)
+      
+      if (projects.length > 0) {
+        // Afficher la structure du premier projet pour debug
+        console.log('🔍 Structure du premier projet:', projects[0])
+        
+        // Filtrer les projets qui n'ont pas encore d'AMO assigné (amoId === null)
+        const availableProjects = projects.filter(project => project.amoId === null)
+        console.log(`📊 ${availableProjects.length} projets disponibles (sans AMO assigné) sur ${projects.length} projets brouillon`)
+        
+        // Transformer les données de l'API au format attendu par le template
+        newProjects.value = availableProjects.map(project => {
+          // Vérifier la structure des données client
+          const client = project.client || {}
+          const clientName = client.firstName && client.lastName 
+            ? `${client.firstName} ${client.lastName}`
+            : client.fullName || client.nom || client.name || 'Client inconnu'
+          
+          return {
+            id: project.id,
+            title: project.description 
+              ? project.description.substring(0, 50) + (project.description.length > 50 ? '...' : '')
+              : 'Projet sans description',
+            description: project.description || 'Aucune description disponible',
+            location: `${project.city || 'Ville inconnue'}, ${project.postalCode || '00000'}`,
+            budget: project.formattedBudget || amoProjectService.formatBudget(parseFloat(project.budget)),
+            clientName: clientName,
+            clientEmail: client.email || 'Email non disponible',
+            // Données complètes pour le modal
+            address: project.address || 'Adresse non spécifiée',
+            city: project.city || 'Ville inconnue',
+            postalCode: project.postalCode || '00000',
+            surfaceM2: project.surfaceM2 || null,
+            bedrooms: project.bedrooms || null,
+            houseType: project.houseType || null,
+            hasLand: project.hasLand || false,
+            createdAt: project.createdAt || project.dateSubmission || null,
+            client: client
+          }
+        })
+        
+        newProjectsCount.value = newProjects.value.length
+        
+        // Notification si nouveaux projets détectés
+        const newCount = newProjects.value.length
+        if (lastProjectCount.value > 0 && newCount > lastProjectCount.value) {
+          const diff = newCount - lastProjectCount.value
+          
+          notificationsStore.showSuccess(`${diff} nouveau${diff > 1 ? 'x' : ''} projet${diff > 1 ? 's' : ''} disponible${diff > 1 ? 's' : ''} !`, {
+            title: 'Nouveaux projets',
+            autoRemove: true,
+            duration: 5000
+          })
+          
+          // Notification navigateur si permission accordée
+          if (Notification.permission === 'granted') {
+            new Notification('Nouveaux projets Experta', {
+              body: `${diff} nouveau${diff > 1 ? 'x' : ''} projet${diff > 1 ? 's' : ''} dans votre zone`,
+              icon: '/favicon.ico',
+              tag: 'new-projects'
+            })
+          }
+        }
+        
+        lastProjectCount.value = newCount
+        console.log(`✅ ${newCount} nouveaux projets chargés et transformés`)
+        
+      } else {
+        console.warn('⚠️ Aucun projet en statut brouillon trouvé ou tous déjà assignés')
+        newProjects.value = []
+        newProjectsCount.value = 0
+      }
+      
+    } else {
+      console.warn('⚠️ Réponse API invalide ou vide:', response)
+      newProjects.value = []
+      newProjectsCount.value = 0
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des nouveaux projets:', error)
+    console.error('❌ Détails de l\'erreur:', {
+      message: error.message,
+      status: error.status,
+      data: error.data
+    })
+    
+    // Afficher l'erreur à l'utilisateur seulement si ce n'est pas du polling silencieux
+    if (!pollInterval.value) {
+      notificationsStore.showError(`Erreur lors du chargement des projets: ${error.message}`, {
+        title: 'Erreur de chargement',
+        autoRemove: true,
+        duration: 5000
+      })
+    }
+  }
+}
+
+// Charger les projets que l'AMO gère (acceptés)
+async function loadManagedProjects() {
+  try {
+    console.log('📋 Chargement des projets gérés par l\'AMO...')
+    
+    const response = await amoProjectService.getMyAMOProjects()
+    console.log('📥 Réponse brute getMyAMOProjects:', response)
+    
+    if (response && response.success && response.data) {
+      console.log('📋 Données projets AMO reçues:', response.data)
+      
+      // Mettre à jour les projets gérés
+      if (response.data.projets && Array.isArray(response.data.projets)) {
+        managedProjects.value = response.data.projets
+        console.log(`✅ ${managedProjects.value.length} projets gérés chargés`)
+        
+        // Mettre à jour les statistiques si disponibles
+        if (response.data.statistiques) {
+          console.log('📊 Statistiques AMO:', response.data.statistiques)
+          Object.assign(dashboardStats.value, {
+            geres: response.data.statistiques.total || managedProjects.value.length,
+            enAttente: response.data.statistiques.acceptes || 0,
+            termines: response.data.statistiques.termines || 0
+          })
+        }
+        
+      } else {
+        console.warn('⚠️ Aucun projet géré trouvé')
+        managedProjects.value = []
+      }
+      
+    } else {
+      console.warn('⚠️ Réponse API projets gérés invalide:', response)
+      managedProjects.value = []
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des projets gérés:', error)
+    notificationsStore.showError(`Erreur lors du chargement des projets: ${error.message}`, {
+      title: 'Erreur de chargement',
+      autoRemove: true,
+      duration: 5000
+    })
+  }
+}
+
 // Charger les données du dashboard
 async function loadDashboardData() {
   try {
     console.log('🔄 Chargement des données dashboard AMO...')
     
-    // Charger les données du dashboard en parallèle avec gestion d'erreurs
-    const [dashboardData, projetsData, missionsData] = await Promise.all([
+    // Charger les projets gérés via la nouvelle API
+    await loadManagedProjects()
+    
+    // Charger les données du dashboard en parallèle avec gestion d'erreurs (pour compatibilité)
+    const [dashboardData, missionsData] = await Promise.all([
       safeApiCall(
         () => dashboardService.getAmoDashboard(),
         'amo-dashboard'
-      ),
-      safeApiCall(
-        () => dashboardService.getAmoProjets(),
-        'amo-projets'
       ),
       safeApiCall(
         () => dashboardService.getAmoMissions(),
@@ -885,16 +1368,160 @@ async function loadDashboardData() {
       Object.assign(dashboardStats.value, dashboardData.data)
     }
     
-    if (projetsData?.data) {
-      console.log('✅ Projets chargés:', projetsData.data)
-      // Mettre à jour les projets avec les vraies données
-      newProjects.value = projetsData.data.nouveaux || []
-      managedProjects.value = projetsData.data.geres || []
-    }
-    
   } catch (error) {
     console.error('❌ Erreur lors du chargement des données:', error)
   }
+}
+
+// Test API projets gérés pour debug
+async function testManagedProjectsApi() {
+  console.log('🔍 === TEST API PROJETS GÉRÉS ===')
+  
+  try {
+    // Test API brut
+    const { buildUrl, getAuthHeaders } = await import('../utils/apiConfig.js')
+    const url = buildUrl('/projets/my-amo-projects')
+    const headers = getAuthHeaders()
+    
+    console.log('🌐 URL à appeler:', url)
+    console.log('📋 Headers:', headers)
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: headers
+    })
+    
+    console.log('📡 Statut réponse:', response.status, response.statusText)
+    
+    const textResponse = await response.text()
+    console.log('📄 Réponse texte brute:', textResponse)
+    
+    if (textResponse) {
+      try {
+        const jsonResponse = JSON.parse(textResponse)
+        console.log('📦 Réponse JSON parsée:', jsonResponse)
+        
+        if (jsonResponse.data && jsonResponse.data.projets && Array.isArray(jsonResponse.data.projets)) {
+          console.log(`📊 ${jsonResponse.data.projets.length} projets gérés trouvés`)
+          if (jsonResponse.data.projets.length > 0) {
+            console.log('🔍 Premier projet géré:', jsonResponse.data.projets[0])
+          }
+        }
+        
+      } catch (parseError) {
+        console.error('❌ Erreur parsing JSON:', parseError)
+      }
+    }
+    
+    notificationsStore.showInfo(`API Projets Response: ${response.status} - Voir console`, {
+      title: 'Test API Projets',
+      autoRemove: true,
+      duration: 4000
+    })
+    
+  } catch (error) {
+    console.error('❌ Erreur test API projets:', error)
+    notificationsStore.showError(`Erreur test: ${error.message}`, {
+      title: 'Erreur Test API',
+      autoRemove: true,
+      duration: 4000
+    })
+  }
+  
+  console.log('🔍 === FIN TEST API PROJETS ===')
+}
+
+// Démarrer le polling pour les nouveaux projets
+async function startProjectPolling() {
+  // Demander permission pour les notifications navigateur
+  if (Notification.permission === 'default') {
+    await Notification.requestPermission()
+  }
+  
+  // Charger immédiatement
+  await loadAvailableProjects()
+  
+  // Puis vérifier toutes les 30 secondes
+  pollInterval.value = setInterval(loadAvailableProjects, 30000)
+  console.log('🔄 Polling des nouveaux projets démarré (30s)')
+}
+
+// Arrêter le polling
+function stopProjectPolling() {
+  if (pollInterval.value) {
+    clearInterval(pollInterval.value)
+    pollInterval.value = null
+    console.log('⏹️ Polling des nouveaux projets arrêté')
+  }
+}
+
+// Test API direct pour debug
+async function testApiDirectly() {
+  console.log('🔍 === TEST API DIRECT ===')
+  
+  try {
+    // Test de l'authentification
+    const userInfo = userStore.user || userStore.userData || {}
+    console.log('👤 Utilisateur actuel:', userInfo)
+    console.log('🔑 Token présent:', !!userStore.token)
+    console.log('🏷️ Rôle utilisateur:', userStore.userRole)
+    
+    // Test API brut
+    const { buildUrl, getAuthHeaders } = await import('../utils/apiConfig.js')
+    const url = buildUrl('/projets/status/brouillon')
+    const headers = getAuthHeaders()
+    
+    console.log('🌐 URL à appeler:', url)
+    console.log('📋 Headers:', headers)
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: headers
+    })
+    
+    console.log('📡 Statut réponse:', response.status, response.statusText)
+    console.log('📋 Headers réponse:', Object.fromEntries(response.headers.entries()))
+    
+    const textResponse = await response.text()
+    console.log('📄 Réponse texte brute:', textResponse)
+    
+    if (textResponse) {
+      try {
+        const jsonResponse = JSON.parse(textResponse)
+        console.log('📦 Réponse JSON parsée:', jsonResponse)
+        
+        // Vérifier si ce sont des projets
+        if (jsonResponse.data && Array.isArray(jsonResponse.data)) {
+          console.log(`📊 ${jsonResponse.data.length} projets trouvés dans l'API`)
+          if (jsonResponse.data.length > 0) {
+            console.log('🔍 Premier projet:', jsonResponse.data[0])
+          }
+        } else {
+          console.log('⚠️ Format de données inattendu')
+        }
+        
+      } catch (parseError) {
+        console.error('❌ Erreur parsing JSON:', parseError)
+      }
+    }
+    
+    // Afficher le résultat à l'utilisateur
+    notificationsStore.showInfo(`API Response: ${response.status} - Voir console pour détails`, {
+      title: 'Test API',
+      autoRemove: true,
+      duration: 4000
+    })
+    
+  } catch (error) {
+    console.error('❌ Erreur test API:', error)
+    notificationsStore.showError(`Erreur test API: ${error.message}`, {
+      title: 'Erreur Test',
+      autoRemove: true,
+      duration: 4000
+    })
+  }
+  
+  console.log('🔍 === FIN TEST API ===')
 }
 
 // Charger les documents réels
@@ -978,9 +1605,20 @@ onMounted(async () => {
   
   console.log('✅ Accès autorisé au dashboard AMO')
   
-  // Charger les données réelles
-  await loadDashboardData()
-  await loadDocuments()
+  // Charger les données réelles en parallèle
+  await Promise.all([
+    loadDashboardData(),
+    loadDocuments(),
+    loadManagedProjects()
+  ])
+  
+  // Démarrer le polling des nouveaux projets
+  await startProjectPolling()
+})
+
+// Nettoyer le polling quand le composant est détruit
+onUnmounted(() => {
+  stopProjectPolling()
 })
 </script>
 
