@@ -24,8 +24,15 @@
               </button>
             </li>
             <li>
-              <button @click="activeTab = 'notifications'" :class="activeTab === 'notifications' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors">
+              <button @click="activeTab = 'notifications'" :class="activeTab === 'notifications' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'text-gray-600 hover:bg-gray-50'" class="w-full text-left px-4 py-2 rounded-lg border transition-colors relative">
                 Notifications
+                <!-- Pastille pour nouvelles notifications -->
+                <span 
+                  v-if="clientNotifications.filter(n => !n.read).length > 0" 
+                  class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse"
+                >
+                  {{ clientNotifications.filter(n => !n.read).length }}
+                </span>
               </button>
             </li>
             <li>
@@ -643,33 +650,8 @@ const amoDocumentsStats = ref({
 const isLoadingAmoDocuments = ref(false)
 const amoDocumentsError = ref('')
 
-// Notifications client
-const clientNotifications = ref([
-  {
-    id: 1,
-    type: 'document',
-    title: 'Nouveau document reçu',
-    message: 'Votre AMO a envoyé un nouveau document pour votre projet de rénovation',
-    formattedDate: 'Il y a 2 heures',
-    read: false
-  },
-  {
-    id: 2,
-    type: 'project',
-    title: 'Projet pris en compte',
-    message: 'Votre projet de rénovation de cuisine a été pris en compte par un AMO',
-    formattedDate: 'Il y a 1 jour',
-    read: false
-  },
-  {
-    id: 3,
-    type: 'document',
-    title: 'Document validé',
-    message: 'Votre devis a été validé et traité',
-    formattedDate: 'Il y a 3 jours',
-    read: true
-  }
-])
+// Notifications client avec persistance localStorage
+const clientNotifications = ref([])
 
 const payments = ref([])
 
@@ -890,6 +872,7 @@ async function uploadSelectedFiles() {
         timestamp: notificationDate.toISOString(),
         read: false
       })
+      saveNotificationsToStorage()
     }
     
   } catch (error) {
@@ -969,6 +952,7 @@ async function deleteDocument(document) {
         timestamp: notificationDate.toISOString(),
         read: false
       })
+      saveNotificationsToStorage()
     }
     
   } catch (error) {
@@ -1080,11 +1064,79 @@ function onProjectCreated(newProject) {
     timestamp: notificationDate.toISOString(),
     read: false
   })
+  saveNotificationsToStorage()
 }
 
 // ================================================
 // MÉTHODES POUR LES NOTIFICATIONS CLIENT
 // ================================================
+
+/**
+ * Charger les notifications depuis le localStorage
+ */
+function loadNotificationsFromStorage() {
+  try {
+    const userId = userStore.userId || 'default'
+    const storageKey = `client_notifications_${userId}`
+    const stored = localStorage.getItem(storageKey)
+    
+    if (stored) {
+      const notifications = JSON.parse(stored)
+      clientNotifications.value = notifications
+      console.log('🔔 Notifications chargées depuis localStorage:', notifications.length)
+    } else {
+      // Données par défaut si aucune notification sauvegardée
+      clientNotifications.value = [
+        {
+          id: Date.now() + 1,
+          type: 'document',
+          title: 'Nouveau document reçu',
+          message: 'Votre AMO a envoyé un nouveau document pour votre projet de rénovation',
+          formattedDate: 'Il y a 2 heures',
+          timestamp: new Date().toISOString(),
+          read: false
+        },
+        {
+          id: Date.now() + 2,
+          type: 'project',
+          title: 'Projet pris en compte',
+          message: 'Votre projet de rénovation de cuisine a été pris en compte par un AMO',
+          formattedDate: 'Il y a 1 jour',
+          timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+          read: false
+        },
+        {
+          id: Date.now() + 3,
+          type: 'document',
+          title: 'Document validé',
+          message: 'Votre devis a été validé et traité',
+          formattedDate: 'Il y a 3 jours',
+          timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+          read: true
+        }
+      ]
+      saveNotificationsToStorage()
+    }
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des notifications:', error)
+    // Fallback avec données par défaut
+    clientNotifications.value = []
+  }
+}
+
+/**
+ * Sauvegarder les notifications dans le localStorage
+ */
+function saveNotificationsToStorage() {
+  try {
+    const userId = userStore.userId || 'default'
+    const storageKey = `client_notifications_${userId}`
+    localStorage.setItem(storageKey, JSON.stringify(clientNotifications.value))
+    console.log('💾 Notifications sauvegardées dans localStorage')
+  } catch (error) {
+    console.error('❌ Erreur lors de la sauvegarde des notifications:', error)
+  }
+}
 
 /**
  * Formatter la date relative (ex: "Il y a 2 minutes")
@@ -1114,6 +1166,7 @@ function markAsRead(notificationId) {
   const notification = clientNotifications.value.find(n => n.id === notificationId)
   if (notification) {
     notification.read = true
+    saveNotificationsToStorage()
   }
 }
 
@@ -1121,12 +1174,14 @@ function markAllAsRead() {
   clientNotifications.value.forEach(notification => {
     notification.read = true
   })
+  saveNotificationsToStorage()
 }
 
 function deleteNotification(notificationId) {
   const index = clientNotifications.value.findIndex(n => n.id === notificationId)
   if (index !== -1) {
     clientNotifications.value.splice(index, 1)
+    saveNotificationsToStorage()
   }
 }
 
@@ -1139,6 +1194,7 @@ onMounted(() => {
     return // La redirection sera gérée par protectRoute
   }
   
+  loadNotificationsFromStorage() // Charger les notifications sauvegardées
   loadDashboard()
   loadDocuments() // Charger aussi les documents
   loadAmoDocuments() // Charger les documents AMO
