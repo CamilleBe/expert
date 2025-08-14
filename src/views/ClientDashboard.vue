@@ -29,7 +29,7 @@
                 <!-- Pastille pour nouvelles notifications -->
                 <span 
                   v-if="clientNotifications.filter(n => !n.read).length > 0" 
-                  class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse"
+                  class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"
                 >
                   {{ clientNotifications.filter(n => !n.read).length }}
                 </span>
@@ -208,6 +208,7 @@
               :project="project"
               :all-projects="allProjects"
               @view-details="openProjectDetailsModal(project)"
+              @delete-project="deleteProject"
             />
           </div>
         </div>
@@ -523,21 +524,48 @@
                 class="flex items-center justify-between p-4 rounded-lg border transition-colors"
               >
                 <div class="flex items-center">
-                  <div :class="notification.read ? 'bg-gray-100' : 'bg-blue-100'" class="p-3 rounded-full">
-                    <svg v-if="notification.type === 'document'" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  <div :class="notification.read ? 'bg-gray-100' : getNotificationBgClass(notification.type)" class="p-3 rounded-full">
+                    <!-- Document reçu (par AMO) -->
+                    <svg v-if="notification.type === 'document_received'" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 12l2 2 4-4" />
                     </svg>
-                    <svg v-else-if="notification.type === 'project'" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m4 0V9a1 1 0 011-1h4a1 1 0 011 1v12m-6 0h6" />
+                    <!-- Document uploadé (par utilisateur) -->
+                    <svg v-else-if="notification.type === 'document_uploaded'" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
-                    <svg v-else class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <!-- Document supprimé -->
+                    <svg v-else-if="notification.type === 'document_deleted'" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    <!-- Projet créé -->
+                    <svg v-else-if="notification.type === 'project_created'" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    <!-- Projet supprimé -->
+                    <svg v-else-if="notification.type === 'project_deleted'" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    <!-- Changement statut projet -->
+                    <svg v-else-if="notification.type === 'project_status'" class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <!-- AMO assigné -->
+                    <svg v-else-if="notification.type === 'amo_assigned'" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <!-- Devis reçu -->
+                    <svg v-else-if="notification.type === 'quote_received'" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    </svg>
+                    <!-- Défaut -->
+                    <svg v-else class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                   <div class="ml-4">
                     <p class="text-sm font-medium text-gray-900">{{ notification.title }}</p>
                     <p class="text-sm text-gray-600">{{ notification.message }}</p>
-                    <p class="text-xs text-gray-500 mt-1">{{ notification.formattedDate }}</p>
+                    <p class="text-xs text-gray-500 mt-1">{{ getFormattedDateRealTime(notification.timestamp) }}</p>
                   </div>
                 </div>
                 <div class="flex space-x-2">
@@ -581,7 +609,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { useUserStore } from '@/stores/user.js'
 import { useNotificationsStore } from '@/stores/notifications.js'
 import { useRoleGuard } from '@/composables/useRoleGuard.js'
@@ -652,6 +680,10 @@ const amoDocumentsError = ref('')
 
 // Notifications client avec persistance localStorage
 const clientNotifications = ref([])
+
+// Timer pour mettre à jour les dates en temps réel
+const dateUpdateInterval = ref(null)
+const currentTime = ref(new Date())
 
 const payments = ref([])
 
@@ -857,22 +889,16 @@ async function uploadSelectedFiles() {
         duration: 4000
       })
       
-      // Ajouter à l'onglet notifications persistantes
+      // Ajouter notification pour upload par l'utilisateur
       const uploadedCount = response.data?.length || selectedFiles.value.length
       const fileNames = response.data?.map(doc => doc.nomOriginal || doc.nom).join(', ') || 
                         selectedFiles.value.map(f => f.name).join(', ')
       
-      const notificationDate = new Date()
-      clientNotifications.value.unshift({
-        id: Date.now(),
-        type: 'document',
-        title: 'Documents uploadés',
-        message: `${uploadedCount} document(s) uploadé(s) avec succès: ${fileNames}`,
-        formattedDate: formatRelativeDate(notificationDate),
-        timestamp: notificationDate.toISOString(),
-        read: false
-      })
-      saveNotificationsToStorage()
+      addNotification(
+        'document_uploaded',
+        'Documents déposés',
+        `Vous avez déposé ${uploadedCount} document(s) : ${fileNames.length > 50 ? fileNames.substring(0, 50) + '...' : fileNames}`
+      )
     }
     
   } catch (error) {
@@ -941,18 +967,12 @@ async function deleteDocument(document) {
         duration: 3000
       })
       
-      // Ajouter à l'onglet notifications persistantes
-      const notificationDate = new Date()
-      clientNotifications.value.unshift({
-        id: Date.now(),
-        type: 'document',
-        title: 'Document supprimé',
-        message: `Le document "${document.originalName}" a été supprimé avec succès`,
-        formattedDate: formatRelativeDate(notificationDate),
-        timestamp: notificationDate.toISOString(),
-        read: false
-      })
-      saveNotificationsToStorage()
+      // Ajouter notification pour suppression par l'utilisateur
+      addNotification(
+        'document_deleted',
+        'Document supprimé',
+        `Vous avez supprimé le document "${document.originalName}"`
+      )
     }
     
   } catch (error) {
@@ -1042,6 +1062,91 @@ function closeCreateProjectModal() {
   showCreateProjectModal.value = false
 }
 
+/**
+ * Supprimer un projet en brouillon
+ */
+async function deleteProject(projectId) {
+  const project = allProjects.value.find(p => p.id === projectId)
+  
+  if (!project) {
+    console.error('Projet non trouvé:', projectId)
+    return
+  }
+  
+  // Vérifier que le projet est bien en brouillon
+  if (project.statut !== 'brouillon') {
+    notificationsStore.showError('Seuls les projets en brouillon peuvent être supprimés', {
+      title: 'Suppression impossible',
+      autoRemove: true,
+      duration: 4000
+    })
+    return
+  }
+  
+  // Demander confirmation
+  const projectDescription = project.description ? project.description.substring(0, 50) + '...' : 'Ce projet'
+  if (!confirm(`Êtes-vous sûr de vouloir supprimer ce projet ?\n\n${projectDescription}\n\nCette action est irréversible.`)) {
+    return
+  }
+  
+  try {
+    console.log('🗑️ Suppression du projet:', project.id)
+    
+    // Appel API pour supprimer le projet
+    const response = await projetService.deleteProject(project.id)
+    
+    if (response.success || response.status === 200) {
+      console.log('✅ Projet supprimé avec succès')
+      
+      // Recharger les données du dashboard
+      await loadDashboard()
+      
+      // Afficher une notification de succès
+      notificationsStore.showSuccess('Projet supprimé avec succès', {
+        title: 'Suppression réussie',
+        autoRemove: true,
+        duration: 3000
+      })
+      
+      // Ajouter notification persistante
+      addNotification(
+        'project_deleted',
+        'Projet supprimé',
+        `Votre projet "${project.description || 'Projet brouillon'}" a été supprimé avec succès`
+      )
+      
+    } else {
+      throw new Error(response.message || 'Erreur lors de la suppression')
+    }
+    
+  } catch (error) {
+    console.error('❌ Erreur lors de la suppression du projet:', error)
+    
+    // Fallback: supprimer localement si l'API échoue (projet brouillon local)
+    const index = allProjects.value.findIndex(p => p.id === projectId)
+    if (index !== -1) {
+      allProjects.value.splice(index, 1)
+      
+      notificationsStore.showSuccess('Projet supprimé avec succès', {
+        title: 'Suppression réussie',
+        autoRemove: true,
+        duration: 3000
+      })
+      
+      addNotification(
+        'project_deleted',
+        'Projet supprimé',
+        `Votre projet "${project.description || 'Projet brouillon'}" a été supprimé avec succès`
+      )
+    } else {
+      notificationsStore.showError(error.message || 'Erreur lors de la suppression du projet', {
+        title: 'Erreur de suppression',
+        autoRemove: false
+      })
+    }
+  }
+}
+
 function onProjectCreated(newProject) {
   // Recharger les données du dashboard
   loadDashboard()
@@ -1053,18 +1158,12 @@ function onProjectCreated(newProject) {
     duration: 4000
   })
   
-  // Ajouter à l'onglet notifications persistantes
-  const notificationDate = new Date()
-  clientNotifications.value.unshift({
-    id: Date.now(),
-    type: 'project',
-    title: 'Nouveau projet créé',
-    message: `Votre projet "${newProject?.description || 'Nouveau projet'}" a été créé avec succès`,
-    formattedDate: formatRelativeDate(notificationDate),
-    timestamp: notificationDate.toISOString(),
-    read: false
-  })
-  saveNotificationsToStorage()
+  // Ajouter notification pour création de projet
+  addNotification(
+    'project_created',
+    'Projet créé',
+    `Votre projet "${newProject?.description || 'Nouveau projet'}" a été créé avec succès`
+  )
 }
 
 // ================================================
@@ -1085,36 +1184,8 @@ function loadNotificationsFromStorage() {
       clientNotifications.value = notifications
       console.log('🔔 Notifications chargées depuis localStorage:', notifications.length)
     } else {
-      // Données par défaut si aucune notification sauvegardée
-      clientNotifications.value = [
-        {
-          id: Date.now() + 1,
-          type: 'document',
-          title: 'Nouveau document reçu',
-          message: 'Votre AMO a envoyé un nouveau document pour votre projet de rénovation',
-          formattedDate: 'Il y a 2 heures',
-          timestamp: new Date().toISOString(),
-          read: false
-        },
-        {
-          id: Date.now() + 2,
-          type: 'project',
-          title: 'Projet pris en compte',
-          message: 'Votre projet de rénovation de cuisine a été pris en compte par un AMO',
-          formattedDate: 'Il y a 1 jour',
-          timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          read: false
-        },
-        {
-          id: Date.now() + 3,
-          type: 'document',
-          title: 'Document validé',
-          message: 'Votre devis a été validé et traité',
-          formattedDate: 'Il y a 3 jours',
-          timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-          read: true
-        }
-      ]
+      // Pas de notifications par défaut - elles seront créées par les événements réels
+      clientNotifications.value = []
       saveNotificationsToStorage()
     }
   } catch (error) {
@@ -1137,6 +1208,30 @@ function saveNotificationsToStorage() {
     console.error('❌ Erreur lors de la sauvegarde des notifications:', error)
   }
 }
+
+/**
+ * Ajouter une notification pertinente (changements d'état importants)
+ */
+function addNotification(type, title, message, data = {}) {
+  const notificationDate = new Date()
+  const notification = {
+    id: Date.now() + Math.random(), // Éviter les doublons
+    type: type, // 'project_status', 'document_received', 'amo_assigned', etc.
+    title: title,
+    message: message,
+    formattedDate: formatRelativeDate(notificationDate), // Sera recalculé en temps réel
+    timestamp: notificationDate.toISOString(),
+    read: false,
+    data: data // Données supplémentaires si nécessaire
+  }
+  
+  clientNotifications.value.unshift(notification)
+  saveNotificationsToStorage()
+  
+  console.log('🔔 Nouvelle notification ajoutée:', notification.title)
+}
+
+// Fonction simulateSystemNotifications supprimée - plus de notifications fictives
 
 /**
  * Formatter la date relative (ex: "Il y a 2 minutes")
@@ -1162,6 +1257,41 @@ function formatRelativeDate(date) {
   })
 }
 
+/**
+ * Obtenir la date formatée en temps réel (se met à jour automatiquement)
+ * @param {string} timestamp - Timestamp ISO de la notification
+ * @returns {string} - Date formatée en temps réel
+ */
+function getFormattedDateRealTime(timestamp) {
+  // Utilisation de currentTime.value pour déclencher la réactivité
+  currentTime.value // Accès à la valeur pour déclencher le re-calcul
+  
+  if (!timestamp) return 'Date inconnue'
+  
+  const notificationDate = new Date(timestamp)
+  return formatRelativeDate(notificationDate)
+}
+
+/**
+ * Démarrer le timer de mise à jour des dates
+ */
+function startDateUpdateTimer() {
+  // Mettre à jour toutes les minutes
+  dateUpdateInterval.value = setInterval(() => {
+    currentTime.value = new Date()
+  }, 60000) // 60 secondes
+}
+
+/**
+ * Arrêter le timer de mise à jour des dates
+ */
+function stopDateUpdateTimer() {
+  if (dateUpdateInterval.value) {
+    clearInterval(dateUpdateInterval.value)
+    dateUpdateInterval.value = null
+  }
+}
+
 function markAsRead(notificationId) {
   const notification = clientNotifications.value.find(n => n.id === notificationId)
   if (notification) {
@@ -1185,6 +1315,24 @@ function deleteNotification(notificationId) {
   }
 }
 
+/**
+ * Obtenir la classe de couleur de fond pour les icônes de notification
+ */
+function getNotificationBgClass(type) {
+  const bgClasses = {
+    'document_received': 'bg-blue-100',
+    'document_uploaded': 'bg-indigo-100',
+    'document_deleted': 'bg-red-100',
+    'project_created': 'bg-green-100',
+    'project_deleted': 'bg-red-100',
+    'project_status': 'bg-orange-100',
+    'amo_assigned': 'bg-green-100',
+    'quote_received': 'bg-purple-100',
+    'payment_received': 'bg-teal-100'
+  }
+  return bgClasses[type] || 'bg-gray-100'
+}
+
 // Charger les données au montage du composant
 onMounted(() => {
   console.log('🚀 Initialisation du tableau de bord client')
@@ -1198,6 +1346,14 @@ onMounted(() => {
   loadDashboard()
   loadDocuments() // Charger aussi les documents
   loadAmoDocuments() // Charger les documents AMO
+  
+  // Démarrer le timer de mise à jour des dates en temps réel
+  startDateUpdateTimer()
+})
+
+// Nettoyer le timer quand le composant est détruit
+onUnmounted(() => {
+  stopDateUpdateTimer()
 })
 </script>
 

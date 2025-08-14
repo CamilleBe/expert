@@ -145,6 +145,66 @@ class ProjetService {
   }
   
   /**
+   * Supprimer un projet
+   * @param {number} projectId - ID du projet à supprimer
+   * @returns {Promise} - Promesse avec la réponse de l'API
+   */
+  async deleteProject(projectId) {
+    try {
+      console.log('🗑️ Suppression du projet:', projectId)
+      
+      // Configuration de la requête
+      const config = {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      }
+      
+      // Faire la requête vers l'endpoint projets
+      const response = await fetch(buildUrl(`/projets/${projectId}`), config)
+      
+      console.log(`🌐 Statut de réponse suppression: ${response.status} ${response.statusText}`)
+      console.log(`📡 URL appelée: ${response.url}`)
+      
+      // Vérifier si la réponse a du contenu
+      const textResponse = await response.text()
+      console.log(`📄 Réponse brute suppression: "${textResponse}"`)
+      
+      // Tenter de parser seulement si on a du contenu
+      let data = {}
+      if (textResponse.trim() !== '') {
+        try {
+          data = JSON.parse(textResponse)
+        } catch (parseError) {
+          console.warn('⚠️ Impossible de parser la réponse JSON, mais suppression potentiellement réussie')
+          data = { message: 'Suppression effectuée' }
+        }
+      }
+      
+      console.log(`📥 Réponse suppression projet (${response.status}):`, data)
+      
+      // Vérifier si la requête a réussi
+      if (!response.ok) {
+        // Créer une erreur avec le message du serveur
+        const error = new Error(data.message || `Erreur HTTP ${response.status}`)
+        error.status = response.status
+        error.data = data
+        throw error
+      }
+      
+      return {
+        success: true,
+        status: response.status,
+        data: data,
+        message: data.message || 'Projet supprimé avec succès'
+      }
+      
+    } catch (error) {
+      console.error('❌ Erreur lors de la suppression du projet:', error)
+      throw error
+    }
+  }
+  
+  /**
    * Valider les données du projet côté client
    * @param {object} projetData - Données à valider
    * @param {boolean} isAuthenticated - Si l'utilisateur est connecté
