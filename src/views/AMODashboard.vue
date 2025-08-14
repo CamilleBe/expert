@@ -807,27 +807,105 @@ const newProjects = ref([
 const managedProjects = ref([
   {
     id: 1,
-    title: 'Rénovation salle de bain',
-    location: 'Nice, 06000',
-    clientName: 'Sophie Moreau',
-    clientEmail: 'sophie.moreau@email.com',
-    status: 'En cours'
+    description: 'Rénovation complète salle de bain de 12m² avec pose de faïence, installation d\'une douche italienne et rénovation de la plomberie',
+    city: 'Nice',
+    postalCode: '06000',
+    budget: '25000.00',
+    surfaceM2: 12,
+    bedrooms: 0,
+    houseType: 'appartement',
+    statut: 'accepte',
+    createdAt: '2025-01-10T10:30:00.000Z',
+    client: {
+      firstName: 'Sophie',
+      lastName: 'Moreau',
+      email: 'sophie.moreau@email.com'
+    }
   },
   {
     id: 2,
-    title: 'Extension maison',
-    location: 'Bordeaux, 33000',
-    clientName: 'Antoine Roux',
-    clientEmail: 'antoine.roux@email.com',
-    status: 'Planification'
+    description: 'Extension de maison individuelle de 25m² avec création d\'une cuisine ouverte sur salon',
+    city: 'Bordeaux',
+    postalCode: '33000',
+    budget: '45000.00',
+    surfaceM2: 25,
+    bedrooms: 0,
+    houseType: 'extension',
+    statut: 'en_cours',
+    createdAt: '2025-01-05T14:20:00.000Z',
+    client: {
+      firstName: 'Antoine',
+      lastName: 'Roux',
+      email: 'antoine.roux@email.com'
+    }
   },
   {
     id: 3,
-    title: 'Réfection toiture',
-    location: 'Nantes, 44000',
-    clientName: 'Claire Dubois',
-    clientEmail: 'claire.dubois@email.com',
-    status: 'En attente'
+    description: 'Réfection complète de toiture avec isolation thermique renforcée sur maison de 120m²',
+    city: 'Nantes',
+    postalCode: '44000',
+    budget: '18000.00',
+    surfaceM2: 120,
+    bedrooms: 4,
+    houseType: 'étage',
+    statut: 'accepte',
+    createdAt: '2025-01-08T09:15:00.000Z',
+    client: {
+      firstName: 'Claire',
+      lastName: 'Dubois',
+      email: 'claire.dubois@email.com'
+    }
+  },
+  {
+    id: 4,
+    description: 'Isolation des combles perdus et aménagés sur 80m² avec pose de velux',
+    city: 'Lyon',
+    postalCode: '69000',
+    budget: '12000.00',
+    surfaceM2: 80,
+    bedrooms: 2,
+    houseType: 'étage',
+    statut: 'en_cours',
+    createdAt: '2025-01-12T16:45:00.000Z',
+    client: {
+      firstName: 'Marc',
+      lastName: 'Durand',
+      email: 'marc.durand@email.com'
+    }
+  },
+  {
+    id: 5,
+    description: 'Mise aux normes électriques complète d\'un appartement T3 de 70m²',
+    city: 'Marseille',
+    postalCode: '13000',
+    budget: '8500.00',
+    surfaceM2: 70,
+    bedrooms: 2,
+    houseType: 'appartement',
+    statut: 'termine',
+    createdAt: '2024-12-20T11:30:00.000Z',
+    client: {
+      firstName: 'Emma',
+      lastName: 'Martin',
+      email: 'emma.martin@email.com'
+    }
+  },
+  {
+    id: 6,
+    description: 'Création d\'une cuisine équipée moderne avec îlot central dans maison contemporaine',
+    city: 'Toulouse',
+    postalCode: '31000',
+    budget: '35000.00',
+    surfaceM2: 18,
+    bedrooms: 0,
+    houseType: 'plain-pied',
+    statut: 'en_cours',
+    createdAt: '2025-01-03T08:20:00.000Z',
+    client: {
+      firstName: 'Paul',
+      lastName: 'Bernard',
+      email: 'paul.bernard@email.com'
+    }
   }
 ])
 
@@ -1308,9 +1386,9 @@ async function loadManagedProjects() {
       console.log('📋 Données projets AMO reçues:', response.data)
       
       // Mettre à jour les projets gérés
-      if (response.data.projets && Array.isArray(response.data.projets)) {
+      if (response.data.projets && Array.isArray(response.data.projets) && response.data.projets.length > 0) {
         managedProjects.value = response.data.projets
-        console.log(`✅ ${managedProjects.value.length} projets gérés chargés`)
+        console.log(`✅ ${managedProjects.value.length} projets gérés chargés depuis l'API`)
         
         // Mettre à jour les statistiques si disponibles
         if (response.data.statistiques) {
@@ -1323,17 +1401,21 @@ async function loadManagedProjects() {
         }
         
       } else {
-        console.warn('⚠️ Aucun projet géré trouvé')
-        managedProjects.value = []
+        console.warn('⚠️ Aucun projet géré trouvé dans l\'API, conservation des données fictives')
+        // Ne pas écraser les données fictives si l'API ne retourne rien
+        console.log(`📋 Projets fictifs conservés: ${managedProjects.value.length}`)
       }
       
     } else {
-      console.warn('⚠️ Réponse API projets gérés invalide:', response)
-      managedProjects.value = []
+      console.warn('⚠️ Réponse API projets gérés invalide, conservation des données fictives:', response)
+      // Ne pas écraser les données fictives en cas d'erreur API
     }
     
   } catch (error) {
     console.error('❌ Erreur lors du chargement des projets gérés:', error)
+    console.log('📋 Conservation des données fictives suite à l\'erreur API')
+    // En cas d'erreur, conserver les données fictives
+    
     notificationsStore.showError(`Erreur lors du chargement des projets: ${error.message}`, {
       title: 'Erreur de chargement',
       autoRemove: true,
