@@ -576,6 +576,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user.js'
+import { useNotificationsStore } from '@/stores/notifications.js'
 import { useRoleGuard } from '@/composables/useRoleGuard.js'
 import projetService from '@/services/projetService'
 import documentService from '@/services/documentService'
@@ -585,6 +586,9 @@ import CreateProjectModal from '@/components/CreateProjectModal.vue'
 
 // Store utilisateur
 const userStore = useUserStore()
+
+// Store notifications
+const notificationsStore = useNotificationsStore()
 
 // Protection de la route
 const { protectRoute } = useRoleGuard()
@@ -802,6 +806,12 @@ async function loadDocuments() {
   } catch (error) {
     console.error('❌ Erreur lors du chargement des documents:', error)
     documentsError.value = error.message || 'Erreur lors du chargement des documents'
+    
+    // Afficher une notification d'erreur
+    notificationsStore.showError(error.message || 'Erreur lors du chargement des documents', {
+      title: 'Erreur de chargement',
+      autoRemove: false
+    })
   } finally {
     isLoadingDocuments.value = false
   }
@@ -858,13 +868,39 @@ async function uploadSelectedFiles() {
       // Recharger la liste des documents
       await loadDocuments()
       
-      // TODO: Afficher une notification de succès
-      console.log('🎉 Documents uploadés avec succès!')
+      // Afficher une notification de succès (toast)
+      notificationsStore.showSuccess(response.message || 'Documents uploadés avec succès !', {
+        title: 'Upload réussi',
+        autoRemove: true,
+        duration: 4000
+      })
+      
+      // Ajouter à l'onglet notifications persistantes
+      const uploadedCount = response.data?.length || selectedFiles.value.length
+      const fileNames = response.data?.map(doc => doc.nomOriginal || doc.nom).join(', ') || 
+                        selectedFiles.value.map(f => f.name).join(', ')
+      
+      const notificationDate = new Date()
+      clientNotifications.value.unshift({
+        id: Date.now(),
+        type: 'document',
+        title: 'Documents uploadés',
+        message: `${uploadedCount} document(s) uploadé(s) avec succès: ${fileNames}`,
+        formattedDate: formatRelativeDate(notificationDate),
+        timestamp: notificationDate.toISOString(),
+        read: false
+      })
     }
     
   } catch (error) {
     console.error('❌ Erreur lors de l\'upload:', error)
     documentsError.value = error.message || 'Erreur lors de l\'upload'
+    
+    // Afficher une notification d'erreur
+    notificationsStore.showError(error.message || 'Erreur lors de l\'upload des documents', {
+      title: 'Erreur d\'upload',
+      autoRemove: false
+    })
   } finally {
     uploadingDocuments.value = false
   }
@@ -878,9 +914,22 @@ async function downloadDocument(document) {
     console.log('📥 Téléchargement de:', document.originalName)
     await documentService.downloadDocument(document.id, document.originalName)
     console.log('✅ Téléchargement réussi')
+    
+    // Afficher une notification de succès
+    notificationsStore.showSuccess(`Téléchargement de "${document.originalName}" terminé`, {
+      title: 'Téléchargement réussi',
+      autoRemove: true,
+      duration: 3000
+    })
   } catch (error) {
     console.error('❌ Erreur lors du téléchargement:', error)
     documentsError.value = error.message || 'Erreur lors du téléchargement'
+    
+    // Afficher une notification d'erreur
+    notificationsStore.showError(error.message || 'Erreur lors du téléchargement', {
+      title: 'Erreur de téléchargement',
+      autoRemove: false
+    })
   }
 }
 
@@ -902,13 +951,35 @@ async function deleteDocument(document) {
       // Recharger la liste des documents
       await loadDocuments()
       
-      // TODO: Afficher une notification de succès
-      console.log('🎉 Document supprimé avec succès!')
+      // Afficher une notification de succès (toast)
+      notificationsStore.showSuccess(response.message || `"${document.originalName}" supprimé avec succès`, {
+        title: 'Document supprimé',
+        autoRemove: true,
+        duration: 3000
+      })
+      
+      // Ajouter à l'onglet notifications persistantes
+      const notificationDate = new Date()
+      clientNotifications.value.unshift({
+        id: Date.now(),
+        type: 'document',
+        title: 'Document supprimé',
+        message: `Le document "${document.originalName}" a été supprimé avec succès`,
+        formattedDate: formatRelativeDate(notificationDate),
+        timestamp: notificationDate.toISOString(),
+        read: false
+      })
     }
     
   } catch (error) {
     console.error('❌ Erreur lors de la suppression:', error)
     documentsError.value = error.message || 'Erreur lors de la suppression'
+    
+    // Afficher une notification d'erreur
+    notificationsStore.showError(error.message || 'Erreur lors de la suppression', {
+      title: 'Erreur de suppression',
+      autoRemove: false
+    })
   }
 }
 
@@ -954,6 +1025,12 @@ async function loadAmoDocuments() {
   } catch (error) {
     console.error('❌ Erreur lors du chargement des documents AMO:', error)
     amoDocumentsError.value = error.message || 'Erreur lors du chargement des documents AMO'
+    
+    // Afficher une notification d'erreur
+    notificationsStore.showError(error.message || 'Erreur lors du chargement des documents AMO', {
+      title: 'Erreur de chargement AMO',
+      autoRemove: false
+    })
   } finally {
     isLoadingAmoDocuments.value = false
   }
@@ -984,11 +1061,54 @@ function closeCreateProjectModal() {
 function onProjectCreated(newProject) {
   // Recharger les données du dashboard
   loadDashboard()
+  
+  // Afficher une notification de succès (toast)
+  notificationsStore.showSuccess('Votre projet a été créé avec succès !', {
+    title: 'Projet créé',
+    autoRemove: true,
+    duration: 4000
+  })
+  
+  // Ajouter à l'onglet notifications persistantes
+  const notificationDate = new Date()
+  clientNotifications.value.unshift({
+    id: Date.now(),
+    type: 'project',
+    title: 'Nouveau projet créé',
+    message: `Votre projet "${newProject?.description || 'Nouveau projet'}" a été créé avec succès`,
+    formattedDate: formatRelativeDate(notificationDate),
+    timestamp: notificationDate.toISOString(),
+    read: false
+  })
 }
 
 // ================================================
 // MÉTHODES POUR LES NOTIFICATIONS CLIENT
 // ================================================
+
+/**
+ * Formatter la date relative (ex: "Il y a 2 minutes")
+ * @param {Date} date - Date à formater
+ * @returns {string} - Date formatée
+ */
+function formatRelativeDate(date) {
+  const now = new Date()
+  const diffMs = now - date
+  const diffMinutes = Math.floor(diffMs / (1000 * 60))
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  
+  if (diffMinutes < 1) return 'À l\'instant'
+  if (diffMinutes < 60) return `Il y a ${diffMinutes} minute${diffMinutes > 1 ? 's' : ''}`
+  if (diffHours < 24) return `Il y a ${diffHours} heure${diffHours > 1 ? 's' : ''}`
+  if (diffDays < 7) return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`
+  
+  return date.toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  })
+}
 
 function markAsRead(notificationId) {
   const notification = clientNotifications.value.find(n => n.id === notificationId)

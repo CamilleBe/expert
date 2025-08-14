@@ -1,6 +1,7 @@
 <script setup>
 import Footer from './components/Footer.vue'
 import NavBar from './components/NavBar.vue'
+import GlobalNotifications from './components/GlobalNotifications.vue'
 </script>
 
 <template>
@@ -13,6 +14,9 @@ import NavBar from './components/NavBar.vue'
 
     <!-- Footer commun à toutes les pages -->
     <Footer />
+    
+    <!-- Notifications globales -->
+    <GlobalNotifications />
   </div>
 </template>
 
