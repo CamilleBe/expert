@@ -228,14 +228,19 @@ export function createRoleGuard(allowedRoles) {
         })
       }
 
-      // Vérifier les permissions
+      // Vérifier les permissions avec normalisation des rôles
       const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles]
-      if (!roles.includes(userStore.userType)) {
+      const normalizedUserRole = normalizeRole(userStore.userType)
+      const normalizedAllowedRoles = roles.map(role => normalizeRole(role))
+      
+      if (!normalizedAllowedRoles.includes(normalizedUserRole)) {
         console.log('❌ Rôle non autorisé - Redirection vers 404')
         console.log('🚨 Comparaison échouée:', {
           userRole: userStore.userType,
+          normalizedUserRole: normalizedUserRole,
           allowedRoles: roles,
-          match: roles.includes(userStore.userType)
+          normalizedAllowedRoles: normalizedAllowedRoles,
+          match: normalizedAllowedRoles.includes(normalizedUserRole)
         })
         next('/404')
         return

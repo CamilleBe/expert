@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Rôle AMO</title>
+    <style>
+        body { font-family: monospace; margin: 20px; }
+        .step { margin: 10px 0; padding: 10px; background: #f0f0f0; border-radius: 5px; }
+        .error { color: red; }
+        .success { color: green; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug Rôle AMO</h1>
+    <button onclick="debugRoleNormalization()">Test Normalisation Rôle</button>
+    <button onclick="testLogin()">Test Connexion + Debug</button>
+    <div id="results"></div>
+
+    <script>
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `step ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+        }
+
+        // Reproduire la fonction normalizeRole du frontend
+        function normalizeRole(role) {
+            log(`🔍 normalizeRole appelée avec: "${role}" (type: ${typeof role})`);
+            
+            if (!role) {
+                log(`❌ Rôle vide ou null, retour 'client'`, 'error');
+                return 'client';
+            }
+            
+            const normalized = role.toLowerCase().trim();
+            log(`➡️ Après toLowerCase(): "${normalized}"`);
+            
+            // Mapper les variations possibles
+            const roleMapping = {
+                'amo': 'amo',
+                'assistant': 'amo',
+                'maître d\'ouvrage': 'amo',
+                'maitre d\'ouvrage': 'amo',
+                'assistant_maitre_ouvrage': 'amo',
+                
+                'partenaire': 'partenaire',
+                'partner': 'partenaire',
+                'artisan': 'partenaire', // Backward compatibility
+                'craftsman': 'partenaire',
+                'entrepreneur': 'partenaire',
+                
+                'client': 'client',
+                'customer': 'client',
+                'user': 'client',
+                'admin': 'admin'
+            };
+            
+            const result = roleMapping[normalized] || 'client';
+            log(`➡️ Mapping: "${normalized}" => "${result}"`, result === 'amo' ? 'success' : 'error');
+            
+            return result;
+        }
+
+        function debugRoleNormalization() {
+            document.getElementById('results').innerHTML = '';
+            log('<h3>🧪 Test de normalisation des rôles</h3>');
+            
+            const testRoles = ['AMO', 'amo', 'Amo', 'client', 'CLIENT', 'partenaire', ''];
+            
+            testRoles.forEach(role => {
+                log(`<hr><strong>Test avec: "${role}"</strong>`);
+                const result = normalizeRole(role);
+                log(`✅ Résultat final: "${result}"`, result === 'amo' && (role === 'AMO' || role === 'amo') ? 'success' : 'info');
+            });
+        }
+
+        async function testLogin() {
+            document.getElementById('results').innerHTML = '';
+            log('<h3>🔐 Test de connexion AMO avec debug</h3>');
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/users/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'amo@test.com',
+                        password: 'rootroot'
+                    })
+                });
+                
+                const data = await response.json();
+                log(`📥 Réponse login: ${JSON.stringify(data, null, 2)}`);
+                
+                if (data.success && data.data.user) {
+                    const user = data.data.user;
+                    log(`👤 Rôle reçu du backend: "${user.role}"`);
+                    
+                    // Simuler ce que fait le frontend
+                    log('<hr><strong>Simulation stockage frontend:</strong>');
+                    localStorage.setItem('user', JSON.stringify(user));
+                    localStorage.setItem('token', data.data.token);
+                    log('✅ Données sauvegardées dans localStorage');
+                    
+                    // Test de normalisation
+                    log('<hr><strong>Test de normalisation:</strong>');
+                    const normalizedRole = normalizeRole(user.role);
+                    log(`🎯 Rôle normalisé: "${normalizedRole}"`, normalizedRole === 'amo' ? 'success' : 'error');
+                    
+                    // Test de vérification permission
+                    log('<hr><strong>Test hasPermission:</strong>');
+                    const hasAmoPermission = normalizedRole === 'amo';
+                    log(`✅ hasPermission('amo'): ${hasAmoPermission}`, hasAmoPermission ? 'success' : 'error');
+                    
+                } else {
+                    log(`❌ Erreur login: ${data.message}`, 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Erreur réseau: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-test au chargement
+        window.onload = () => {
+            log('🚀 Page de debug chargée');
+            // debugRoleNormalization();
+        };
+    </script>
+</body>
+</html>

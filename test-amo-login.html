@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Connexion AMO</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .error { background-color: #fee; color: #c33; }
+        .success { background-color: #efe; color: #3c3; }
+        .info { background-color: #eef; color: #33c; }
+        button { padding: 10px 20px; margin: 5px; }
+        input { padding: 5px; margin: 5px; width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Connexion AMO</h1>
+    
+    <div>
+        <h2>Test de l'API Backend</h2>
+        <button onclick="testBackendHealth()">Tester Santé Backend</button>
+        <button onclick="testLoginEndpoint()">Tester Endpoint Login</button>
+    </div>
+    
+    <div>
+        <h2>Test de Connexion AMO</h2>
+        <input type="email" id="email" placeholder="Email AMO" value="amo@test.com">
+        <input type="password" id="password" placeholder="Mot de passe" value="password123">
+        <button onclick="testAmoLogin()">Connexion AMO</button>
+        <button onclick="testCreateAmo()">Créer utilisateur AMO test</button>
+    </div>
+    
+    <div>
+        <h2>Test des Routes Dashboard</h2>
+        <button onclick="testAmoDashboard()">Test Dashboard AMO</button>
+        <button onclick="testAmoRoutes()">Test Routes AMO</button>
+    </div>
+    
+    <div id="results"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            results.insertBefore(div, results.firstChild);
+        }
+        
+        async function makeRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                
+                const data = await response.json();
+                return { response, data };
+            } catch (error) {
+                addResult(`❌ Erreur réseau: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+        
+        async function testBackendHealth() {
+            addResult('🔍 Test de santé du backend...');
+            try {
+                const { response, data } = await makeRequest(`${API_BASE}/health`);
+                if (response.ok) {
+                    addResult(`✅ Backend OK: ${JSON.stringify(data)}`, 'success');
+                } else {
+                    addResult(`⚠️ Backend répond mais erreur ${response.status}: ${JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Backend inaccessible`, 'error');
+            }
+        }
+        
+        async function testLoginEndpoint() {
+            addResult('🔍 Test de l\'endpoint de connexion...');
+            try {
+                const { response, data } = await makeRequest(`${API_BASE}/users/login`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        email: 'test@nonexistant.com',
+                        password: 'wrongpassword'
+                    })
+                });
+                
+                if (response.status === 401) {
+                    addResult(`✅ Endpoint login fonctionne (401 attendu): ${data.message}`, 'success');
+                } else {
+                    addResult(`⚠️ Réponse inattendue ${response.status}: ${JSON.stringify(data)}`, 'info');
+                }
+            } catch (error) {
+                addResult(`❌ Erreur endpoint login`, 'error');
+            }
+        }
+        
+        async function testCreateAmo() {
+            addResult('🔍 Création d\'un utilisateur AMO test...');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const { response, data } = await makeRequest(`${API_BASE}/users/register-amo`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        firstName: 'Test',
+                        lastName: 'AMO',
+                        email: email,
+                        password: password,
+                        passwordConfirm: password,
+                        telephone: '0123456789',
+                        siret: '12345678901234'
+                    })
+                });
+                
+                if (response.ok) {
+                    addResult(`✅ Utilisateur AMO créé: ${JSON.stringify(data)}`, 'success');
+                } else {
+                    addResult(`❌ Erreur création AMO ${response.status}: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Erreur création AMO`, 'error');
+            }
+        }
+        
+        async function testAmoLogin() {
+            addResult('🔍 Test de connexion AMO...');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const { response, data } = await makeRequest(`${API_BASE}/users/login`, {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+                
+                if (response.ok && data.success) {
+                    const user = data.data.user;
+                    const token = data.data.token;
+                    
+                    addResult(`✅ Connexion AMO réussie!`, 'success');
+                    addResult(`👤 Utilisateur: ${user.prenom} ${user.nom} (${user.role})`, 'success');
+                    addResult(`🎫 Token: ${token.substring(0, 20)}...`, 'info');
+                    
+                    // Sauvegarder dans localStorage pour les tests suivants
+                    localStorage.setItem('test_token', token);
+                    localStorage.setItem('test_user', JSON.stringify(user));
+                    
+                    // Test automatique du dashboard
+                    setTimeout(() => testAmoDashboard(), 1000);
+                    
+                } else {
+                    addResult(`❌ Connexion échouée ${response.status}: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Erreur connexion AMO`, 'error');
+            }
+        }
+        
+        async function testAmoDashboard() {
+            addResult('🔍 Test d\'accès au dashboard AMO...');
+            const token = localStorage.getItem('test_token');
+            
+            if (!token) {
+                addResult('❌ Pas de token - connectez-vous d\'abord', 'error');
+                return;
+            }
+            
+            try {
+                const { response, data } = await makeRequest(`${API_BASE}/amo/dashboard`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    addResult(`✅ Dashboard AMO accessible: ${JSON.stringify(data)}`, 'success');
+                } else if (response.status === 404) {
+                    addResult(`🚫 Dashboard AMO inaccessible (404 - route hidden) - Normal si pas AMO`, 'info');
+                } else {
+                    addResult(`❌ Erreur dashboard AMO ${response.status}: ${JSON.stringify(data)}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Erreur accès dashboard AMO`, 'error');
+            }
+        }
+        
+        async function testAmoRoutes() {
+            addResult('🔍 Test des routes AMO...');
+            const token = localStorage.getItem('test_token');
+            
+            if (!token) {
+                addResult('❌ Pas de token - connectez-vous d\'abord', 'error');
+                return;
+            }
+            
+            const routes = [
+                '/amo/mes-projets',
+                '/amo/gestion-missions',
+                '/amo/profil',
+                '/amo/documents/client'
+            ];
+            
+            for (const route of routes) {
+                try {
+                    const { response, data } = await makeRequest(`${API_BASE}${route}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        addResult(`✅ ${route}: OK`, 'success');
+                    } else if (response.status === 404) {
+                        addResult(`🚫 ${route}: 404 (route hidden)`, 'info');
+                    } else {
+                        addResult(`❌ ${route}: ${response.status} - ${data.message}`, 'error');
+                    }
+                } catch (error) {
+                    addResult(`❌ ${route}: Erreur réseau`, 'error');
+                }
+            }
+        }
+        
+        // Test automatique au chargement
+        window.onload = () => {
+            addResult('🚀 Page de test chargée - Prêt pour les tests');
+            testBackendHealth();
+        };
+    </script>
+</body>
+</html>
