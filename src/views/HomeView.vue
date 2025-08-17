@@ -52,13 +52,13 @@
             
             <!-- CTA principal -->
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <a href="#project-form" class="group inline-flex items-center justify-center py-4 px-10 bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold text-lg rounded-xl transition-all duration-300 ease-in-out hover:shadow-2xl hover:scale-105 transform">
+              <a href="#project-form" class="group inline-flex items-center justify-center py-4 px-8 bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold text-lg rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg hover:scale-105 transform">
                 <svg class="w-5 h-5 mr-3 group-hover:animate-bounce" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd"></path>
                 </svg>
                 Démarrer mon projet GRATUITEMENT
               </a>
-              <a href="#how-it-works" class="inline-flex items-center justify-center py-4 px-8 border-2 border-white text-white font-semibold text-lg rounded-xl hover:bg-white hover:text-blue-600 transition-all duration-300 ease-in-out">
+              <a href="#how-it-works" class="inline-flex items-center justify-center py-4 px-8 border-2 border-white text-white font-semibold text-lg rounded-lg hover:bg-white hover:text-blue-600 transition-all duration-300 ease-in-out hover:shadow-lg">
                 Comment ça marche ?
               </a>
             </div>
@@ -161,7 +161,7 @@
         </div>
         
         <div class="text-center mt-12">
-          <a href="#" class="inline-block py-3 px-8 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg">
+          <a href="#" class="inline-block py-4 px-8 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-lg rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg transform hover:scale-105">
             Voir tous les services
           </a>
         </div>
@@ -409,7 +409,7 @@
         </div>
         
         <div class="text-center mt-12">
-          <a href="#" class="inline-block py-3 px-8 bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold rounded-lg transition-all duration-300 ease-in-out">
+          <a href="#" class="inline-block py-4 px-8 bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold text-lg rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg transform hover:scale-105">
             Voir plus de témoignages
           </a>
         </div>
@@ -603,10 +603,10 @@
           </p>
         </div>
         <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-          <a href="#project-form" class="py-3 px-8 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all duration-300 ease-in-out hover:shadow-lg text-center">
+          <a href="#project-form" class="py-4 px-8 bg-white text-blue-600 font-semibold text-lg rounded-lg hover:bg-blue-50 transition-all duration-300 ease-in-out hover:shadow-lg transform hover:scale-105 text-center">
             Démarrer mon projet
           </a>
-          <a href="/inscription" class="py-3 px-8 bg-transparent border-2 border-white text-white font-semibold rounded-lg hover:bg-blue-500 transition-all duration-300 ease-in-out text-center">
+          <a href="/inscription" class="py-4 px-8 bg-transparent border-2 border-white text-white font-semibold text-lg rounded-lg hover:bg-blue-500 transition-all duration-300 ease-in-out hover:shadow-lg transform hover:scale-105 text-center">
             S'inscrire gratuitement
           </a>
         </div>

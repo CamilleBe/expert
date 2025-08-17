@@ -8,7 +8,7 @@
         
         <nav class="hidden md:flex space-x-8">
           <router-link to="/" class="text-gray-700 hover:text-blue-600 font-medium">Accueil</router-link>
-          <router-link to="/how-it-works" class="text-gray-700 hover:text-blue-600 font-medium">Comment ça marche ?</router-link>
+          <a href="/#how-it-works" class="text-gray-700 hover:text-blue-600 font-medium">Comment ça marche ?</a>
           <!-- Dashboard uniquement pour les utilisateurs connectés -->
           <router-link v-if="userStore.isAuthenticated" 
                        :to="userStore.isClient ? '/dashboard' : userStore.isAMO ? '/amo-dashboard' : '/artisan-dashboard'" 
@@ -79,7 +79,7 @@
       <div class="container mx-auto px-4 py-4">
         <nav class="flex flex-col space-y-3">
           <router-link @click="menuOpen = false" to="/" class="text-gray-700 font-medium hover:text-blue-600 transition py-2">Accueil</router-link>
-          <router-link @click="menuOpen = false" to="/how-it-works" class="text-gray-700 font-medium hover:text-blue-600 transition py-2">Comment ça marche ?</router-link>
+          <a @click="menuOpen = false" href="/#how-it-works" class="text-gray-700 font-medium hover:text-blue-600 transition py-2">Comment ça marche ?</a>
           <!-- Dashboard dans le menu mobile uniquement pour les utilisateurs connectés -->
           <router-link v-if="userStore.isAuthenticated" 
                        @click="menuOpen = false" 
