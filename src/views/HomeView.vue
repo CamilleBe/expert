@@ -8,10 +8,10 @@
       <div class="w-full px-4 sm:px-6 lg:px-8 py-24 md:py-32 relative z-10">
         <div class="w-full max-w-5xl mx-auto">
           <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 animate-fade-in">
-            Trouvez l'artisan idéal pour vos projets
+            Votre projet de rénovation, notre expertise
           </h1>
           <p class="text-xl md:text-2xl mb-8 text-blue-100 animate-fade-in-delay">
-            Des milliers d'artisans qualifiés prêts à réaliser vos travaux en toute confiance
+            Confiez votre projet à un Assistant Maîtrise d'Ouvrage qui vous accompagne de A à Z
           </p>
           <div class="animate-fade-in-delay-2 w-full">
             <!-- Message pour inciter à créer un projet -->
@@ -20,7 +20,7 @@
                 <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
                 </svg>
-                Nouveau : Créez votre projet et recevez des devis personnalisés
+                Nouveau : Soumettez votre projet et bénéficiez d'un accompagnement expert
               </div>
               <a href="#project-form" class="inline-block py-3 px-8 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all duration-300 ease-in-out hover:shadow-lg">
                 Démarrer mon projet
@@ -44,9 +44,9 @@
     <div class="w-screen px-4 sm:px-6 lg:px-8 py-16 md:py-24 bg-white">
       <div class="w-full mx-auto">
         <div class="text-center mb-16 animate-fade-in">
-          <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Services proposés</h2>
+          <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Secteurs d'intervention</h2>
           <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-            Des artisans qualifiés pour tous vos besoins en rénovation et construction
+            Nos AMO vous accompagnent sur tous types de projets de rénovation et construction
           </p>
         </div>
         
@@ -130,7 +130,7 @@
         <div class="text-center mb-16 animate-fade-in">
           <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Comment ça marche</h2>
           <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-            En seulement 3 étapes simples, trouvez l'artisan idéal pour votre projet
+            En 3 étapes simples, bénéficiez d'un accompagnement professionnel pour votre projet
           </p>
         </div>
         
@@ -138,19 +138,19 @@
           <div class="text-center">
             <div class="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-blue-600 text-white text-2xl font-bold">1</div>
             <h3 class="text-2xl font-bold mb-3 text-gray-900">Décrivez votre projet</h3>
-            <p class="text-gray-600">Précisez votre besoin, votre localisation et votre budget pour obtenir des devis adaptés.</p>
+            <p class="text-gray-600">Remplissez notre formulaire détaillé. Un AMO expert prend en charge votre dossier immédiatement.</p>
           </div>
           
           <div class="text-center">
             <div class="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-blue-600 text-white text-2xl font-bold">2</div>
-            <h3 class="text-2xl font-bold mb-3 text-gray-900">Comparez les artisans</h3>
-            <p class="text-gray-600">Consultez les profils, les avis et les réalisations des artisans intéressés par votre projet.</p>
+            <h3 class="text-2xl font-bold mb-3 text-gray-900">Votre AMO sélectionne</h3>
+            <p class="text-gray-600">Votre Assistant Maîtrise d'Ouvrage identifie les artisans adaptés et compare les devis pour vous.</p>
           </div>
           
           <div class="text-center">
             <div class="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-full bg-blue-600 text-white text-2xl font-bold">3</div>
-            <h3 class="text-2xl font-bold mb-3 text-gray-900">Faites votre choix</h3>
-            <p class="text-gray-600">Sélectionnez l'artisan qui correspond le mieux à vos attentes et suivez l'avancement de votre projet.</p>
+            <h3 class="text-2xl font-bold mb-3 text-gray-900">Suivi complet</h3>
+            <p class="text-gray-600">Ensemble, vous choisissez les artisans. Votre AMO assure le suivi, défend vos intérêts et vous informe de tout.</p>
           </div>
         </div>
       </div>
@@ -160,9 +160,9 @@
     <div class="w-screen px-4 sm:px-6 lg:px-8 py-16 md:py-24 bg-white">
       <div class="w-full mx-auto">
         <div class="text-center mb-16 animate-fade-in">
-          <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Fonctionnalités principales</h2>
+          <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Votre accompagnement personnalisé</h2>
           <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-            Des outils innovants pour simplifier la gestion de vos projets de rénovation et construction
+            Un Assistant Maîtrise d'Ouvrage dédié qui défend vos intérêts à chaque étape
           </p>
         </div>
         
@@ -178,9 +178,9 @@
                 </div>
               </div>
               <div class="ml-6">
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Suivi de projet en temps réel</h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Représentation et défense de vos intérêts</h3>
                 <p class="text-gray-600 leading-relaxed">
-                  Suivez l'avancement de vos travaux à chaque étape. Recevez des notifications importantes, consultez les photos d'avancement et gardez un œil sur le calendrier des interventions directement depuis votre espace client.
+                  Votre AMO vous représente auprès des artisans, négocie en votre nom, vérifie la conformité des travaux et s'assure que vos exigences sont respectées à chaque étape du projet.
                 </p>
                 <div class="mt-4 flex items-center">
                   <a href="#" class="text-blue-600 font-medium hover:text-blue-500 inline-flex items-center">
@@ -203,9 +203,9 @@
                 </div>
               </div>
               <div class="ml-6">
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Gestion documentaire centralisée</h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Sélection et comparaison d'artisans</h3>
                 <p class="text-gray-600 leading-relaxed">
-                  Stockez tous vos documents importants au même endroit : devis, factures, contrats, plans, garanties et assurances. Fini les papiers perdus ou les recherches fastidieuses dans vos emails.
+                  Votre AMO identifie les corps de métier nécessaires, sollicite les artisans qualifiés de son réseau, compare les devis techniques et financiers, et vous présente les meilleures options.
                 </p>
                 <div class="mt-4 flex items-center">
                   <a href="#" class="text-blue-600 font-medium hover:text-blue-500 inline-flex items-center">
@@ -228,9 +228,9 @@
                 </div>
               </div>
               <div class="ml-6">
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Paiement sécurisé en ligne</h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Suivi et coordination du chantier</h3>
                 <p class="text-gray-600 leading-relaxed">
-                  Réglez vos acomptes et factures directement via notre plateforme sécurisée. Suivez l'historique de vos paiements et bénéficiez de notre système de paiement par étapes qui libère les fonds uniquement lorsque le travail est validé.
+                  Votre AMO coordonne les différents corps de métier, supervise l'avancement des travaux, gère les imprévus, et vous tient informé en temps réel de l'évolution de votre projet.
                 </p>
                 <div class="mt-4 flex items-center">
                   <a href="#" class="text-blue-600 font-medium hover:text-blue-500 inline-flex items-center">
@@ -272,19 +272,19 @@
             
             <div class="space-y-6 text-gray-600">
               <p class="text-lg">
-                Fondée en 2020, Experta est née d'un constat simple : trouver le bon artisan pour son projet de rénovation ou de construction reste un parcours semé d'embûches pour de nombreux particuliers.
+                Fondée en 2020, Experta révolutionne l'accompagnement des projets de rénovation en proposant un service d'Assistant Maîtrise d'Ouvrage (AMO) dédié aux particuliers.
               </p>
               
               <p class="text-lg">
-                <span class="font-semibold text-blue-600">Notre mission :</span> Simplifier la mise en relation entre particuliers et artisans qualifiés, tout en garantissant qualité, transparence et sérénité à chaque étape de vos projets immobiliers.
+                <span class="font-semibold text-blue-600">Notre mission :</span> Vous faire bénéficier de l'expertise d'un professionnel qui défend vos intérêts, coordonne vos travaux et vous garantit un projet réussi dans les meilleures conditions.
               </p>
               
               <p class="text-lg">
-                <span class="font-semibold text-blue-600">Notre innovation :</span> Experta se distingue par une approche centrée sur la vérification rigoureuse des artisans, un système d'évaluation transparent et un accompagnement personnalisé tout au long de votre projet.
+                <span class="font-semibold text-blue-600">Notre innovation :</span> Démocratiser l'accès à l'assistance maîtrise d'ouvrage, traditionnellement réservée aux gros projets, pour tous les particuliers souhaitant rénover en toute sérénité.
               </p>
               
               <p class="text-lg">
-                Grâce à notre plateforme, fini les mauvaises surprises ! Nous vous aidons à concrétiser vos projets immobiliers en toute confiance, en vous connectant avec des professionnels dont les compétences et le sérieux sont reconnus.
+                Avec Experta, vous n'êtes plus seul face à votre projet. Votre AMO devient votre partenaire de confiance qui vous accompagne, vous conseille et défend vos intérêts du début à la fin de vos travaux.
               </p>
             </div>
           </div>
@@ -298,7 +298,7 @@
         <div class="text-center mb-16 animate-fade-in">
           <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Ce que disent nos clients</h2>
           <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-            Des milliers de clients satisfaits ont trouvé leur artisan idéal sur notre plateforme
+            Des particuliers accompagnés avec succès par nos Assistants Maîtrise d'Ouvrage
           </p>
         </div>
         
@@ -309,7 +309,7 @@
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118l-3.388-2.46a1 1 0 00-1.175 0l-3.388 2.46c-.784.57-1.838-.197-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.049 9.394c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.967z"></path>
               </svg>
             </div>
-            <p class="text-gray-600 italic mb-6">"Grâce à Experta, j'ai trouvé un excellent électricien pour la rénovation complète de mon installation. Travail soigné, devis respecté et délais tenus !"</p>
+            <p class="text-gray-600 italic mb-6">"Mon AMO a géré toute la rénovation électrique de ma maison. Il a négocié les prix, coordonné les artisans et vérifié la qualité. Un vrai soulagement !"</p>
             <div class="flex items-center">
               <img src="https://randomuser.me/api/portraits/women/12.jpg" alt="Client" class="w-12 h-12 rounded-full mr-4" />
               <div>
@@ -325,7 +325,7 @@
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118l-3.388-2.46a1 1 0 00-1.175 0l-3.388 2.46c-.784.57-1.838-.197-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.049 9.394c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.967z"></path>
               </svg>
             </div>
-            <p class="text-gray-600 italic mb-6">"Le plombier que j'ai engagé via la plateforme a été très professionnel. Il a résolu rapidement mon problème de fuite et m'a donné de précieux conseils pour éviter que cela ne se reproduise."</p>
+            <p class="text-gray-600 italic mb-6">"Experta m'a assigné un AMO fantastique qui a piloté ma rénovation de salle de bain. Il a tout géré : artisans, planning, qualité. Je n'ai eu à me soucier de rien !"</p>
             <div class="flex items-center">
               <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Client" class="w-12 h-12 rounded-full mr-4" />
               <div>
@@ -341,7 +341,7 @@
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118l-3.388-2.46a1 1 0 00-1.175 0l-3.388 2.46c-.784.57-1.838-.197-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.049 9.394c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.967z"></path>
               </svg>
             </div>
-            <p class="text-gray-600 italic mb-6">"J'ai fait appel à un peintre pour rafraîchir mon appartement. Le résultat est impeccable et le prix très compétitif. Je recommande vivement cette plateforme !"</p>
+            <p class="text-gray-600 italic mb-6">"Grâce à mon AMO, ma cuisine a été refaite dans les temps et le budget. Il a défendu mes intérêts et négocié chaque détail. Service exceptionnel !"</p>
             <div class="flex items-center">
               <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Client" class="w-12 h-12 rounded-full mr-4" />
               <div>
@@ -460,7 +460,7 @@
               class="flex justify-between items-center w-full px-6 py-5 text-left bg-white hover:bg-gray-50 transition-colors"
               @click="toggleFaq(1)"
             >
-              <span class="font-semibold text-lg text-gray-900">Comment fonctionne la mise en relation avec les artisans ?</span>
+              <span class="font-semibold text-lg text-gray-900">Comment fonctionne l'accompagnement par un AMO ?</span>
               <svg 
                 class="w-6 h-6 text-blue-600 transform transition-transform duration-300"
                 :class="{ 'rotate-180': openFaq === 1 }"
@@ -476,7 +476,7 @@
               v-show="openFaq === 1"
             >
               <p class="text-gray-700">
-                Après avoir décrit votre projet et précisé vos besoins, notre système identifie les artisans les plus qualifiés dans votre région. Vous recevez plusieurs propositions et pouvez consulter les profils, réalisations et avis des artisans avant de faire votre choix. Une fois votre sélection effectuée, vous êtes mis en relation directe avec l'artisan pour finaliser les détails de votre projet.
+                Après avoir soumis votre projet via notre formulaire, nous vous assignons un Assistant Maîtrise d'Ouvrage qualifié. Votre AMO analyse vos besoins, identifie les corps de métier nécessaires, sollicite son réseau d'artisans et vous présente les meilleures options. Il vous accompagne ensuite dans le choix final et pilote l'intégralité du projet.
               </p>
             </div>
           </div>
@@ -487,7 +487,7 @@
               class="flex justify-between items-center w-full px-6 py-5 text-left bg-white hover:bg-gray-50 transition-colors"
               @click="toggleFaq(2)"
             >
-              <span class="font-semibold text-lg text-gray-900">Comment sont sélectionnés les artisans sur Experta ?</span>
+              <span class="font-semibold text-lg text-gray-900">Quelle est la qualification de vos AMO ?</span>
               <svg 
                 class="w-6 h-6 text-blue-600 transform transition-transform duration-300"
                 :class="{ 'rotate-180': openFaq === 2 }"
@@ -503,7 +503,7 @@
               v-show="openFaq === 2"
             >
               <p class="text-gray-700">
-                Tous les artisans référencés sur Experta font l'objet d'une vérification rigoureuse. Nous contrôlons leurs qualifications professionnelles, assurances, certifications et statut juridique. Nous examinons également leurs réalisations antérieures et maintenons un système d'évaluation transparent basé sur les retours des clients. Seuls les artisans répondant à nos critères de qualité sont acceptés sur la plateforme.
+                Nos Assistants Maîtrise d'Ouvrage sont des professionnels expérimentés du bâtiment avec plusieurs années d'expérience dans la gestion de projets. Ils possèdent une connaissance approfondie des techniques, réglementations et bonnes pratiques. Chaque AMO dispose d'un réseau d'artisans qualifiés et vérifiés qu'il a sélectionnés au fil de ses collaborations.
               </p>
             </div>
           </div>
@@ -514,7 +514,7 @@
               class="flex justify-between items-center w-full px-6 py-5 text-left bg-white hover:bg-gray-50 transition-colors"
               @click="toggleFaq(3)"
             >
-              <span class="font-semibold text-lg text-gray-900">Quels types de travaux puis-je faire réaliser via Experta ?</span>
+              <span class="font-semibold text-lg text-gray-900">Sur quels types de projets les AMO interviennent-ils ?</span>
               <svg 
                 class="w-6 h-6 text-blue-600 transform transition-transform duration-300"
                 :class="{ 'rotate-180': openFaq === 3 }"
@@ -530,7 +530,7 @@
               v-show="openFaq === 3"
             >
               <p class="text-gray-700">
-                Experta couvre une large gamme de services dans le domaine de la construction et rénovation : maçonnerie, plomberie, électricité, peinture, menuiserie, carrelage, isolation, couverture, chauffage, climatisation et bien d'autres. Que vous souhaitiez rénover une pièce, construire une extension ou simplement effectuer de petites réparations, vous trouverez des artisans qualifiés pour tous types de projets, petits ou grands.
+                Nos AMO interviennent sur tous types de projets de rénovation et construction : rénovation complète de logement, réaménagement de pièces (cuisine, salle de bain), extensions, aménagements extérieurs, travaux d'isolation, etc. Ils coordonnent tous les corps de métier nécessaires : maçonnerie, plomberie, électricité, peinture, menuiserie et autres spécialités selon vos besoins.
               </p>
             </div>
           </div>
@@ -541,7 +541,7 @@
               class="flex justify-between items-center w-full px-6 py-5 text-left bg-white hover:bg-gray-50 transition-colors"
               @click="toggleFaq(4)"
             >
-              <span class="font-semibold text-lg text-gray-900">La plateforme est-elle gratuite pour les particuliers ?</span>
+              <span class="font-semibold text-lg text-gray-900">Combien coûte l'accompagnement par un AMO ?</span>
               <svg 
                 class="w-6 h-6 text-blue-600 transform transition-transform duration-300"
                 :class="{ 'rotate-180': openFaq === 4 }"
@@ -557,7 +557,7 @@
               v-show="openFaq === 4"
             >
               <p class="text-gray-700">
-                Oui, l'inscription et l'utilisation de la plateforme sont totalement gratuites pour les particuliers. Vous pouvez publier vos projets, recevoir des devis et consulter les profils des artisans sans aucun frais. Nous ne prenons aucune commission sur les projets réalisés. Notre modèle économique est basé sur les abonnements des artisans professionnels qui souhaitent accéder aux demandes de projets.
+                Le coût de l'accompagnement AMO est calculé en pourcentage du montant total des travaux (généralement entre 8% et 12%). Cette prestation comprend l'ensemble des services : analyse du projet, sélection des artisans, comparaison des devis, coordination du chantier, contrôle qualité et suivi jusqu'à la réception des travaux. Un investissement qui vous fait souvent économiser bien plus qu'il ne coûte !
               </p>
             </div>
           </div>
@@ -623,14 +623,14 @@
     <div class="bg-blue-600 py-16 md:py-20 w-screen">
       <div class="w-full px-4 sm:px-6 lg:px-8 mx-auto flex flex-col lg:flex-row items-center justify-between">
         <div class="mb-8 lg:mb-0 text-center lg:text-left">
-          <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">Prêt à démarrer votre projet ?</h2>
+          <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">Prêt à être accompagné ?</h2>
           <p class="text-xl text-blue-100 max-w-2xl">
-            Trouvez dès maintenant l'artisan qualifié qui réalisera vos travaux dans les meilleures conditions.
+            Confiez votre projet à un Assistant Maîtrise d'Ouvrage et réalisez vos travaux en toute sérénité.
           </p>
         </div>
         <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
           <a href="#" class="py-3 px-8 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all duration-300 ease-in-out hover:shadow-lg text-center">
-            Trouver un artisan
+            Démarrer mon projet
           </a>
           <a href="#" class="py-3 px-8 bg-transparent border-2 border-white text-white font-semibold rounded-lg hover:bg-blue-500 transition-all duration-300 ease-in-out text-center">
             S'inscrire gratuitement
