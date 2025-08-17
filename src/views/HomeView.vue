@@ -5,20 +5,70 @@
       <div class="absolute inset-0 opacity-20">
         <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600" alt="" class="w-full h-full object-cover" />
       </div>
-      <div class="w-full px-4 sm:px-6 lg:px-8 py-24 md:py-32 relative z-10">
-        <div class="w-full max-w-5xl mx-auto">
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 animate-fade-in">
-            Votre projet de rénovation, notre expertise
+      <div class="w-full px-4 sm:px-6 lg:px-8 py-32 md:py-40 relative z-10">
+        <div class="w-full max-w-6xl mx-auto text-center">
+          <div class="mb-8">
+            <span class="inline-flex items-center px-4 py-2 bg-yellow-100 border border-yellow-300 rounded-full text-yellow-800 text-sm font-semibold mb-6 animate-fade-in">
+              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              ✨ Service d'accompagnement professionnel
+            </span>
+          </div>
+          
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-8 animate-fade-in">
+            <span class="text-white">Transformez vos</span><br>
+            <span class="text-yellow-300">projets de rénovation</span><br>
+            <span class="text-white">en succès garantis</span>
           </h1>
-          <p class="text-xl md:text-2xl mb-8 text-blue-100 animate-fade-in-delay">
-            Confiez votre projet à un Assistant Maîtrise d'Ouvrage qui vous accompagne de A à Z
+          
+          <p class="text-xl md:text-2xl lg:text-3xl mb-12 text-blue-100 max-w-4xl mx-auto leading-relaxed animate-fade-in-delay">
+            <strong class="text-white">Fini le stress et les mauvaises surprises !</strong><br>
+            Un Assistant Maîtrise d'Ouvrage expert prend en charge votre projet et défend vos intérêts à chaque étape.
           </p>
-          <div class="animate-fade-in-delay-2 w-full">
-            <!-- Message pour inciter à créer un projet -->
-            <div class="text-center mb-8">
-              <a href="#project-form" class="inline-block py-3 px-8 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all duration-300 ease-in-out hover:shadow-lg">
-                Démarrer mon projet
+          
+          <div class="animate-fade-in-delay-2 space-y-6">
+            <!-- Points clés -->
+            <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8 mb-10">
+              <div class="flex items-center text-white">
+                <svg class="w-6 h-6 mr-3 text-green-300" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="font-semibold">Sélection d'artisans experts</span>
+              </div>
+              <div class="flex items-center text-white">
+                <svg class="w-6 h-6 mr-3 text-green-300" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="font-semibold">Négociation des prix</span>
+              </div>
+              <div class="flex items-center text-white">
+                <svg class="w-6 h-6 mr-3 text-green-300" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="font-semibold">Suivi complet du chantier</span>
+              </div>
+            </div>
+            
+            <!-- CTA principal -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <a href="#project-form" class="group inline-flex items-center justify-center py-4 px-10 bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold text-lg rounded-xl transition-all duration-300 ease-in-out hover:shadow-2xl hover:scale-105 transform">
+                <svg class="w-5 h-5 mr-3 group-hover:animate-bounce" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd"></path>
+                </svg>
+                Démarrer mon projet GRATUITEMENT
               </a>
+              <a href="#how-it-works" class="inline-flex items-center justify-center py-4 px-8 border-2 border-white text-white font-semibold text-lg rounded-xl hover:bg-white hover:text-blue-600 transition-all duration-300 ease-in-out">
+                Comment ça marche ?
+              </a>
+            </div>
+            
+            <!-- Testimonial rapide -->
+            <div class="mt-8 text-center">
+              <p class="text-blue-100 italic text-lg">
+                "Mon AMO a géré tous les artisans, négocié les prix et suivi le chantier. Un vrai soulagement !"
+              </p>
+              <p class="text-white font-semibold mt-2">- Marie L., Lyon</p>
             </div>
           </div>
         </div>
@@ -121,7 +171,7 @@
     <!-- Section Comment ça marche -->
     <div class="w-screen bg-gray-50 py-16 md:py-24">
       <div class="w-full px-4 sm:px-6 lg:px-8 mx-auto">
-        <div class="text-center mb-16 animate-fade-in">
+        <div id="how-it-works" class="text-center mb-16 animate-fade-in">
           <h2 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Comment ça marche</h2>
           <p class="text-xl text-gray-600 max-w-3xl mx-auto">
             En 3 étapes simples, bénéficiez d'un accompagnement professionnel pour votre projet
