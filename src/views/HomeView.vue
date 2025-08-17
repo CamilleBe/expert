@@ -306,7 +306,7 @@
         </div>
         
         <div class="text-center mt-16">
-          <a href="#project-form" class="inline-block py-4 px-8 bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold text-lg rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg transform hover:scale-105">
+          <a href="#project-form" class="inline-block py-4 px-8 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-lg rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg transform hover:scale-105">
             Démarrer mon projet
           </a>
         </div>
@@ -550,7 +550,7 @@
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
               >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7 7"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
               </svg>
             </button>
             <div 
