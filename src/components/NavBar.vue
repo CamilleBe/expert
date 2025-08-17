@@ -8,10 +8,11 @@
         
         <nav class="hidden md:flex space-x-8">
           <router-link to="/" class="text-gray-700 hover:text-blue-600 font-medium">Accueil</router-link>
-          <router-link to="/search" class="text-gray-700 hover:text-blue-600 font-medium">Trouver un artisan</router-link>
-          <router-link to="/services" class="text-gray-700 hover:text-blue-600 font-medium">Services</router-link>
-          <router-link to="/how-it-works" class="text-gray-700 hover:text-blue-600 font-medium">Comment ça marche</router-link>
-          <router-link to="/contact" class="text-gray-700 hover:text-blue-600 font-medium">Contact</router-link>
+          <router-link to="/how-it-works" class="text-gray-700 hover:text-blue-600 font-medium">Comment ça marche ?</router-link>
+          <!-- Dashboard uniquement pour les utilisateurs connectés -->
+          <router-link v-if="userStore.isAuthenticated" 
+                       :to="userStore.isClient ? '/dashboard' : '/artisan-dashboard'" 
+                       class="text-gray-700 hover:text-blue-600 font-medium">Dashboard</router-link>
         </nav>
         
         <div class="flex items-center space-x-4">
@@ -122,10 +123,12 @@
       <div class="container mx-auto px-4 py-4">
         <nav class="flex flex-col space-y-3">
           <router-link @click="menuOpen = false" to="/" class="text-gray-700 font-medium hover:text-blue-600 transition py-2">Accueil</router-link>
-          <router-link @click="menuOpen = false" to="/search" class="text-gray-700 font-medium hover:text-blue-600 transition py-2">Trouver un artisan</router-link>
-          <router-link @click="menuOpen = false" to="/services" class="text-gray-700 font-medium hover:text-blue-600 transition py-2">Services</router-link>
-          <router-link @click="menuOpen = false" to="/how-it-works" class="text-gray-700 font-medium hover:text-blue-600 transition py-2">Comment ça marche</router-link>
-          <router-link @click="menuOpen = false" to="/contact" class="text-gray-700 font-medium hover:text-blue-600 transition py-2">Contact</router-link>
+          <router-link @click="menuOpen = false" to="/how-it-works" class="text-gray-700 font-medium hover:text-blue-600 transition py-2">Comment ça marche ?</router-link>
+          <!-- Dashboard dans le menu mobile uniquement pour les utilisateurs connectés -->
+          <router-link v-if="userStore.isAuthenticated" 
+                       @click="menuOpen = false" 
+                       :to="userStore.isClient ? '/dashboard' : '/artisan-dashboard'" 
+                       class="text-gray-700 font-medium hover:text-blue-600 transition py-2">Dashboard</router-link>
         </nav>
         
         <div v-if="userStore.isAuthenticated" class="flex flex-col space-y-3 mt-4 pt-4 border-t border-gray-100">
