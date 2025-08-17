@@ -16,12 +16,6 @@
           <div class="animate-fade-in-delay-2 w-full">
             <!-- Message pour inciter à créer un projet -->
             <div class="text-center mb-8">
-              <div class="inline-flex items-center px-4 py-2 bg-yellow-100 border border-yellow-300 rounded-full text-yellow-800 text-sm font-medium mb-4">
-                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-                </svg>
-                Nouveau : Soumettez votre projet et bénéficiez d'un accompagnement expert
-              </div>
               <a href="#project-form" class="inline-block py-3 px-8 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-all duration-300 ease-in-out hover:shadow-lg">
                 Démarrer mon projet
               </a>
