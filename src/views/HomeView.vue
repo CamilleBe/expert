@@ -113,7 +113,7 @@
           
           <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-transform hover:transform hover:scale-105 duration-300">
             <div class="h-48 bg-blue-50 flex items-center justify-center">
-              <img src="https://images.unsplash.com/photo-1558618666-c291f71742a0?w=800" alt="Plomberie" class="w-full h-full object-cover" />
+              <img src="https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=800" alt="Plomberie" class="w-full h-full object-cover" />
             </div>
             <div class="p-6">
               <h3 class="font-bold text-xl mb-2 text-gray-900">Plomberie</h3>
@@ -293,13 +293,14 @@
               </div>
             </div>
 
-            <!-- Image interface -->
+            <!-- Communication permanente -->
             <div class="relative rounded-2xl overflow-hidden shadow-xl max-h-[180px] animate-fade-in-delay-2">
               <img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=1200" alt="Interface Experta" class="w-full h-[180px] object-cover" />
+              <div class="absolute inset-0 bg-blue-600 opacity-40"></div>
               <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-30"></div>
               <div class="absolute bottom-0 left-0 right-0 p-3 text-white">
-                <p class="text-lg font-semibold mb-0">Interface intuitive</p>
-                <p class="text-sm">Accessible sur tous vos appareils, gardez le contrôle sur vos projets</p>
+                <p class="text-lg font-semibold mb-0">Communication permanente</p>
+                <p class="text-sm">Votre AMO vous tient informé à chaque étape et reste disponible pour vos questions</p>
               </div>
             </div>
           </div>
