@@ -197,6 +197,12 @@
             <p class="text-gray-600">Ensemble, vous choisissez les artisans. Votre AMO assure le suivi, défend vos intérêts et vous informe de tout.</p>
           </div>
         </div>
+        
+        <div class="text-center mt-12">
+          <a href="#project-form" class="inline-block py-4 px-8 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-lg rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg transform hover:scale-105">
+            Démarrer mon projet
+          </a>
+        </div>
       </div>
     </div>
     
@@ -297,6 +303,12 @@
               </div>
             </div>
           </div>
+        </div>
+        
+        <div class="text-center mt-16">
+          <a href="#project-form" class="inline-block py-4 px-8 bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold text-lg rounded-lg transition-all duration-300 ease-in-out hover:shadow-lg transform hover:scale-105">
+            Démarrer mon projet
+          </a>
         </div>
       </div>
     </div>
