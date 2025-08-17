@@ -11,66 +11,17 @@
           <router-link to="/how-it-works" class="text-gray-700 hover:text-blue-600 font-medium">Comment ça marche ?</router-link>
           <!-- Dashboard uniquement pour les utilisateurs connectés -->
           <router-link v-if="userStore.isAuthenticated" 
-                       :to="userStore.isClient ? '/dashboard' : '/artisan-dashboard'" 
+                       :to="userStore.isClient ? '/dashboard' : userStore.isAMO ? '/amo-dashboard' : '/artisan-dashboard'" 
                        class="text-gray-700 hover:text-blue-600 font-medium">Dashboard</router-link>
         </nav>
         
         <div class="flex items-center space-x-4">
           <!-- Si l'utilisateur est connecté -->
           <div v-if="userStore.isAuthenticated" class="flex items-center space-x-4">
-            <!-- Notifications -->
-            <div class="relative">
-              <button @click="showNotifications = !showNotifications" class="relative p-2 text-gray-600 hover:text-blue-600 transition">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM10.97 4.97a.75.75 0 0 0-1.08 1.05L15.39 12l-5.5 6.02a.75.75 0 0 0 1.08 1.05L18 12.05l-7.03-7.08zM5.5 3l5.5 6-5.5 6"></path>
-                </svg>
-                <!-- Badge de notifications non lues -->
-                <span v-if="notificationsStore.unreadCount > 0" 
-                      class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {{ notificationsStore.unreadCount }}
-                </span>
-              </button>
-              
-              <!-- Dropdown des notifications -->
-              <div v-if="showNotifications" 
-                   class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
-                <div class="px-4 py-2 border-b border-gray-100">
-                  <h3 class="font-semibold text-gray-900">Notifications</h3>
-                </div>
-                <div class="max-h-64 overflow-y-auto">
-                  <div v-if="notificationsStore.notifications.length === 0" class="px-4 py-3 text-gray-500 text-sm">
-                    Aucune notification
-                  </div>
-                  <div v-else>
-                    <div v-for="notification in notificationsStore.recentNotifications" 
-                         :key="notification.id"
-                         class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
-                         :class="{ 'bg-blue-50': !notification.read }">
-                      <div class="flex items-start space-x-3">
-                        <span class="text-lg">{{ notification.icon }}</span>
-                        <div class="flex-1 min-w-0">
-                          <p class="text-sm font-medium text-gray-900">{{ notification.title }}</p>
-                          <p class="text-sm text-gray-600 truncate">{{ notification.message }}</p>
-                        </div>
-                        <button v-if="!notification.read" 
-                                @click="notificationsStore.markAsRead(notification.id)"
-                                class="text-blue-600 hover:text-blue-800 text-xs">
-                          Marquer lu
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <!-- Menu utilisateur -->
             <div class="relative">
               <button @click="showUserMenu = !showUserMenu" class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition">
-                <img :src="userStore.currentUser?.avatar" 
-                     :alt="userStore.userName" 
-                     class="w-8 h-8 rounded-full object-cover">
-                <span class="hidden md:block font-medium">{{ userStore.userName }}</span>
+                <span class="font-medium">Profil</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
@@ -81,6 +32,11 @@
                    class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
                 <router-link v-if="userStore.isClient" 
                            to="/dashboard" 
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Mon dashboard
+                </router-link>
+                <router-link v-if="userStore.isAMO" 
+                           to="/amo-dashboard" 
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   Mon dashboard
                 </router-link>
@@ -127,13 +83,13 @@
           <!-- Dashboard dans le menu mobile uniquement pour les utilisateurs connectés -->
           <router-link v-if="userStore.isAuthenticated" 
                        @click="menuOpen = false" 
-                       :to="userStore.isClient ? '/dashboard' : '/artisan-dashboard'" 
+                       :to="userStore.isClient ? '/dashboard' : userStore.isAMO ? '/amo-dashboard' : '/artisan-dashboard'" 
                        class="text-gray-700 font-medium hover:text-blue-600 transition py-2">Dashboard</router-link>
         </nav>
         
         <div v-if="userStore.isAuthenticated" class="flex flex-col space-y-3 mt-4 pt-4 border-t border-gray-100">
           <router-link @click="menuOpen = false" 
-                       :to="userStore.isClient ? '/dashboard' : '/artisan-dashboard'" 
+                       :to="userStore.isClient ? '/dashboard' : userStore.isAMO ? '/amo-dashboard' : '/artisan-dashboard'" 
                        class="py-2 text-blue-600 hover:text-blue-700 transition font-medium">
             Mon dashboard
           </router-link>
